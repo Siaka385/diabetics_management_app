@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diawise - Diabetes Education and Community</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../src/styles/index.css">
+</head>
+<body>
+    <header>
+        <nav class="main-nav">
+            <div class="logo">Diawise</div>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#community">Community</a>
+            </div>
+            <div class="auth-buttons">
+                <a href="/login" class="btn-auth btn-login">Log In</a>
+                <a href="/signup" class="btn-auth btn-signup">Sign Up</a>
+            </div>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1>Empower Your Diabetes Journey</h1>
+                    <p>Join a community dedicated to diabetes education, support, and healthy living tips tailored just for you.</p>
+                    <!-- <div class="btn-group">
+                        <a href="/login" class="btn btn-primary">Log In</a>
+                        <a href="/signup" class="btn btn-login btn-auth">Sign Up</a>
+                    </div> -->
+                </div>
+                <div class="hero-image">
+                    <!-- Optional Image or SVG for visual enhancement -->
+                    <svg viewBox="0 0 200 200" width="100%" height="100%">
+                        <rect x="40" y="20" width="120" height="160" rx="10" fill="#fff" stroke="#000" stroke-width="2"/>
+                        <rect x="45" y="25" width="110" height="150" rx="8" fill="#f8fafc"/>
+                        <circle cx="100" cy="40" r="8" fill="var(--primary)"/>
+                        <path d="M60 70 L140 70" stroke="#94a3b8" stroke-width="2"/>
+                        <path d="M60 90 L140 90" stroke="#94a3b8" stroke-width="2"/>
+                        <path d="M60 110 L140 110" stroke="#94a3b8" stroke-width="2"/>
+                        <g transform="translate(70, 130)">
+                            <path d="M0 0 L20 20 L40 0" fill="none" stroke="#e11d48" stroke-width="3"/>
+                        </g>
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="features" class="features">
+        <div class="container">
+            <h2>Empowering Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <svg class="feature-icon" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-width="2"/>
+                    </svg>
+                    <h3>Educational Content</h3>
+                    <p>Discover essential resources and expert insights to better understand diabetes.</p>
+                </div>
+                <div class="feature-card">
+                    <svg class="feature-icon" viewBox="0 0 24 24" fill="none">
+                        <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke-width="2"/>
+                    </svg>
+                    <h3>Support Groups</h3>
+                    <p>Connect with others on similar journeys and share experiences in a safe space.</p>
+                </div>
+                <div class="feature-card">
+                    <svg class="feature-icon" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" stroke-width="2"/>
+                    </svg>
+                    <h3>Healthy Living Tips</h3>
+                    <p>Explore diet, exercise, and lifestyle recommendations to improve your well-being.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="community" class="cta">
+        <div class="container">
+            <h2>Join Our Supportive Community</h2>
+            <p>Be part of a vibrant network of individuals supporting each other to manage diabetes effectively.</p>
+            <div class="btn-group">
+                <a href="/signup" class="btn btn-secondary">Join Now</a>
+            </div>
+        </div>
+    </section>
+</body>
+</html>
