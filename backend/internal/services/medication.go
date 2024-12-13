@@ -59,3 +59,24 @@ func (s *MedicationService) AddMedication(medication Medication) (Medication, er
 
 	return meds, nil
 }
+
+// Getting medications by user_id
+func (s *MedicationService) GetMedicationsByUserId(userID string) ([]Medication, error) {
+	rows, err := database.DB.Query("SELECT * FROM medications WHERE user_id=?", userID) // SQL query to select all medications for a given user
+	if err != nil {
+		return nil, fmt.Errorf("failed to get medications: %v", err)
+	}
+	defer rows.Close()
+
+	var medications []Medication
+	for rows.Next() {
+		var med Medication
+		err := rows.Scan(&med.Medication_id, &med.User_id, &med.Medication_name, &med.Dose, &med.Dosage_time, &med.Dosage_frequency, &med.Notes)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan medication row: %v", err)
+		}
+		medications = append(medications, med)
+	}
+
+	return medications, nil
+}
