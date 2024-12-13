@@ -1,0 +1,11 @@
+{{define "content"}}
+<h2>Blog Posts</h2>
+<ul>
+    {{range .Posts}}
+    <li>
+        <a href="/post/{{.ID}}">{{.Title}}</a>
+        <p>{{.Excerpt}}</p>
+    </li>
+    {{end}}
+</ul>
+{{end}}
