@@ -19,6 +19,8 @@ func main() {
 
 	router.HandleFunc("/", Index).Methods("GET")
 	router.HandleFunc("/nutrition/mealplan", api.GetDefaultMealPlan).Methods("GET")
+	router.HandleFunc("/nutrition/editplan", api.EditPlan).Methods("POST")
+	router.HandleFunc("/api/nutrition/meal/log", api.LogMealHandler).Methods("POST")
 	router.HandleFunc("/nutrition/suggestions", api.GetMealSuggestions).Methods("POST")
 
 	http.ListenAndServe(portStr, router)
