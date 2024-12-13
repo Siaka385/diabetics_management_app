@@ -58,8 +58,21 @@ func GetDefaultMealPlan(w http.ResponseWriter, r *http.Request) {
     json.NewEncoder(w).Encode(defaultMealPlan)
 }
 
+func EditPlan(w http.ResponseWriter, r *http.Request) {
+	var updates MealPlan
+	if err := json.NewDecoder(r.Body).Decode(&updates); err != nil {
+		http.Error(w, "Invalid input", http.StatusBadRequest)
+		return
+	}
 
-// curl -v -X GET http://localhost:9000/nutrition/mealplan \
+	defaultMealPlan = updates
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"message": "Meal plan updated successfully"})
+}
+
+
+// curl -v -X POST http://localhost:9000/nutrition/editplan \
 // -H "Content-Type: application/json" \
 // -d {
 // 	"name": "Diabetic-Friendly Breakfast",
@@ -67,6 +80,6 @@ func GetDefaultMealPlan(w http.ResponseWriter, r *http.Request) {
 // 	"protein": 25.0,
 // 	"carbs": 20.0,
 // 	"fats": 10.0,
-// 	"ingredients": ["Eggs", "Whole Wheat Bread", "Avocado"]
+// 	"ingredients": ["Milk", "Whole Wheat Bread", "Molly"]
 //   }
   
