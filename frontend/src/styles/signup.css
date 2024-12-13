@@ -111,6 +111,6 @@ body {
     margin-bottom: 1rem;
 }
 
-.alert.show {
-    display: block;
+.hide{
+    display: none;
 }
