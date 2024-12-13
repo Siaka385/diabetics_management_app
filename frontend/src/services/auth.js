@@ -61,4 +61,51 @@ window.onload = () => {
     });
   };
   
-  
+  /**package main
+
+import (
+	"encoding/json"
+	"fmt"
+	"io"
+	"net/http"
+)
+
+type User struct {
+	Name            string `json:"name"`             // User's name
+	Gmail           string `json:"gmail"`            // User's Gmail address
+	Password        string `json:"password"`         // Password
+	ConfirmPassword string `json:"confirm_password"` // Confirmation of the password
+}
+
+func test(w http.ResponseWriter, r *http.Request) {
+	// Read the request body
+	content, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, "Unable to read request body", http.StatusBadRequest)
+		return
+	}
+	defer r.Body.Close()
+
+	// Unmarshal the JSON into the User struct
+	var user User
+	if err := json.Unmarshal(content, &user); err != nil {
+		http.Error(w, "Invalid JSON format", http.StatusBadRequest)
+		return
+	}
+
+	// Process the user data (example: print it)
+	fmt.Printf("Received user: %+v\n", user)
+
+	// Example response
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(`{"success": true, "message": "User data received successfully"}`))
+}
+
+func main() {
+	mux := http.NewServeMux()
+
+	mux.HandleFunc("/", test)
+
+	http.ListenAndServe(":8089", mux)
+}
+ */
