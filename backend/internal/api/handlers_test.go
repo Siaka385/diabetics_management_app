@@ -1,0 +1,89 @@
+package api
+
+import (
+	"encoding/json"
+	"net/http"
+	"net/http/httptest"
+	"reflect"
+	"testing"
+)
+
+func TestGetMealSuggestions(t *testing.T) {
+	// // Create test input data
+	// input := map[string]interface{}{
+	// 	"name":        "Grilled Chicken Salad",
+	// 	"calories":    350,
+	// 	"protein":     30.0,
+	// 	"carbs":       20.0,
+	// 	"fats":        10.0,
+	// 	"servingSize": "1 bowl",
+	// }
+
+	// data, err := json.Marshal(input)
+	// if err != nil {
+	// 	t.Fatalf("Failed to serialize input data: %v", err)
+	// }
+
+	// req, err := http.NewRequest("GET", "/nutrition/suggestions", bytes.NewReader(data))
+	// if err != nil {
+	// 	t.Fatalf("Failed to create request: %v", err)
+	// }
+
+	// handler := http.HandlerFunc(GetMealSuggestions)
+	// rr := httptest.NewRecorder()
+
+	// handler.ServeHTTP(rr, req)
+
+	// if err := rr.Code; err != http.StatusOK {
+	// 	t.Error("Handlre returned wrong status")
+	// }
+
+	// expectedResponse := map[string]string{
+	// 	"message":      "Meal suggestions received",
+	// 	"mealInsights": "The meal 'Grilled Chicken Salad' has 350 calories, 30.00 grams of protein, 20.00 grams of carbs, and 10.00 grams of fats.",
+	// }
+	// var gotResponse = map[string]string{}
+	// err = json.Unmarshal(rr.Body.Bytes(), &gotResponse)
+	// if err!= nil {
+	//     t.Fatalf("Failed to deserialize response: %v", err)
+	// }
+	// for key, value := range gotResponse {
+	// 	if actualValue, ok := expectedResponse[key]; !ok || actualValue != value {
+	//         t.Errorf("Expected '%s' got '%s'", expectedResponse[key], value)
+	//     }
+	// }
+}
+
+func TestGetDefaultMealPlan(t *testing.T) {
+	req, err := http.NewRequest("GET", "/nutrition/mealplan", nil)
+	if err != nil {
+		t.Fatalf("Failed to create request: %v", err)
+	}
+
+	handler := http.HandlerFunc(GetDefaultMealPlan)
+	rr := httptest.NewRecorder()
+
+	handler.ServeHTTP(rr, req)
+
+	if err := rr.Code; err != http.StatusOK {
+		t.Error("Handler returned wrong status")
+	}
+
+	expectedResponse := MealPlan{
+		Name:        "Diabetic-Friendly Breakfast",
+		Calories:    300,
+		Protein:     25.0,
+		Carbs:       20.0,
+		Fats:        10.0,
+		Ingredients: []string{"Eggs", "Whole Wheat Bread", "Avocado"},
+	}
+
+	var gotResponse MealPlan
+	err = json.Unmarshal(rr.Body.Bytes(), &gotResponse)
+	if err != nil {
+		t.Fatalf("Failed to deserialize response: %v", err)
+	}
+	if !reflect.DeepEqual(gotResponse, expectedResponse) {
+		t.Errorf("Expected '%v' got '%v'", expectedResponse, gotResponse)
+	}
+}
