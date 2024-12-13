@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	utils "diawise/pkg"
-
+	"diawise/internal/api"
 
 	"github.com/gorilla/mux"
 )
@@ -18,6 +18,8 @@ func main() {
 	router := mux.NewRouter()
 
 	router.HandleFunc("/", Index).Methods("GET")
+	router.HandleFunc("/nutrition/mealplan", api.GetDefaultMealPlan).Methods("GET")
+	router.HandleFunc("/nutrition/suggestions", api.GetMealSuggestions).Methods("POST")
 
 	http.ListenAndServe(portStr, router)
 }
