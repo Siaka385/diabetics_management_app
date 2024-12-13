@@ -14,6 +14,12 @@ type BlogPost struct {
 	Content string
 }
 
+type Post struct {
+	ID      string
+	Title   string
+	Excerpt string
+}
+
 type Issue struct {
 	StatusCode int
 	Problem    string
@@ -54,6 +60,35 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		Author:  "John Doe",
 		Date:    "December 13, 2024",
 		Content: "<p>This is the full content of the post.</p>",
+	}
+
+	err = tmpl.ExecuteTemplate(w, "base", data)
+	if err != nil {
+		InternalServerErrorHandler(w)
+		return
+	}
+}
+
+func BlogHomeHandler(w http.ResponseWriter, r *http.Request) {
+	tmpl, err := template.ParseFiles(
+		"frontend/public/blog_base.html",
+		"frontend/public/blog_home.html",
+	)
+
+	if err != nil {
+		InternalServerErrorHandler(w)
+		return
+	}
+
+	data := struct {
+		Title string
+		Posts []Post
+	}{
+		Title: "Home",
+		Posts: []Post{
+			{ID: "1", Title: "First Blog Post", Excerpt: "This is the first post."},
+			{ID: "2", Title: "Another Post", Excerpt: "Learn more about this topic."},
+		},
 	}
 
 	err = tmpl.ExecuteTemplate(w, "base", data)
