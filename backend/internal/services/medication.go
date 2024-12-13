@@ -1,6 +1,7 @@
 package services
 
 import (
+	"errors"
 	"time"
 )
 
@@ -29,3 +30,20 @@ func NewMedicationService() *MedicationService {
 }
 
 // Adding medication to the database
+func (s *MedicationService) AddMedication(medication Medication) (Medication, error) {
+	if medication.medication_name == "" || medication.dose == "" || medication.dosage_time.IsZero() || medication.dosage_frequency == "" {
+		return Medication{}, errors.New("Missing required fields")
+	}
+	// Add medication to the database
+	meds := Medication{
+		medication_id:    medication.medication_id,
+		user_id:          medication.user_id,
+		medication_name:  medication.medication_name,
+		dose:             medication.dose,
+		dosage_time:      medication.dosage_time,
+		dosage_frequency: medication.dosage_frequency,
+		notes:            medication.notes,
+	}
+
+	return meds, nil
+}
