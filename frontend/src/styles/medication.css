@@ -1,0 +1,67 @@
+@import url("https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,500,600,700&display=swap");
+
+html {
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: #27a5d6;
+  background: -webkit-linear-gradient(to right, #96c93d, #00b09b);
+}
+
+.navbar {
+  height: 9vh;
+  width: 90vw;
+  margin: 0 auto;
+  margin-top: 10em;
+  padding: 1em 1em;
+  box-sizing: border-box;
+  display: block;
+  box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.15),
+    0px 10px 10px rgba(0, 0, 0, 0.1);
+  border-radius: 2em;
+  position: relative;
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 2;
+}
+
+.navbar .logo {
+  text-transform: uppercase;
+  font-family: "Source Sans Pro", sans-serif;
+  font-weight: 300;
+  font-size: 16pt;
+}
+
+.navbar .logo a {
+  text-decoration: none;
+  color: #090909;
+}
+
+.navbar ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  margin-left: 4em;
+}
+
+.navbar ul li {
+  display: inline;
+  text-decoration: none;
+}
+
+.navbar ul li a {
+  padding: 0.25em 1em 0.25em 1em;
+  color: #090909;
+  text-decoration: none;
+  font-family: "Source Sans Pro", sans-serif;
+  font-weight: 400;
+}
+
+.navbar a:hover {
+  color: #777;
+  transition-duration: 0.3s;
+}
