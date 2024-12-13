@@ -70,16 +70,9 @@ func TestGetDefaultMealPlan(t *testing.T) {
 		t.Error("Handler returned wrong status")
 	}
 
-	expectedResponse := MealPlan{
-		Name:        "Diabetic-Friendly Breakfast",
-		Calories:    300,
-		Protein:     25.0,
-		Carbs:       20.0,
-		Fats:        10.0,
-		Ingredients: []string{"Eggs", "Whole Wheat Bread", "Avocado"},
-	}
+	expectedResponse := defaultMealPlan
 
-	var gotResponse MealPlan
+	var gotResponse FoodLog
 	err = json.Unmarshal(rr.Body.Bytes(), &gotResponse)
 	if err != nil {
 		t.Fatalf("Failed to deserialize response: %v", err)
@@ -90,14 +83,7 @@ func TestGetDefaultMealPlan(t *testing.T) {
 }
 
 func TestEditPlan(t *testing.T) {
-	edit := MealPlan{
-		Name:        "Diabetic-Friendly Breakfast",
-		Calories:    300,
-		Protein:     25.0,
-		Carbs:       20.0,
-		Fats:        10.0,
-		Ingredients: []string{"Milk", "Whole Wheat Bread", "Molly"},
-	}
+	edit := defaultMealPlan
 	data, err := json.Marshal(edit)
 	if err != nil {
 		t.Fatalf("Failed to serialize input data: %v", err)
@@ -125,19 +111,29 @@ func TestEditPlan(t *testing.T) {
 }
 
 func TestLogMealHandler(t *testing.T) {
-	type args struct {
-		w http.ResponseWriter
-		r *http.Request
+	mealLog := defaultMealPlan
+	data, err := json.Marshal(mealLog)
+	if err != nil {
+		t.Fatalf("Failed to serialize input data: %v", err)
 	}
-	tests := []struct {
-		name string
-		args args
-	}{
-		// TODO: Add test cases.
+	req, err := http.NewRequest("POST", "/nutrition/meal/log", bytes.NewReader(data))
+	if err != nil {
+		t.Fatalf("Failed to create request: %v", err)
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			LogMealHandler(tt.args.w, tt.args.r)
-		})
+	handler := http.HandlerFunc(EditPlan)
+	rr := httptest.NewRecorder()
+	handler.ServeHTTP(rr, req)
+	if err := rr.Code; err != http.StatusOK {
+		t.Error("Handler returned wrong status")
+	}
+
+	expectedResp := map[string]string{"message": "Meal plan updated successfully"}
+	var gotResp map[string]string
+	err = json.Unmarshal(rr.Body.Bytes(), &gotResp)
+	if err != nil {
+		t.Fatalf("Failed to deserialize response: %v", err)
+	}
+	if !reflect.DeepEqual(gotResp, expectedResp) {
+		t.Errorf("Expected '%v' got '%v'", expectedResp, gotResp)
 	}
 }
