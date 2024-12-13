@@ -71,6 +71,10 @@ body {
     border-color: var(--primary);
 }
 
+.form-group input.error {
+    border-color: var(--warning);
+}
+
 .btn-signup {
     background-color: var(--primary);
     color: var(--white);
@@ -95,4 +99,18 @@ body {
     color: var(--primary);
     text-decoration: none;
     font-weight: 600;
+}
+
+/* Alert Styles */
+.alert {
+    background-color: #fecaca;
+    color: var(--warning);
+    border: 2px solid var(--warning);
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.alert.show {
+    display: block;
 }
