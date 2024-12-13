@@ -5,10 +5,20 @@ import (
 	"net/http"
 
 	utils "diawise/pkg"
-
+	handlers "diawise/internal/api"
+	database "diawise/internal/database"
 
 	"github.com/gorilla/mux"
+	"gorm.io/gorm"
 )
+
+var (
+	db *gorm.DB // since sqlite is an internal database that is file based, we need to  have a single handler to the database. Use mutexes to prevent race conditions
+)
+
+func init() {
+	db = database.InitializeDatabase("data/diawise.db")
+}
 
 func main() {
 	port := utils.Port()
@@ -17,11 +27,10 @@ func main() {
 
 	router := mux.NewRouter()
 
-	router.HandleFunc("/", Index).Methods("GET")
+	router.HandleFunc("/", handlers.Index(db)).Methods("GET")
+	router.HandleFunc("/auth/register", handlers.RegisterUser(db)).Methods("POST")
+	router.HandleFunc("/auth/login", handlers.LoginUser(db)).Methods("POST")
 
 	http.ListenAndServe(portStr, router)
 }
 
-func Index(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello")
-}
