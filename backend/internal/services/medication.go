@@ -2,24 +2,27 @@ package services
 
 import (
 	"errors"
+	"fmt"
 	"time"
+
+	"diawise/internal/database"
 )
 
 type Users struct {
-	user_id  string `json:"user_id"`
-	name     string `json:"name"`
-	email    string `json:"email"`
-	password string `json:"password"`
+	User_id  string `json:"user_id"`
+	Name     string `json:"name"`
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
 type Medication struct {
-	medication_id    string    `json:"medication_id"`
-	user_id          string    `json:"user_id"`
-	medication_name  string    `json:"medication_name"`
-	dose             string    `json:"dose"`
-	dosage_time      time.Time `json:"time"`
-	dosage_frequency string    `json:"frequency"`
-	notes            string    `json:"notes"`
+	Medication_id    string    `json:"medication_id"`
+	User_id          string    `json:"user_id"`
+	Medication_name  string    `json:"medication_name"`
+	Dose             string    `json:"dose"`
+	Dosage_time      time.Time `json:"time"`
+	Dosage_frequency string    `json:"frequency"`
+	Notes            string    `json:"notes"`
 }
 
 type MedicationService struct{}
@@ -31,18 +34,27 @@ func NewMedicationService() *MedicationService {
 
 // Adding medication to the database
 func (s *MedicationService) AddMedication(medication Medication) (Medication, error) {
-	if medication.medication_name == "" || medication.dose == "" || medication.dosage_time.IsZero() || medication.dosage_frequency == "" {
-		return Medication{}, errors.New("Missing required fields")
+	if medication.Medication_id == "" || medication.User_id == "" || medication.Medication_name == "" || medication.Dose == "" || medication.Dosage_time.IsZero() || medication.Dosage_frequency == "" || medication.Notes == "" {
+		return Medication{}, errors.New("missing required fields")
 	}
 	// Add medication to the database
 	meds := Medication{
-		medication_id:    medication.medication_id,
-		user_id:          medication.user_id,
-		medication_name:  medication.medication_name,
-		dose:             medication.dose,
-		dosage_time:      medication.dosage_time,
-		dosage_frequency: medication.dosage_frequency,
-		notes:            medication.notes,
+		Medication_id:    medication.Medication_id,
+		User_id:          medication.User_id,
+		Medication_name:  medication.Medication_name,
+		Dose:             medication.Dose,
+		Dosage_time:      medication.Dosage_time,
+		Dosage_frequency: medication.Dosage_frequency,
+		Notes:            medication.Notes,
+	}
+
+	// Handle any errors during database operations
+	_, err := database.DB.Exec( // SQL query to insert a new medication into the database
+		"INSERT INTO medications (medication_id, user_id, medication_name, medication_dose, dosage_time, dosage_frequency, notes) VALUES (?,?,?,?,?,?,?)",
+		meds.Medication_id, meds.User_id, meds.Medication_name, meds.Dose, meds.Dosage_time, meds.Dosage_frequency, meds.Notes,
+	)
+	if err != nil {
+		return Medication{}, fmt.Errorf("failed to add medication: %v", err)
 	}
 
 	return meds, nil
