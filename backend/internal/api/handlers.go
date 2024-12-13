@@ -71,14 +71,9 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 
 func BlogHomeHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl, err := template.ParseFiles(
-		"frontend/public/blog_base.html",
-		"frontend/public/blog_home.html",
+		"/home/davodhiambo/github/diabetics_management_app/frontend/public/base.html",
+		"/home/davodhiambo/github/diabetics_management_app/frontend/public/blog_home.html",
 	)
-
-	if err != nil {
-		InternalServerErrorHandler(w)
-		return
-	}
 
 	data := struct {
 		Title string
@@ -91,8 +86,12 @@ func BlogHomeHandler(w http.ResponseWriter, r *http.Request) {
 		},
 	}
 
-	err = tmpl.ExecuteTemplate(w, "base", data)
 	if err != nil {
+		InternalServerErrorHandler(w)
+		return
+	}
+
+	if err := tmpl.ExecuteTemplate(w, "base", data); err != nil {
 		InternalServerErrorHandler(w)
 		return
 	}
