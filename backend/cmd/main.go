@@ -4,17 +4,16 @@ import (
 	"fmt"
 	"net/http"
 
-	utils "diawise/pkg"
 	handlers "diawise/internal/api"
 	database "diawise/internal/database"
+	utils "diawise/pkg"
 
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 	"gorm.io/gorm"
 )
 
-var (
-	db *gorm.DB // since sqlite is an internal database that is file based, we need to  have a single handler to the database. Use mutexes to prevent race conditions
-)
+var db *gorm.DB // since sqlite is an internal database that is file based, we need to  have a single handler to the database. Use mutexes to prevent race conditions
 
 func init() {
 	db = database.InitializeDatabase("data/diawise.db")
@@ -31,6 +30,14 @@ func main() {
 	router.HandleFunc("/auth/register", handlers.RegisterUser(db)).Methods("POST")
 	router.HandleFunc("/auth/login", handlers.LoginUser(db)).Methods("POST")
 
-	http.ListenAndServe(portStr, router)
-}
+	// CORS configuration
+	corsHandler := cors.New(cors.Options{
+		AllowedOrigins: []string{"*"},
+		AllowedMethods: []string{"GET", "POST", "OPTIONS"},
+		AllowedHeaders: []string{"Content-Type", "Authorization"},
+	})
 
+	handlerWithCORS := corsHandler.Handler(router) // apply the CORS middleware to the router
+
+	http.ListenAndServe(portStr, handlerWithCORS)
+}
