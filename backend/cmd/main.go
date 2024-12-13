@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	handlers "diawise/internal/api"
-	auth "diawise/internal/auth"
 	database "diawise/internal/database"
 	utils "diawise/pkg"
 
@@ -30,10 +29,6 @@ func main() {
 	router.HandleFunc("/", handlers.Index(db)).Methods("GET")
 	router.HandleFunc("/auth/register", handlers.RegisterUser(db)).Methods("POST")
 	router.HandleFunc("/auth/login", handlers.LoginUser(db)).Methods("POST")
-
-	router.HandleFunc("/", auth.CORSMiddleware(handlers.Index(db))).Methods("GET")
-	router.HandleFunc("/auth/register", auth.CORSMiddleware(handlers.RegisterUser(db))).Methods("POST")
-	router.HandleFunc("/auth/login", auth.CORSMiddleware(handlers.LoginUser(db))).Methods("POST")
 
 	// CORS configuration
 	corsHandler := cors.New(cors.Options{
