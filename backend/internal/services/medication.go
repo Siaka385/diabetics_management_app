@@ -80,3 +80,27 @@ func (s *MedicationService) GetMedicationsByUserId(userID string) ([]Medication,
 
 	return medications, nil
 }
+
+// update medications by medication_id
+func (s *MedicationService) UpdateMedication(medication Medication) (Medication, error) {
+	if medication.Medication_id == "" || medication.User_id == "" || medication.Medication_name == "" || medication.Dose == "" || medication.Dosage_time.IsZero() || medication.Dosage_frequency == "" || medication.Notes == "" {
+		return Medication{}, errors.New("missing required fields")
+	}
+
+	_, err := database.DB.Exec( // SQL query to update a medication in the database
+		"UPDATE medications SET medication_name=?, medication_dose=?, dosage_time=?, dosage_frequency=?, notes=? WHERE medication_id=? AND user_id=?",
+		medication.Medication_name, medication.Dose, medication.Dosage_time, medication.Dosage_frequency, medication.Notes,
+	)
+	if err != nil {
+		return Medication{}, fmt.Errorf("failed to update medication: %v", err)
+	}
+
+	var med Medication
+	err = database.DB.QueryRow(
+		"SELECT * FROM medications WHERE medication_id=? AND user_id=?", medication.Medication_id, medication.User_id,
+	).Scan(&med.Medication_id, &med.User_id, &med.Medication_name, &med.Dose, &med.Dosage_time, &med.Dosage_frequency, &med.Notes)
+	if err != nil {
+		return Medication{}, fmt.Errorf("failed to get updated medication: %v", err)
+	}
+	return med, nil
+}
