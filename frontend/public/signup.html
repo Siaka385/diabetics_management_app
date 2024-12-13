@@ -16,11 +16,11 @@
         <h2>Create Your Account</h2>
         <p style="margin-bottom: 1.5rem;">Start your diabetes management journey</p>
         
-        <div id="email-exists-alert" class="alert">
-            <strong>Email Already Registered:</strong> This email is already associated with an account. Please use a different email or try logging in.
+        <div id="email-exists-alert" class="alert hide">
+            <strong id="WarningMessageTitle">Email Already Registered:</strong> <p id="warningBody">This email is already associated with an account. Please use a different email or try logging in.</p>
         </div>
 
-        <form id="signup-form" class="signup-form" action="/signup" method="POST">
+        <form id="signup-form" class="signup-form">
             <div class="form-group">
                 <label for="name">Full Name</label>
                 <input type="text" id="name" name="name" required placeholder="Enter your full name">
@@ -48,5 +48,7 @@
             Already have an account? <a href="/login">Log In</a>
         </div>
     </div>
+
+    <script src="../src/services/auth.js"></script>
 </body>
 </html>
