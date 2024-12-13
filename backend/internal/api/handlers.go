@@ -104,37 +104,36 @@ var foodDatabase = map[string]FoodItem{
 }
 
 var servings = map[string]float64{
-	"Ugali":             1,   // 1 serving of Ugali
-	"Kales":             1.5, // 1.5 servings of Kales
-	"Fish (Tilapia)":    0.5, // 0.5 serving of Fish
-	"Broccoli":          1,   // 1 serving of Broccoli
-	"Chicken (Grilled)": 2,   // 2 servings of Chicken
+	"Ugali":             1,
+	"Kales":             1.5,
+	"Fish (Tilapia)":    0.5,
+	"Broccoli":          1,
+	"Chicken (Grilled)": 2,
 }
 
 var defaultMealPlan = FoodLog{
-	UserID: "default-user", // Placeholder for user ID
+	UserID: "default-user",
 	MealItems: []MealItem{
 		{
 			FoodItem:   "Eggs",
-			Weight:     100, // Weight in grams
-			Proportion: 0.4, // Represents 40% of the plate
+			Weight:     100,
+			Proportion: 0.4,
 		},
 		{
 			FoodItem:   "Whole Wheat Bread",
-			Weight:     60,  // Weight in grams
-			Proportion: 0.3, // Represents 30% of the plate
+			Weight:     60, 
+			Proportion: 0.3,
 		},
 		{
 			FoodItem:   "Avocado",
-			Weight:     50,  // Weight in grams
-			Proportion: 0.3, // Represents 30% of the plate
+			Weight:     50, 
+			Proportion: 0.3,
 		},
 	},
 }
 
 var foodLogs []FoodLog
 
-// GetMealSuggestions handles the GET /nutrition/suggestions endpoint
 func GetMealSuggestions(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Getting meal suggestions...")
 }
@@ -158,9 +157,7 @@ func EditPlan(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]string{"message": "Meal plan updated successfully"})
 }
 
-// Handler to log a consumed meal
 func LogMealHandler(w http.ResponseWriter, r *http.Request) {
-	// Parse incoming JSON request
 	var foodLog FoodLog
 	err := json.NewDecoder(r.Body).Decode(&foodLog)
 	if err != nil {
@@ -168,24 +165,20 @@ func LogMealHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Calculate nutrition for the meal
 	nutrientInfo, err := CalculateMealNutrition(foodLog)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
-	// Store the food log and nutrient information (stubbed function, replace with actual implementation)
 	err = SaveMealLog(foodLog, nutrientInfo)
 	if err != nil {
 		http.Error(w, "Failed to save meal log", http.StatusInternalServerError)
 		return
 	}
 
-	// Generate insights based on the meal
 	mealInsights := GenerateMealInsights(nutrientInfo)
 
-	// Respond with the nutrition information and insights
 	response := NutritionResponse{
 		Message:      "Meal logged successfully!",
 		MealInsights: mealInsights,
@@ -205,7 +198,6 @@ func CalculateMealNutrition(foodLog FoodLog) (NutrientInfo, error) {
 			return NutrientInfo{}, fmt.Errorf("Food item '%s' not found in the database", mealItem.FoodItem)
 		}
 
-		// Scale nutrition values by weight and proportion
 		scaleFactor := mealItem.Weight / food.ServingSize * mealItem.Proportion
 
 		totalCalories += food.Calories * scaleFactor
@@ -214,7 +206,6 @@ func CalculateMealNutrition(foodLog FoodLog) (NutrientInfo, error) {
 		totalFat += food.Fat * scaleFactor
 		totalFiber += food.Fiber * scaleFactor
 
-		// Sum vitamins and minerals
 		for vitamin, value := range food.Vitamins {
 			totalVitamins[vitamin] += value * scaleFactor
 		}
