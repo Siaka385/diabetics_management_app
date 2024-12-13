@@ -15,11 +15,11 @@
         <h2>Welcome Back</h2>
         <p style="margin-bottom: 1.5rem;">Log in to continue your diabetes management journey</p>
         
-        <div id="error-alert" class="alert">
+        <div id="error-alert" class="alert show">
             <strong>Login Failed:</strong> Incorrect email or password. Please try again.
         </div>
 
-        <form id="login-form" class="login-form" action="/login" method="POST">
+        <form id="login-form" class="login-form">
             <div class="form-group">
                 <label for="email">Email Address</label>
                 <input type="email" id="email" name="email" required placeholder="Enter your email">
@@ -34,7 +34,7 @@
                 <a href="/forgot-password">Forgot Password?</a>
             </div>
             
-            <button type="submit" class="btn-login">Log In</button>
+            <button type="submit" class="btn-login" id="loginbtn">Log In</button>
         </form>
         
         <div class="divider">or</div>
