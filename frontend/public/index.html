@@ -1,326 +1,95 @@
-<html><head><base href="https://"><link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diawise - Diabetes Education and Community</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-    :root {
-        --primary: #2563eb;
-        --secondary: #64748b;
-        --accent: #0ea5e9;
-        --background: #f8fafc;
-        --text: #1e293b;
-    }
-    
-    * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-family: 'Inter', sans-serif;
-    }
-    
-    body {
-        background-color: var(--background);
-        color: var(--text);
-        line-height: 1.6;
-    }
-    
-    .container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 2rem;
-    }
-    
-    /* Hero Section */
-    .hero {
-        min-height: 80vh;
-        display: flex;
-        align-items: center;
-        background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-    }
-    
-    .hero-content {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 4rem;
-        align-items: center;
-    }
-    
-    .hero h1 {
-        font-size: 3rem;
-        font-weight: 700;
-        margin-bottom: 1.5rem;
-        line-height: 1.2;
-        background: linear-gradient(to right, var(--primary), var(--accent));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-    }
-    
-    .hero p {
-        font-size: 1.25rem;
-        color: var(--secondary);
-        margin-bottom: 2rem;
-    }
-    
-    .btn-group {
-        display: flex;
-        gap: 1rem;
-    }
-    
-    .btn {
-        padding: 1rem 2rem;
-        border-radius: 0.5rem;
-        font-weight: 500;
-        text-decoration: none;
-        transition: all 0.3s ease;
-    }
-    
-    .btn-primary {
-        background: var(--primary);
-        color: white;
-    }
-    
-    .btn-secondary {
-        background: transparent;
-        border: 2px solid var(--primary);
-        color: var(--primary);
-    }
-    
-    /* Features Section */
-    .features {
-        padding: 6rem 0;
-    }
-    
-    .features-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 2rem;
-        margin-top: 3rem;
-    }
-    
-    .feature-card {
-        padding: 2rem;
-        border-radius: 1rem;
-        background: white;
-        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-        transition: transform 0.3s ease;
-    }
-    
-    .feature-card:hover {
-        transform: translateY(-5px);
-    }
-    
-    .feature-icon {
-        width: 48px;
-        height: 48px;
-        margin-bottom: 1rem;
-    }
-    
-    /* How It Works */
-    .how-it-works {
-        padding: 6rem 0;
-        background: white;
-    }
-    
-    .steps {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr);
-        gap: 2rem;
-        margin-top: 3rem;
-    }
-    
-    .step {
-        text-align: center;
-        position: relative;
-    }
-    
-    .step:not(:last-child)::after {
-        content: '';
-        position: absolute;
-        top: 2rem;
-        right: -1rem;
-        width: 2rem;
-        height: 2px;
-        background: var(--primary);
-    }
-    
-    /* Testimonials */
-    .testimonials {
-        padding: 6rem 0;
-        background: var(--background);
-    }
-    
-    .testimonial-carousel {
-        margin-top: 3rem;
-        display: flex;
-        overflow-x: auto;
-        scroll-snap-type: x mandatory;
-        gap: 2rem;
-        padding: 1rem;
-    }
-    
-    .testimonial-card {
-        scroll-snap-align: start;
-        min-width: 300px;
-        background: white;
-        padding: 2rem;
-        border-radius: 1rem;
-        box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
-    }
-    
-    /* CTA Section */
-    .cta {
-        padding: 6rem 0;
-        text-align: center;
-        background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
-        color: white;
-    }
-    
-    /* Footer */
-    footer {
-        padding: 4rem 0;
-        background: var(--text);
-        color: white;
-    }
-    
-    .footer-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 2rem;
-    }
-    
-    .social-icons {
-        display: flex;
-        gap: 1rem;
-    }
-    
-    .social-icon {
-        width: 24px;
-        height: 24px;
-        fill: white;
-    }
-    
-    @media (max-width: 768px) {
-        .hero-content {
-            grid-template-columns: 1fr;
-            text-align: center;
-        }
-        
-        .btn-group {
-            justify-content: center;
-        }
-        
-        .steps {
-            grid-template-columns: 1fr;
-        }
-        
-        .step:not(:last-child)::after {
-            display: none;
-        }
-    }
-    </style>
-    </head>
-    <body>
-        <section class="hero">
-            <div class="container">
-                <div class="hero-content">
-                    <div>
-                        <h1>Empowering You to Take Control of Your Diabetes with AI-Powered Insights</h1>
-                        <p>Personalized nutrition, expert education, and a supportive community tailored to your journey.</p>
-                        <div class="btn-group">
-                            <a href="https://example.com/get-started" class="btn btn-primary">Get Started</a>
-                            <a href="https://example.com/learn-more" class="btn btn-secondary">Learn More</a>
-                        </div>
-                    </div>
-                    <div class="hero-image">
-                        <svg viewBox="0 0 200 200" width="100%" height="100%">
-                            <!-- Simplified app mockup -->
-                            <rect x="40" y="20" width="120" height="160" rx="10" fill="#fff" stroke="#000" stroke-width="2"/>
-                            <rect x="45" y="25" width="110" height="150" rx="8" fill="#f8fafc"/>
-                            <circle cx="100" cy="40" r="8" fill="var(--primary)"/>
-                            <rect x="60" y="60" width="80" height="10" rx="2" fill="#94a3b8"/>
-                            <rect x="60" y="80" width="80" height="10" rx="2" fill="#94a3b8"/>
-                            <rect x="60" y="100" width="80" height="10" rx="2" fill="#94a3b8"/>
-                        </svg>
-                    </div>
+    <link rel="stylesheet" href="../src/styles/index.css">
+</head>
+<body>
+    <header>
+        <nav class="main-nav">
+            <div class="logo">Diawise</div>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#community">Community</a>
+            </div>
+            <div class="auth-buttons">
+                <a href="/login" class="btn-auth btn-login">Log In</a>
+                <a href="/signup" class="btn-auth btn-signup">Sign Up</a>
+            </div>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1>Empower Your Diabetes Journey</h1>
+                    <p>Join a community dedicated to diabetes education, support, and healthy living tips tailored just for you.</p>
+                    <!-- <div class="btn-group">
+                        <a href="/login" class="btn btn-primary">Log In</a>
+                        <a href="/signup" class="btn btn-login btn-auth">Sign Up</a>
+                    </div> -->
+                </div>
+                <div class="hero-image">
+                    <!-- Optional Image or SVG for visual enhancement -->
+                    <svg viewBox="0 0 200 200" width="100%" height="100%">
+                        <rect x="40" y="20" width="120" height="160" rx="10" fill="#fff" stroke="#000" stroke-width="2"/>
+                        <rect x="45" y="25" width="110" height="150" rx="8" fill="#f8fafc"/>
+                        <circle cx="100" cy="40" r="8" fill="var(--primary)"/>
+                        <path d="M60 70 L140 70" stroke="#94a3b8" stroke-width="2"/>
+                        <path d="M60 90 L140 90" stroke="#94a3b8" stroke-width="2"/>
+                        <path d="M60 110 L140 110" stroke="#94a3b8" stroke-width="2"/>
+                        <g transform="translate(70, 130)">
+                            <path d="M0 0 L20 20 L40 0" fill="none" stroke="#e11d48" stroke-width="3"/>
+                        </g>
+                    </svg>
                 </div>
             </div>
-        </section>
-    
-        <section class="features">
-            <div class="container">
-                <h2>Key Features</h2>
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <svg class="feature-icon" viewBox="0 0 24 24" fill="none" stroke="var(--primary)">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                        </svg>
-                        <h3>Personalized Nutrition</h3>
-                        <p>Meal planning and food tracking tailored to glucose levels.</p>
-                    </div>
-                    <!-- More feature cards... -->
+        </div>
+    </section>
+
+    <section id="features" class="features">
+        <div class="container">
+            <h2>Empowering Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <svg class="feature-icon" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-width="2"/>
+                    </svg>
+                    <h3>Educational Content</h3>
+                    <p>Discover essential resources and expert insights to better understand diabetes.</p>
+                </div>
+                <div class="feature-card">
+                    <svg class="feature-icon" viewBox="0 0 24 24" fill="none">
+                        <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke-width="2"/>
+                    </svg>
+                    <h3>Support Groups</h3>
+                    <p>Connect with others on similar journeys and share experiences in a safe space.</p>
+                </div>
+                <div class="feature-card">
+                    <svg class="feature-icon" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" stroke-width="2"/>
+                    </svg>
+                    <h3>Healthy Living Tips</h3>
+                    <p>Explore diet, exercise, and lifestyle recommendations to improve your well-being.</p>
                 </div>
             </div>
-        </section>
-    
-        <section class="how-it-works">
-            <div class="container">
-                <h2>How It Works</h2>
-                <div class="steps">
-                    <div class="step">
-                        <h3>Step 1</h3>
-                        <p>Log meals and glucose levels</p>
-                    </div>
-                    <div class="step">
-                        <h3>Step 2</h3>
-                        <p>Receive personalized insights</p>
-                    </div>
-                    <div class="step">
-                        <h3>Step 3</h3>
-                        <p>Connect and track progress</p>
-                    </div>
-                </div>
+        </div>
+    </section>
+
+    <section id="community" class="cta">
+        <div class="container">
+            <h2>Join Our Supportive Community</h2>
+            <p>Be part of a vibrant network of individuals supporting each other to manage diabetes effectively.</p>
+            <div class="btn-group">
+                <a href="/signup" class="btn btn-secondary">Join Now</a>
             </div>
-        </section>
-    
-        <section class="testimonials">
-            <div class="container">
-                <h2>What Our Users Say</h2>
-                <div class="testimonial-carousel">
-                    <div class="testimonial-card">
-                        <p>"This platform has completely transformed how I manage my diabetes."</p>
-                        <div class="rating">★★★★★</div>
-                        <p>- John D.</p>
-                    </div>
-                    <!-- More testimonials... -->
-                </div>
-            </div>
-        </section>
-    
-        <section class="cta">
-            <div class="container">
-                <h2>Ready to take control of your health?</h2>
-                <p>Join thousands already on this journey.</p>
-                <a href="https://example.com/signup" class="btn btn-secondary">Sign Up for Free</a>
-            </div>
-        </section>
-    
-        <footer>
-            <div class="container">
-                <div class="footer-grid">
-                    <div>
-                        <h3>Navigation</h3>
-                        <ul>
-                            <li><a href="https://example.com">Home</a></li>
-                            <li><a href="https://example.com/features">Features</a></li>
-                            <li><a href="https://example.com/about">About</a></li>
-                        </ul>
-                    </div>
-                    <div>
-                        <h3>Connect With Us</h3>
-                        <div class="social-icons">
-                            <!-- Social media icons... -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </footer>
-    </body></html>
+        </div>
+    </section>
+</body>
+</html>
