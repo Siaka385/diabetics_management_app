@@ -325,59 +325,70 @@
 
             <!--medication-->
             <div class="med hide">
-            <main class="main-content">
-                <div class="header">
-                    <h1>Medication Management</h1>
-                </div>
-    
-                <div class="medications-container">
-                    <div class="medications-list">
-                        <div class="medication-item">
-                            <div class="medication-details">
-                                <div class="medication-name">Metformin</div>
-                                <div class="medication-info">500mg - 2x daily</div>
+                <main class="main-content">
+                    <div class="header">
+                        <h1>Medication Management</h1>
+                    </div>
+        
+                    <div class="medications-container">
+                        <div class="medications-list">
+                            {{range .Medications}}
+                            <div class="medication-item">
+                                <div class="medication-details">
+                                    <div class="medication-name">{{.Medication_name}}</div>
+                                    <div class="medication-info">{{.Dose}} - {{.Dosage_frequency}}</div>
+                                </div>
+                                <div class="medication-actions">
+                                    <button class="btn btn-taken">Taken</button>
+                                    <button class="btn btn-skip">Skip</button>
+                                </div>
                             </div>
-                            <div class="medication-actions">
-                                <button class="btn btn-taken">Taken</button>
-                                <button class="btn btn-skip">Skip</button>
-                            </div>
+                            {{end}}
                         </div>
-                        <div class="medication-item">
-                            <div class="medication-details">
-                                <div class="medication-name">Insulin Glargine</div>
-                                <div class="medication-info">10 units - Once daily</div>
-                            </div>
-                            <div class="medication-actions">
-                                <button class="btn btn-taken">Taken</button>
-                                <button class="btn btn-skip">Skip</button>
+        
+                        <!-- sidebar section -->
+                        <div class="sidebar-section">
+                            <button id="addMedicationBtn" class="add-medication-btn">Add Medication</button>
+        
+                            <div class="upcoming-reminders">
+                                <h3>Upcoming Reminders</h3>
+                                {{range .Reminders}}
+                                <div class="reminder-item">
+                                    <div class="reminder-icon">💊</div>
+                                    <div>
+                                        <div class="medication-name">{{.Medication_name}}</div>
+                                        <div class="medication-info">{{.ReminderTime}}</div>
+                                    </div>
+                                </div>
+                                {{end}}
                             </div>
                         </div>
                     </div>
-    
-                    <div class="sidebar-section">
-                        <button id="addMedicationBtn" class="add-medication-btn">Add Medication</button>
-    
-                        <div class="upcoming-reminders">
-                            <h3>Upcoming Reminders</h3>
-                            <div class="reminder-item">
-                                <div class="reminder-icon">💊</div>
-                                <div>
-                                    <div class="medication-name">Metformin</div>
-                                    <div class="medication-info">Next dose at 6:00 PM</div>
-                                </div>
-                            </div>
-                            <div class="reminder-item">
-                                <div class="reminder-icon">💉</div>
-                                <div>
-                                    <div class="medication-name">Insulin Glargine</div>
-                                    <div class="medication-info">Next dose at 9:00 PM</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                </main>
+            
+        
+            <!-- Add Medication Modal -->
+            <div id="addMedicationModal" class="modal">
+                <div class="modal-content">
+                    <span class="close-modal" id="closeModal">&times;</span>
+                    <h2>Add New Medication</h2>
+                    <form id="addMedicationForm">
+                        <!-- Medication Data -->
+                        <input type="text" class="modal-input" placeholder="Medication Name" name="medication_name" value="{{.Medication_name}}" required>
+                        <input type="text" class="modal-input" placeholder="Dosage" name="dose" value="{{.Dose}}" required>
+                        <select class="modal-select" name="frequency" required>
+                            <option value="">Select Frequency</option>
+                            <option value="daily" {{if eq .Dosage_frequency "daily"}}selected{{end}}>Once Daily</option>
+                            <option value="twice-daily" {{if eq .Dosage_frequency "twice-daily"}}selected{{end}}>Twice Daily</option>
+                            <option value="three-times-daily" {{if eq .Dosage_frequency "three-times-daily"}}selected{{end}}>Three Times Daily</option>
+                            <option value="as-needed" {{if eq .Dosage_frequency "as-needed"}}selected{{end}}>As Needed</option>
+                        </select>
+                        <input type="time" class="modal-input" name="reminder_time" value="{{.ReminderTime}}" required>
+                        <button type="submit" class="submit-btn">Add Medication</button>
+                    </form>
                 </div>
-            </main>
-    <div id="addMedicationModal" class="modal">
+            </div>
+        
         <div class="modal-content">
             <span class="close-modal" id="closeModal">&times;</span>
             <h2>Add New Medication</h2>
@@ -396,7 +407,7 @@
             </form>
         </div>
     </div>
-            </div>
+            
 
 
             <!--Education-->
@@ -671,7 +682,7 @@
     <script src="/static/pages/Home.js"></script>
     <script src="/static/pages/BloodSugar.js"></script>
     <script src="/static/pages/Diet.js"></script>
-    <script src="/static/pages/Medication.js"></script>
+    <script src="/static/pages/MedicationManager.js"></script>
     <script src="/static/pages/Support.js"></script>
 
 <!-- 
