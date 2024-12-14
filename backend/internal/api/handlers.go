@@ -16,25 +16,28 @@ type NutritionResponse struct {
 }
 
 type NutrientInfo struct {
-	UserID   string `json:"user"`
-	Calories float64
-	Carbs    float64
-	Protein  float64
-	Fat      float64
-	Fiber    float64
-	Vitamins map[string]float64
-	Minerals map[string]float64
+	gorm.Model
+	UserID   string `json:"user_id"`
+	Calories float64 `json:"calories"`
+	Carbs    float64 `json:"carbs"`
+	Protein  float64 `json:"protein"`
+	Fat      float64 `json:"fat"`
+	Fiber    float64 `json:"fiber"`
+	Vitamins map[string]float64 `json:"vitamins"`
+	Minerals map[string]float64 `json:"inerals"`
 }
 
 type FoodLog struct {
-	UserID    string     `json:"user"`
+	gorm.Model
+	UserID    string     `json:"user_id"`
 	MealItems []MealItem `json:"meal_items"`
 }
 
 type MealItem struct {
+	FoodLogID  uint
 	FoodItem   string  `json:"food_item"`
-	Weight     float64 `json:"weight"`     // in grams
-	Proportion float64 `json:"proportion"` // portion of the plate (0.25, 0.5, etc.)
+	Weight     float64 `json:"weight"`
+	Proportion float64 `json:"proportion"`
 }
 
 type FoodItem struct {
@@ -73,7 +76,7 @@ var foodDatabase = map[string]FoodItem{
 		Minerals:    map[string]float64{"Calcium": 150.0, "Iron": 2.7, "Magnesium": 47.0},
 	},
 	"Fish": {
-		Name:        "Fish (Tilapia)",
+		Name:        "Fish",
 		ServingSize: 100,
 		Calories:    128,
 		Carbs:       0.0,
@@ -95,7 +98,7 @@ var foodDatabase = map[string]FoodItem{
 		Minerals:    map[string]float64{"Calcium": 47.0, "Iron": 0.7, "Magnesium": 21.0},
 	},
 	"Chicken": {
-		Name:        "Chicken (Grilled)",
+		Name:        "Chicken",
 		ServingSize: 100,
 		Calories:    165,
 		Carbs:       0.0,
@@ -105,6 +108,17 @@ var foodDatabase = map[string]FoodItem{
 		Vitamins:    map[string]float64{"Vitamin B6": 0.6, "Niacin": 14.8},
 		Minerals:    map[string]float64{"Selenium": 0.025, "Phosphorus": 0.2, "Magnesium": 24.0},
 	},
+	"Apple": {
+		Name:        "Apple",
+		ServingSize: 100,
+		Calories:    52,
+		Carbs:       13.8,
+		Protein:     0.3,
+		Fat:         0.2,
+		Fiber:       2.4,
+		Vitamins:    map[string]float64{"Vitamin C": 4.6, "Vitamin A": 0.0, "Vitamin K": 2.2},
+		Minerals:    map[string]float64{"Potassium": 0.107, "Phosphorus": 0.02, "Magnesium": 0.009},
+	},	
 }
 
 var servings = map[string]float64{
@@ -162,28 +176,28 @@ func EditPlan(w http.ResponseWriter, r *http.Request) {
 }
 
 func LogMealHandler(db *gorm.DB) http.HandlerFunc {
-	return func (w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
 		var foodLog FoodLog
 		err := json.NewDecoder(r.Body).Decode(&foodLog)
 		if err != nil {
 			http.Error(w, "Invalid input", http.StatusBadRequest)
 			return
 		}
-	
+		fmt.Println(foodLog.MealItems)
 		nutrientInfo, err := CalculateMealNutrition(foodLog)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-	
-		err = SaveMealLog(foodLog, nutrientInfo)
+		
+		err = SaveMealLog(db, foodLog, nutrientInfo)
 		if err != nil {
 			http.Error(w, "Failed to save meal log", http.StatusInternalServerError)
 			return
 		}
-	
+
 		mealInsights := GenerateMealInsights(nutrientInfo)
-	
+
 		response := NutritionResponse{
 			Message:      "Meal logged successfully!",
 			MealInsights: mealInsights,
@@ -192,7 +206,6 @@ func LogMealHandler(db *gorm.DB) http.HandlerFunc {
 		json.NewEncoder(w).Encode(response)
 	}
 }
-
 
 func CalculateMealNutrition(foodLog FoodLog) (NutrientInfo, error) {
 	var totalCalories, totalCarbs, totalProtein, totalFat, totalFiber float64
@@ -233,7 +246,18 @@ func CalculateMealNutrition(foodLog FoodLog) (NutrientInfo, error) {
 	}, nil
 }
 
-func SaveMealLog(foodLog FoodLog, nutrientInfo NutrientInfo) error {
+func SaveMealLog(db *gorm.DB, foodLog FoodLog, nutrientInfo NutrientInfo) error {
+	tx := db.Begin()
+	if err := tx.Create(foodLog).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	nutrientInfo.UserID = foodLog.UserID
+	if err := tx.Create(nutrientInfo).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+	tx.Commit()
 	return nil
 }
 
