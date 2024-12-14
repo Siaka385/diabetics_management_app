@@ -57,7 +57,8 @@ func main() {
 
 	router.HandleFunc("/", handlers.Index(db, tmpl)).Methods("GET")
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("../../frontend/src"))))
-	router.HandleFunc("/auth/register", handlers.RegisterUser(db)).Methods("POST")
+	router.HandleFunc("/signup", handlers.Signup(db, tmpl, sessionStore)).Methods("GET")
+	router.HandleFunc("/auth/signup", handlers.SignupUser(db, sessionStore)).Methods("POST")
 	router.HandleFunc("/auth/login", handlers.LoginUser(db, sessionStore)).Methods("POST")
 	router.HandleFunc("/login", handlers.Login(db, tmpl, sessionStore)).Methods("GET")
 	router.HandleFunc("/logout", handlers.Logout(sessionStore)).Methods("GET")
