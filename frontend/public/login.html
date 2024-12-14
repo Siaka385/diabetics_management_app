@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../src/styles/login.css">
+    <link rel="stylesheet" href="/static/styles/login.css">
 </head>  
 <body>
     <div class="login-container">
@@ -21,13 +21,13 @@
 
         <form id="login-form" class="login-form">
             <div class="form-group">
-                <label for="email">Email Address</label>
-                <input type="email" id="email" name="email" required placeholder="Enter your email">
+                <label for="username">Username</label>
+                <input type="username" id="username" name="username" required placeholder="Enter your username...">
             </div>
             
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" name="password" required placeholder="Enter your password">
+                <input type="password" id="password" name="password" required placeholder="Enter your password...">
             </div>
             
             <div class="forgot-password">
@@ -43,6 +43,39 @@
             Don't have an account? <a href="/signup">Sign Up</a>
         </div>
     </div>
+    <script>
+        document.getElementById('login-form').addEventListener('submit', function(event) {
+            event.preventDefault();
 
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            const formData = {
+                username: username,
+                password: password
+            };
+
+            // Send the data using fetch
+            fetch('/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);  // handle success response
+
+                // If the backend sends a "redirect" field in the response, handle the redirection
+                if (data.redirect) {
+                    window.location.href = data.redirect;  // Redirect to the URL specified in the "redirect" field
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);  // handle errors here
+            });
+        });
+    </script>
 </body>
 </html>
