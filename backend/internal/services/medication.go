@@ -100,3 +100,19 @@ func ListMedicationsByUserId(db *gorm.DB, userID string) ([]Medication, error) {
 	}
 	return medications, nil
 }
+
+// send medication reminders
+func SendMedicationReminders(db *gorm.DB, userID int64) error {
+	var medications []Medication
+	if err := db.Where("user_id = ?", userID).Find(&medications).Error; err != nil {
+		return fmt.Errorf("failed to get medications: %v", err)
+	}
+	for _, medication := range medications {
+		// Check if medication reminder time has passed
+		if medication.Dosage_time.Before(time.Now()) {
+			// Send reminder email or push notification
+			fmt.Printf("Sending reminder for medication %s to user %s\n", medication.Medication_name, medication.User_id)
+		}
+	}
+	return nil
+}
