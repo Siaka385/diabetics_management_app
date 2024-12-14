@@ -17,27 +17,28 @@ type NutritionResponse struct {
 
 type NutrientInfo struct {
 	gorm.Model
-	UserID   string `json:"user_id"`
+	UserID   string  `json:"user_id"`
 	Calories float64 `json:"calories"`
 	Carbs    float64 `json:"carbs"`
 	Protein  float64 `json:"protein"`
 	Fat      float64 `json:"fat"`
 	Fiber    float64 `json:"fiber"`
-	Vitamins map[string]float64 `json:"vitamins"`
-	Minerals map[string]float64 `json:"inerals"`
+	Vitamins string  `json:"vitamins"`
+	Minerals string  `json:"minerals"`
 }
 
 type FoodLog struct {
 	gorm.Model
 	UserID    string     `json:"user_id"`
-	MealItems []MealItem `json:"meal_items"`
+	MealItems []MealItem `gorm:"foreignKey:FoodLogID" json:"meal_items"`
 }
 
 type MealItem struct {
-	FoodLogID  uint
+	gorm.Model
 	FoodItem   string  `json:"food_item"`
 	Weight     float64 `json:"weight"`
 	Proportion float64 `json:"proportion"`
+	FoodLogID  uint    `json:"-"`
 }
 
 type FoodItem struct {
@@ -118,7 +119,7 @@ var foodDatabase = map[string]FoodItem{
 		Fiber:       2.4,
 		Vitamins:    map[string]float64{"Vitamin C": 4.6, "Vitamin A": 0.0, "Vitamin K": 2.2},
 		Minerals:    map[string]float64{"Potassium": 0.107, "Phosphorus": 0.02, "Magnesium": 0.009},
-	},	
+	},
 }
 
 var servings = map[string]float64{
@@ -149,8 +150,6 @@ var defaultMealPlan = FoodLog{
 		},
 	},
 }
-
-var foodLogs []FoodLog
 
 func GetMealSuggestions(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Getting meal suggestions...")
@@ -183,13 +182,13 @@ func LogMealHandler(db *gorm.DB) http.HandlerFunc {
 			http.Error(w, "Invalid input", http.StatusBadRequest)
 			return
 		}
-		fmt.Println(foodLog.MealItems)
 		nutrientInfo, err := CalculateMealNutrition(foodLog)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		
+		fmt.Println(nutrientInfo)
+
 		err = SaveMealLog(db, foodLog, nutrientInfo)
 		if err != nil {
 			http.Error(w, "Failed to save meal log", http.StatusInternalServerError)
@@ -206,7 +205,21 @@ func LogMealHandler(db *gorm.DB) http.HandlerFunc {
 		json.NewEncoder(w).Encode(response)
 	}
 }
+func stringifyVitaminsAndMinerals(minrals, vitamins map[string]float64, info NutrientInfo) error {
+	vitaminsJSON, err := json.Marshal(vitamins)
+	if err != nil {
+		return err
+	}
+	mineralsJSON, err := json.Marshal(minrals)
+	if err != nil {
+		return err
+	}
 
+	info.Vitamins = string(vitaminsJSON)
+	info.Minerals = string(mineralsJSON)
+
+	return nil
+}
 func CalculateMealNutrition(foodLog FoodLog) (NutrientInfo, error) {
 	var totalCalories, totalCarbs, totalProtein, totalFat, totalFiber float64
 	totalVitamins := make(map[string]float64)
@@ -215,7 +228,7 @@ func CalculateMealNutrition(foodLog FoodLog) (NutrientInfo, error) {
 	for _, mealItem := range foodLog.MealItems {
 		food, found := foodDatabase[mealItem.FoodItem]
 		if !found {
-			return NutrientInfo{}, fmt.Errorf("Food item '%s' not found in the database", mealItem.FoodItem)
+			return NutrientInfo{}, fmt.Errorf("food item '%s' not found in the database", mealItem.FoodItem)
 		}
 
 		scaleFactor := mealItem.Weight / food.ServingSize * mealItem.Proportion
@@ -233,27 +246,26 @@ func CalculateMealNutrition(foodLog FoodLog) (NutrientInfo, error) {
 			totalMinerals[mineral] += value * scaleFactor
 		}
 	}
-
-	return NutrientInfo{
+	info := NutrientInfo{
 		UserID:   foodLog.UserID,
 		Calories: totalCalories,
 		Carbs:    totalCarbs,
 		Protein:  totalProtein,
 		Fat:      totalFat,
 		Fiber:    totalFiber,
-		Vitamins: totalVitamins,
-		Minerals: totalMinerals,
-	}, nil
+	}
+	stringifyVitaminsAndMinerals(totalMinerals, totalVitamins, info)
+
+	return info, nil
 }
 
 func SaveMealLog(db *gorm.DB, foodLog FoodLog, nutrientInfo NutrientInfo) error {
 	tx := db.Begin()
-	if err := tx.Create(foodLog).Error; err != nil {
+	if err := tx.Create(&foodLog).Error; err != nil {
 		tx.Rollback()
 		return err
 	}
-	nutrientInfo.UserID = foodLog.UserID
-	if err := tx.Create(nutrientInfo).Error; err != nil {
+	if err := tx.Create(&nutrientInfo).Error; err != nil {
 		tx.Rollback()
 		return err
 	}
