@@ -7,8 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="../src/styles/signup.css" rel="stylesheet">
-    
+    <link rel="stylesheet" href="/static/styles/signup.css">
 </head>
 <body>
     <div class="signup-container">
@@ -49,6 +48,53 @@
         </div>
     </div>
 
-    <script src="../src/services/auth.js"></script>
+    <script>
+        // Handle form submission
+        document.getElementById('signup-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirm-password').value;
+
+            // Basic password match validation
+            if (password !== confirmPassword) {
+                alert("Passwords do not match.");
+                return;
+            }
+
+            const formData = {
+                username: name,
+                email: email,
+                password: password
+            };
+
+            // Send the data using fetch
+            fetch('/auth/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);  // handle success response
+
+                // If registration is successful, redirect to home page ("/")
+                if (data.status === "success") {
+                    window.location.href = '/';  // Redirect to the home page
+                } else {
+                    // Handle error (e.g., show an error alert)
+                    document.getElementById('email-exists-alert').classList.add('show');
+                    document.getElementById('WarningMessageTitle').innerText = data.message;
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);  // handle errors here
+            });
+        });
+    </script>
 </body>
 </html>

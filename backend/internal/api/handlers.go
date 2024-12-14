@@ -17,7 +17,6 @@ import (
  */
 func Index(db *gorm.DB, tmpl *template.Template) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
 		templateName := "index.html"
 
 		err := tmpl.ExecuteTemplate(w, templateName, nil)
@@ -61,7 +60,6 @@ func PostHandler(tmpl *template.Template) http.HandlerFunc {
 
 func BlogHomeHandler(tmpl *template.Template) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-
 		if err := tmpl.ExecuteTemplate(w, "blog_home.html", Data); err != nil {
 			InternalServerErrorHandler(w)
 			return
