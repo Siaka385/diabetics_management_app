@@ -45,7 +45,7 @@ func generateMealPlan(mp MealPlanRequest) MealPlanResponse {
 	for _, meal := range availableMeals {
 		if mp.MealTypes == meal.Type {
 			// Apply dietary preferences filtering (simplified)
-			if mp.DietaryPreferences == "Vegetarian" && contains(meal.Ingredients, "Beef") {
+			if mp.DietaryPreferences == "Vegetarian" && Contains(meal.Ingredients, "Beef") {
 				continue // Skip non-vegetarian meals
 			}
 			filteredMeals = append(filteredMeals, meal)
@@ -70,7 +70,7 @@ func generateMealPlan(mp MealPlanRequest) MealPlanResponse {
 	}
 }
 
-func contains(slice []string, item string) bool {
+func Contains(slice []string, item string) bool {
 	for _, v := range slice {
 		if v == item {
 			return true
