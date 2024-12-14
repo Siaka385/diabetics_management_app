@@ -6,7 +6,7 @@ import (
 )
 
 type SSEvent struct {
-	Time string	`json:"time"`
+	Time string `json:"time"`
 	Data string `json:"data"`
 }
 
@@ -18,7 +18,7 @@ func Register(client chan SSEvent) {
 
 var (
 	clients      map[chan SSEvent]bool // registered clients channel
-	clientsMutex *sync.Mutex                 // protect the access to the clients channel map
+	clientsMutex *sync.Mutex           // protect the access to the clients channel map
 )
 
 func Init() map[chan SSEvent]bool {
