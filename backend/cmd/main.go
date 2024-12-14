@@ -30,7 +30,7 @@ func main() {
 	router.HandleFunc("/", handlers.Index(db)).Methods("GET")
 	router.HandleFunc("/auth/register", handlers.RegisterUser(db)).Methods("POST")
 	router.HandleFunc("/auth/login", handlers.LoginUser(db)).Methods("POST")
-	router.HandleFunc("/api/nutrition/meal/log", api.LogMealHandler(db)).Methods("POST")
+	router.HandleFunc("/nutrition/meal/log", api.LogMealHandler(db)).Methods("POST")
 	// router.HandleFunc("/nutrition/mealplan", api.GetDefaultMealPlan).Methods("GET")
 	// router.HandleFunc("/nutrition/editplan", api.EditPlan).Methods("POST")
 	// router.HandleFunc("/nutrition/suggestions", api.GetMealSuggestions).Methods("POST")
