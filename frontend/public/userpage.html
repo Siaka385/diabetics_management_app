@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-       <link rel="stylesheet" href="../src/styles/userpage.css"
+       <link rel="stylesheet" href="../src/styles/userpage.css">
 </head>
 <body>
     <div class="dashboard">
@@ -29,6 +29,8 @@
                 </ul>
             </nav>
         </aside>
+
+
 
         <!--Welcome page-->
         <div class="welcomepage hide">
@@ -578,7 +580,30 @@
         </main>
     </div>
 
+<script>
+     document.addEventListener('DOMContentLoaded', () => {
+            // Existing script content remains the same, adding mobile menu functionality
+            function setupMobileMenu() {
+                const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+                const sidebar = document.querySelector('.sidebar');
+                const overlay = document.querySelector('.overlay');
 
+                mobileMenuToggle.addEventListener('click', () => {
+                    sidebar.classList.toggle('open');
+                    overlay.classList.toggle('active');
+                });
+
+                overlay.addEventListener('click', () => {
+                    sidebar.classList.remove('open');
+                    overlay.classList.remove('active');
+                });
+            }
+
+            // Call mobile menu setup along with existing initialization
+            setupMobileMenu();
+            // Existing initial
+     })
+    </script>
     
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.2/echarts.min.js"></script>
     <script src="../src/pages/Home.js"></script>
