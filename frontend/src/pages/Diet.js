@@ -1,5 +1,6 @@
-     // Preference Tag Selection Logic
-     function setupPreferenceTags() {
+document.addEventListener('DOMContentLoaded', () => {
+    // Preference Tag Selection Logic
+    function setupPreferenceTags() {
         const tagSections = ['mealPlanDurationTags', 'mealTypeTags', 'dietPreferenceTags'];
         
         tagSections.forEach(sectionId => {
@@ -18,6 +19,39 @@
         });
     }
 
+    // Meal Logging Logic
+    function logMeal(e) {
+        e.preventDefault();
+        
+        const mealType = document.getElementById('mealType').value;
+        const foodItem = document.getElementById('foodItem').value;
+        const calories = document.getElementById('calories').value;
+        const carbs = document.getElementById('carbs').value;
+        
+        const mealList = document.getElementById('mealList');
+        const newRow = mealList.insertRow();
+        
+        newRow.innerHTML = `
+            <td>${mealType}</td>
+            <td>${foodItem}</td>
+            <td>${calories}</td>
+            <td>${carbs}</td>
+        `;
+        
+        // Optional: Save to local storage
+        saveMealToLocalStorage(mealType, foodItem, calories, carbs);
+        
+        // Reset form
+        e.target.reset();
+    }
+
+    // Save Meal to Local Storage
+    function saveMealToLocalStorage(mealType, foodItem, calories, carbs) {
+        let meals = JSON.parse(localStorage.getItem('meals')) || [];
+        meals.push({ mealType, foodItem, calories, carbs });
+        localStorage.setItem('meals', JSON.stringify(meals));
+    }
+
     // Meal Plan Generation Logic
     function generateMealPlan(e) {
         e.preventDefault();
@@ -25,59 +59,89 @@
         const selectedDuration = document.querySelector('#mealPlanDurationTags .selected')?.dataset.value;
         const selectedMealType = document.querySelector('#mealTypeTags .selected')?.dataset.value;
         const selectedDietPref = document.querySelector('#dietPreferenceTags .selected')?.dataset.value;
-        const preferredFoods = document.getElementById('preferredFoods').value.split(',').map(f => f.trim());
-        const avoidFoods = document.getElementById('avoidFoods').value.split(',').map(f => f.trim());
+        const preferredFoods = document.getElementById('preferredFoods').value.split(',').map(f => f.trim()).filter(f => f);
+        const avoidFoods = document.getElementById('avoidFoods').value.split(',').map(f => f.trim()).filter(f => f);
 
-        const mealPlanContainer = document.getElementById('generatedMealPlan');
+        const mealPlanBody = document.getElementById('mealPlanBody');
+        mealPlanBody.innerHTML = ''; // Clear previous results
         
-        // Simulated Meal Plan Generation with Local Alternatives
+        // Meal Plan Generation Logic with Diabetes-Friendly Considerations
         const mealPlans = {
-            'low-carb': {
-                breakfast: {
-                    main: 'Scrambled Eggs with Spinach',
-                    local_alt: 'Tofu Scramble with Local Greens',
-                    carbs: 3
-                },
-                lunch: {
-                    main: 'Grilled Chicken Salad',
-                    local_alt: 'Grilled Fish with Mixed Vegetable Salad',
-                    carbs: 10
-                },
-                dinner: {
-                    main: 'Baked Salmon with Roasted Vegetables',
-                    local_alt: 'Steamed Local Fish with Stir-fried Vegetables',
-                    carbs: 8
-                }
-            },
-            // Add more diet preference meal plans
+            'low-carb': [
+                { meal: 'Breakfast', dish: 'Spinach and Feta Egg White Omelet', localAlternative: 'Tofu Scramble', carbs: 8 },
+                { meal: 'Lunch', dish: 'Grilled Chicken Salad', localAlternative: 'Fish Tikka Salad', carbs: 10 },
+                { meal: 'Dinner', dish: 'Baked Salmon with Roasted Vegetables', localAlternative: 'Tandoori Fish with Cauliflower Rice', carbs: 12 }
+            ],
+            'high-protein': [
+                { meal: 'Breakfast', dish: 'Greek Yogurt Parfait', localAlternative: 'Paneer Bhurji', carbs: 15 },
+                { meal: 'Lunch', dish: 'Turkey and Quinoa Bowl', localAlternative: 'Chicken Kebab with Mint Chutney', carbs: 20 },
+                { meal: 'Dinner', dish: 'Lean Beef Stir Fry', localAlternative: 'Mutton Seekh Kebab with Raita', carbs: 18 }
+            ],
+            'vegetarian': [
+                { meal: 'Breakfast', dish: 'Tofu Scramble', localAlternative: 'Masala Dosa', carbs: 25 },
+                { meal: 'Lunch', dish: 'Lentil and Vegetable Curry', localAlternative: 'Dal Makhani with Cauliflower Rice', carbs: 30 },
+                { meal: 'Dinner', dish: 'Stuffed Bell Peppers', localAlternative: 'Vegetable Biryani with Raita', carbs: 35 }
+            ],
+            'gluten-free': [
+                { meal: 'Breakfast', dish: 'Chia Seed Pudding', localAlternative: 'Sabudana Khichdi', carbs: 20 },
+                { meal: 'Lunch', dish: 'Grilled Shrimp with Zucchini Noodles', localAlternative: 'Prawn Curry with Rice', carbs: 25 },
+                { meal: 'Dinner', dish: 'Roasted Vegetable Quinoa Bowl', localAlternative: 'Mixed Vegetable Curry', carbs: 22 }
+            ]
         };
 
-        let generatedPlan = `<h3>Personalized Meal Plan</h3>`;
-        
-        if (selectedDietPref && mealPlans[selectedDietPref]) {
-            const plan = mealPlans[selectedDietPref];
-            
-            for (const [meal, details] of Object.entries(plan)) {
-                generatedPlan += `
-                    <div class="meal-plan-entry">
-                        <h4>${meal.charAt(0).toUpperCase() + meal.slice(1)}</h4>
-                        <p><strong>Recommended:</strong> ${details.main}</p>
-                        <p><strong>Local Alternative:</strong> ${details.local_alt}</p>
-                        <p><strong>Carbohydrates:</strong> ${details.carbs}g</p>
-                    </div>
-                `;
-            }
-        } else {
-            generatedPlan += `<p>Unable to generate a meal plan. Please select preferences.</p>`;
+        // Determine meal plan based on selected preferences
+        const selectedPlan = mealPlans[selectedDietPref] || mealPlans['low-carb'];
+
+        // Filter meals based on selection
+        let mealsToDisplay = selectedPlan;
+        if (selectedMealType && selectedMealType !== 'all-meals') {
+            mealsToDisplay = selectedPlan.filter(m => m.meal.toLowerCase() === selectedMealType);
         }
 
-        mealPlanContainer.innerHTML = generatedPlan;
+        // Populate meal plan
+        mealsToDisplay.forEach(item => {
+            const newRow = mealPlanBody.insertRow();
+            newRow.innerHTML = `
+                <td>${item.meal}</td>
+                <td>${item.dish}</td>
+                <td>${item.localAlternative}</td>
+                <td>${item.carbs}</td>
+            `;
+        });
     }
 
-    // Initialize page
-    document.addEventListener('DOMContentLoaded', () => {
+    // Initialize Event Listeners
+    function initializeEventListeners() {
         setupPreferenceTags();
         
+        const mealLogForm = document.getElementById('mealLogForm');
+        if (mealLogForm) {
+            mealLogForm.addEventListener('submit', logMeal);
+        }
+        
         const mealPlanForm = document.getElementById('mealPlanPreferencesForm');
-        mealPlanForm.addEventListener('submit', generateMealPlan);
-    });
+        if (mealPlanForm) {
+            mealPlanForm.addEventListener('submit', generateMealPlan);
+        }
+    }
+
+    // Load Saved Meals on Page Load
+    function loadSavedMeals() {
+        const meals = JSON.parse(localStorage.getItem('meals')) || [];
+        const mealList = document.getElementById('mealList');
+        
+        meals.forEach(meal => {
+            const newRow = mealList.insertRow();
+            newRow.innerHTML = `
+                <td>${meal.mealType}</td>
+                <td>${meal.foodItem}</td>
+                <td>${meal.calories}</td>
+                <td>${meal.carbs}</td>
+            `;
+        });
+    }
+
+    // Initialize the application
+    initializeEventListeners();
+    loadSavedMeals();
+});

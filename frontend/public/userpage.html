@@ -225,61 +225,78 @@
                             <button type="submit" class="log-btn">Log Meal</button>
                         </form>
     
-                        <div class="meal-list" id="mealList">
-                            <h3>Today's Meals</h3>
-                            <!-- Dynamically populated meal entries -->
-                        </div>
+                        <table class="meals-table" id="mealsTable">
+                            <thead>
+                                <tr>
+                                    <th>Meal Type</th>
+                                    <th>Food Item</th>
+                                    <th>Calories</th>
+                                    <th>Carbs (g)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="mealList">
+                                <!-- Dynamically populated meal entries -->
+                            </tbody>
+                        </table>
                     </div>
     
-                    <div class="nutrition-advice" id="nutritionAdvice">
-                        <div class="meal-plan-generator">
-                            <h2>Personalized Meal Plan Generator</h2>
-                            <form id="mealPlanPreferencesForm" class="preferences-form">
-                                <div class="form-group">
-                                    <label>Meal Plan Duration</label>
-                                    <div class="preference-tags" id="mealPlanDurationTags">
-                                        <span class="preference-tag" data-value="single-day">Single Day</span>
-                                        <span class="preference-tag" data-value="whole-week">Whole Week</span>
-                                    </div>
+                    <div class="meal-plan-generator">
+                        <h2>Personalized Meal Plan Generator</h2>
+                        <form id="mealPlanPreferencesForm" class="preferences-form">
+                            <div class="form-group">
+                                <label>Meal Plan Duration</label>
+                                <div class="preference-tags" id="mealPlanDurationTags">
+                                    <span class="preference-tag" data-value="single-day">Single Day</span>
+                                    <span class="preference-tag" data-value="whole-week">Whole Week</span>
                                 </div>
-    
-                                <div class="form-group">
-                                    <label>Meal Types</label>
-                                    <div class="preference-tags" id="mealTypeTags">
-                                        <span class="preference-tag" data-value="breakfast">Breakfast</span>
-                                        <span class="preference-tag" data-value="lunch">Lunch</span>
-                                        <span class="preference-tag" data-value="dinner">Dinner</span>
-                                        <span class="preference-tag" data-value="all-meals">All Meals</span>
-                                    </div>
-                                </div>
-    
-                                <div class="form-group">
-                                    <label>Dietary Preferences</label>
-                                    <div class="preference-tags" id="dietPreferenceTags">
-                                        <span class="preference-tag" data-value="low-carb">Low Carb</span>
-                                        <span class="preference-tag" data-value="high-protein">High Protein</span>
-                                        <span class="preference-tag" data-value="vegetarian">Vegetarian</span>
-                                        <span class="preference-tag" data-value="gluten-free">Gluten-Free</span>
-                                    </div>
-                                </div>
-    
-                                <div class="form-group">
-                                    <label for="preferredFoods">Preferred Foods (optional)</label>
-                                    <input type="text" id="preferredFoods" placeholder="Enter foods you like (comma-separated)">
-                                </div>
-    
-                                <div class="form-group">
-                                    <label for="avoidFoods">Foods to Avoid (optional)</label>
-                                    <input type="text" id="avoidFoods" placeholder="Enter foods you want to avoid (comma-separated)">
-                                </div>
-    
-                                <button type="submit" class="meal-plan-btn">Generate Personalized Meal Plan</button>
-                            </form>
-    
-                            <div id="generatedMealPlan" class="generated-meal-plan">
-                                <!-- Dynamically populated meal plan -->
                             </div>
-                        </div>
+    
+                            <div class="form-group">
+                                <label>Meal Types</label>
+                                <div class="preference-tags" id="mealTypeTags">
+                                    <span class="preference-tag" data-value="breakfast">Breakfast</span>
+                                    <span class="preference-tag" data-value="lunch">Lunch</span>
+                                    <span class="preference-tag" data-value="dinner">Dinner</span>
+                                    <span class="preference-tag" data-value="all-meals">All Meals</span>
+                                </div>
+                            </div>
+    
+                            <div class="form-group">
+                                <label>Dietary Preferences</label>
+                                <div class="preference-tags" id="dietPreferenceTags">
+                                    <span class="preference-tag" data-value="low-carb">Low Carb</span>
+                                    <span class="preference-tag" data-value="high-protein">High Protein</span>
+                                    <span class="preference-tag" data-value="vegetarian">Vegetarian</span>
+                                    <span class="preference-tag" data-value="gluten-free">Gluten-Free</span>
+                                </div>
+                            </div>
+    
+                            <div class="form-group">
+                                <label for="preferredFoods">Preferred Foods (optional)</label>
+                                <input type="text" id="preferredFoods" placeholder="Enter foods you like (comma-separated)">
+                            </div>
+    
+                            <div class="form-group">
+                                <label for="avoidFoods">Foods to Avoid (optional)</label>
+                                <input type="text" id="avoidFoods" placeholder="Enter foods you want to avoid (comma-separated)">
+                            </div>
+    
+                            <button type="submit" class="meal-plan-btn">Generate Personalized Meal Plan</button>
+                        </form>
+    
+                        <table class="meals-table" id="generatedMealPlan">
+                            <thead>
+                                <tr>
+                                    <th>Meal</th>
+                                    <th>Recommended Dish</th>
+                                    <th>Local Alternative</th>
+                                    <th>Carbohydrates (g)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="mealPlanBody">
+                                <!-- Dynamically populated meal plan entries -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </main>
