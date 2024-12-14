@@ -4,6 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	auth "diawise/internal/auth"
+
+	"gorm.io/gorm"
 )
 
 type NutritionResponse struct {
@@ -121,12 +125,12 @@ var defaultMealPlan = FoodLog{
 		},
 		{
 			FoodItem:   "Whole Wheat Bread",
-			Weight:     60, 
+			Weight:     60,
 			Proportion: 0.3,
 		},
 		{
 			FoodItem:   "Avocado",
-			Weight:     50, 
+			Weight:     50,
 			Proportion: 0.3,
 		},
 	},
@@ -157,35 +161,38 @@ func EditPlan(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]string{"message": "Meal plan updated successfully"})
 }
 
-func LogMealHandler(w http.ResponseWriter, r *http.Request) {
-	var foodLog FoodLog
-	err := json.NewDecoder(r.Body).Decode(&foodLog)
-	if err != nil {
-		http.Error(w, "Invalid input", http.StatusBadRequest)
-		return
+func LogMealHandler(db *gorm.DB) http.HandlerFunc {
+	return func (w http.ResponseWriter, r *http.Request) {
+		var foodLog FoodLog
+		err := json.NewDecoder(r.Body).Decode(&foodLog)
+		if err != nil {
+			http.Error(w, "Invalid input", http.StatusBadRequest)
+			return
+		}
+	
+		nutrientInfo, err := CalculateMealNutrition(foodLog)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+	
+		err = SaveMealLog(foodLog, nutrientInfo)
+		if err != nil {
+			http.Error(w, "Failed to save meal log", http.StatusInternalServerError)
+			return
+		}
+	
+		mealInsights := GenerateMealInsights(nutrientInfo)
+	
+		response := NutritionResponse{
+			Message:      "Meal logged successfully!",
+			MealInsights: mealInsights,
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(response)
 	}
-
-	nutrientInfo, err := CalculateMealNutrition(foodLog)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	err = SaveMealLog(foodLog, nutrientInfo)
-	if err != nil {
-		http.Error(w, "Failed to save meal log", http.StatusInternalServerError)
-		return
-	}
-
-	mealInsights := GenerateMealInsights(nutrientInfo)
-
-	response := NutritionResponse{
-		Message:      "Meal logged successfully!",
-		MealInsights: mealInsights,
-	}
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(response)
 }
+
 
 func CalculateMealNutrition(foodLog FoodLog) (NutrientInfo, error) {
 	var totalCalories, totalCarbs, totalProtein, totalFat, totalFiber float64
@@ -241,4 +248,12 @@ func GenerateMealInsights(nutrientInfo NutrientInfo) string {
 		return "Your meal is low in calories. Ensure you are eating enough."
 	}
 	return "Your meal is well-balanced!"
+}
+
+func Index(db *gorm.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// auth.RegisterUser(db, "toni", "toni@mail.com", "antony102")
+		auth.LoginUser(db, "toni", "antony102")
+		fmt.Fprintf(w, "Hello")
+	}
 }
