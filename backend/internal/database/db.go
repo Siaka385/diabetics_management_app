@@ -5,6 +5,7 @@ import (
     "gorm.io/gorm"
 
 	auth "diawise/internal/auth"
+    "diawise/internal/api"
 )
 
 func InitializeDatabase(dbPath string) *gorm.DB {
@@ -14,6 +15,9 @@ func InitializeDatabase(dbPath string) *gorm.DB {
     }
 
 	db.AutoMigrate(&auth.User{})
+    db.AutoMigrate(&api.FoodLog{})
+    db.AutoMigrate(&api.NutrientInfo{})
+    db.AutoMigrate(&api.MealItem{})
 
     return db
 }
