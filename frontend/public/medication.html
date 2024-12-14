@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -42,7 +43,7 @@
 
         .sidebar {
             background: white;
-            box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.05);
             padding: 2rem 1rem;
             position: relative;
         }
@@ -64,7 +65,7 @@
             justify-content: center;
             color: white;
             font-size: 3rem;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         .edit-profile {
@@ -101,7 +102,8 @@
             transition: all 0.3s ease;
         }
 
-        .sidebar-nav a:hover, .sidebar-nav a.active {
+        .sidebar-nav a:hover,
+        .sidebar-nav a.active {
             background-color: var(--background);
             color: var(--primary);
             transform: translateX(5px);
@@ -128,7 +130,7 @@
             text-align: center;
             padding: .5em;
             border-radius: 15px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
             max-width: 250px;
             size-adjust: 10px;
         }
@@ -149,7 +151,7 @@
             background: white;
             border-radius: 1rem;
             padding: 1.5rem;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         .medication-item {
@@ -204,7 +206,7 @@
             background: white;
             border-radius: 1rem;
             padding: 1.5rem;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
         .add-medication-btn {
@@ -256,7 +258,7 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.4);
+            background-color: rgba(0, 0, 0, 0.4);
         }
 
         .modal-content {
@@ -265,10 +267,11 @@
             padding: 2rem;
             border-radius: 1rem;
             width: 500px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
-        .modal-input, .modal-select {
+        .modal-input,
+        .modal-select {
             width: 100%;
             padding: 0.75rem;
             margin-bottom: 1rem;
@@ -299,6 +302,7 @@
         }
     </style>
 </head>
+
 <body>
     <div class="dashboard">
         <aside class="sidebar">
@@ -306,7 +310,7 @@
                 <div class="profile-image">
                     <img src="../profile-user.png" alt="user-profile-image">
                 </div>
-                <h2>{{.Username}}</h2>
+                <h2>{{.User_id}}</h2>
                 <div class="edit-profile">✎</div>
             </div>
             <nav>
@@ -320,7 +324,6 @@
                 </ul>
             </nav>
         </aside>
-    </div>
         <main class="main-content">
             <div class="header">
                 <h1>Medication Management</h1>
@@ -341,11 +344,11 @@
                     </div>
                     {{end}}
                 </div>
-
+    
                 <!-- sidebar section -->
                 <div class="sidebar-section">
                     <button id="addMedicationBtn" class="add-medication-btn">Add Medication</button>
-
+    
                     <div class="upcoming-reminders">
                         <h3>Upcoming Reminders</h3>
                         {{range .Reminders}}
@@ -353,7 +356,7 @@
                             <div class="reminder-icon">💊</div>
                             <div>
                                 <div class="medication-name">{{.Medication_name}}</div>
-                                <div class="medication-info">{{.ReminderTime}}</div>
+                                <div class="medication-info">{{.Dosage_time.Format "15:04"}}</div>
                             </div>
                         </div>
                         {{end}}
@@ -361,7 +364,7 @@
                 </div>
             </div>
         </main>
-    
+    </div>
 
     <!-- Add Medication Modal -->
     <div id="addMedicationModal" class="modal">
@@ -370,14 +373,17 @@
             <h2>Add New Medication</h2>
             <form id="addMedicationForm">
                 <!-- Medication Data -->
-                <input type="text" class="modal-input" placeholder="Medication Name" name="medication_name" value="{{.Medication_name}}" required>
+                <input type="text" class="modal-input" placeholder="Medication Name" name="medication_name"
+                    value="{{.Medication_name}}" required>
                 <input type="text" class="modal-input" placeholder="Dosage" name="dose" value="{{.Dose}}" required>
                 <select class="modal-select" name="frequency" required>
                     <option value="">Select Frequency</option>
-                    <option value="daily" {{if eq .Dosage_frequency "daily"}}selected{{end}}>Once Daily</option>
-                    <option value="twice-daily" {{if eq .Dosage_frequency "twice-daily"}}selected{{end}}>Twice Daily</option>
-                    <option value="three-times-daily" {{if eq .Dosage_frequency "three-times-daily"}}selected{{end}}>Three Times Daily</option>
-                    <option value="as-needed" {{if eq .Dosage_frequency "as-needed"}}selected{{end}}>As Needed</option>
+                    <option value="daily" {{if eq .Dosage_frequency "daily" }}selected{{end}}>Once Daily</option>
+                    <option value="twice-daily" {{if eq .Dosage_frequency "twice-daily" }}selected{{end}}>Twice Daily
+                    </option>
+                    <option value="three-times-daily" {{if eq .Dosage_frequency "three-times-daily" }}selected{{end}}>
+                        Three Times Daily</option>
+                    <option value="as-needed" {{if eq .Dosage_frequency "as-needed" }}selected{{end}}>As Needed</option>
                 </select>
                 <input type="time" class="modal-input" name="reminder_time" value="{{.ReminderTime}}" required>
                 <button type="submit" class="submit-btn">Add Medication</button>
@@ -385,6 +391,50 @@
         </div>
     </div>
 
-   
+    <script>
+        // Modal functionality for adding medication
+        const addMedicationBtn = document.getElementById('addMedicationBtn');
+        const addMedicationModal = document.getElementById('addMedicationModal');
+        const closeModal = document.getElementById('closeModal');
+        const addMedicationForm = document.getElementById('addMedicationForm');
+
+        addMedicationBtn.addEventListener('click', () => {
+            addMedicationModal.style.display = 'block';
+        });
+
+        closeModal.addEventListener('click', () => {
+            addMedicationModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target === addMedicationModal) {
+                addMedicationModal.style.display = 'none';
+            }
+        });
+
+        addMedicationForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            // In a real application, you would send this data to a backend
+            alert('Medication added successfully!');
+            addMedicationModal.style.display = 'none';
+            addMedicationForm.reset();
+        });
+
+        // Medication tracking buttons
+        const medicationItems = document.querySelectorAll('.medication-item');
+        medicationItems.forEach(item => {
+            const takenBtn = item.querySelector('.btn-taken');
+            const skipBtn = item.querySelector('.btn-skip');
+
+            takenBtn.addEventListener('click', () => {
+                alert('Medication marked as taken!');
+            });
+
+            skipBtn.addEventListener('click', () => {
+                alert('Medication skipped. Please consult your doctor if you regularly miss doses.');
+            });
+        });
+    </script>
 </body>
+
 </html>

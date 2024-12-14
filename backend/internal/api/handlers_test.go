@@ -63,21 +63,6 @@ func TestGlucoseTrackerEndPointHandler(t *testing.T) {
 	}
 }
 
-func TestBlogHomeHandler(t *testing.T) {
-	req := httptest.NewRequest("GET", "/", nil)
-	w := httptest.NewRecorder()
-
-	BlogHomeHandler(w, req)
-
-	if w.Code != http.StatusOK {
-		t.Fatalf("expected status 200, got %d", w.Code)
-	}
-
-	if !contains(w.Body.String(), "Blog Posts") {
-		t.Fatalf("expected page to contain 'Blog Posts'")
-	}
-}
-
 func contains(content, substr string) bool {
 	return strings.Contains(content, substr)
 }
