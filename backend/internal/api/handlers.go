@@ -130,10 +130,10 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 			<p>For women, gestational diabetes can increase the risk of Type 2 diabetes later in life.</p>
 		</section>
 
-		<a href="https://www.youtube.com/watch?v=eOsY84oYqKg" target="_blank">
+		<a href="https://www.youtube.com/watch?v=4imzJ4mRo2g" target="_blank">
 		<img 
-			src="https://img.youtube.com/vi/eOsY84oYqKg/hqdefault.jpg" 
-			alt="How To Test Blood Sugar | How To Use Glucometer | How To Check Blood Glucose | (2018)" 
+			src="https://img.youtube.com/vi/4imzJ4mRo2g/hqdefault.jpg" 
+			alt="Risk factors For Diabetes" 
 			width="560" 
 			height="315">
 	</a>
