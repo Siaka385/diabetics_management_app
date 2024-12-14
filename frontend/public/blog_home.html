@@ -3,8 +3,181 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{.Title}}</title>
-    <link rel="stylesheet" href="/static/css/styles.css">
+    <title>DiaWise Blog</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* CSS Reset and Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-blue: #2b6cb0;
+            --secondary-blue: #4299e1;
+            --light-blue: #ebf8ff;
+            --text-dark: #2d3748;
+            --text-light: #718096;
+            --white: #ffffff;
+            --transition-speed: 0.3s;
+        }
+
+        body {
+            font-family: 'Open Sans', sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            background-color: var(--white);
+        }
+
+        /* Header Styles */
+        header {
+            background-color: var(--primary-blue);
+            padding: 1.5rem 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            color: var(--white);
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        nav a {
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: background-color var(--transition-speed);
+        }
+
+        nav a:hover {
+            background-color: rgba(255,255,255,0.1);
+            text-decoration: underline;
+        }
+
+        /* Main Content Styles */
+        main {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        h2 {
+            color: var(--primary-blue);
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 3px solid var(--light-blue);
+        }
+
+        ul {
+            list-style: none;
+        }
+
+        li {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            border-radius: 8px;
+            background-color: var(--white);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            transition: transform var(--transition-speed);
+        }
+
+        li:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        li a {
+            color: var(--primary-blue);
+            font-size: 1.25rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: block;
+            margin-bottom: 0.5rem;
+            transition: color var(--transition-speed);
+        }
+
+        li a:hover {
+            color: var(--secondary-blue);
+            text-decoration: underline;
+        }
+
+        li p {
+            color: var(--text-light);
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+
+        /* Footer Styles */
+        footer {
+            background-color: var(--light-blue);
+            padding: 2rem;
+            text-align: center;
+            margin-top: 4rem;
+        }
+
+        footer p {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            main {
+                padding: 0 1rem;
+            }
+
+            li {
+                padding: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.75rem;
+            }
+
+            h2 {
+                font-size: 1.5rem;
+            }
+
+            li a {
+                font-size: 1.1rem;
+            }
+        }
+
+        /* Accessibility Enhancements */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                transition: none !important;
+            }
+        }
+
+        /* High Contrast Mode */
+        @media (prefers-contrast: high) {
+            :root {
+                --primary-blue: #004080;
+                --secondary-blue: #0066cc;
+                --text-light: #404040;
+            }
+        }
+    </style>
 </head>
 <body>
     <header>
@@ -15,17 +188,18 @@
     </header>
     <main>
         <h2>Blog Posts</h2>
-<ul>
-    {{range .Posts}}
-    <li>
-        <a href="/post/{{.ID}}">{{.Title}}</a>
-        <p>{{.Excerpt}}</p>
-    </li>
+        {{range .Posts}}
+        <ul>    
+            <li>
+                <a href="/post/{{.ID}}">{{.Title}}</a>
+                <p>{{.Excerpt}}</p>
+            </li>
+        
+    </ul>
     {{end}}
-</ul>
     </main>
     <footer>
-        <p>&copy; @2024 DiaWise</p>
+        <p>&copy; 2024 DiaWise</p>
     </footer>
 </body>
 </html>
