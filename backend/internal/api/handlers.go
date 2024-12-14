@@ -8,8 +8,6 @@ import (
 
 	"github.com/gorilla/mux"
 
-	// auth "diawise/internal/auth"
-
 	"gorm.io/gorm"
 )
 
@@ -19,8 +17,6 @@ import (
  */
 func Index(db *gorm.DB, tmpl *template.Template) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// auth.RegisterUser(db, "toni", "toni@mail.com", "antony102")
-		// auth.LoginUser(db, "toni", "antony102")
 
 		templateName := "index.html"
 
@@ -65,16 +61,8 @@ func PostHandler(tmpl *template.Template) http.HandlerFunc {
 
 func BlogHomeHandler(tmpl *template.Template) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// tmpl, err := template.ParseFiles(
-		// 	"../frontend/public/base.html",
-		// 	"../frontend/public/blog_home.html",
-		// )
-		// if err != nil {
-		// 	InternalServerErrorHandler(w)
-		// 	return
-		// }
 
-		if err := tmpl.ExecuteTemplate(w, "base", Data); err != nil {
+		if err := tmpl.ExecuteTemplate(w, "blog_home.html", Data); err != nil {
 			InternalServerErrorHandler(w)
 			return
 		}
