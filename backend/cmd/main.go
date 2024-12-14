@@ -58,6 +58,10 @@ func main() {
 
 	router.HandleFunc("/", handlers.Index(db, tmpl)).Methods("GET")
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("../../frontend/src"))))
+	router.HandleFunc("/nutrition/meal/log", api.LogMealHandler(db)).Methods("POST")
+	router.HandleFunc("/nutrition/mealplan", api.GetMealPlan).Methods("POST")
+	// router.HandleFunc("/nutrition/editplan", api.EditPlan).Methods("POST")
+	// router.HandleFunc("/nutrition/suggestions", api.GetMealSuggestions).Methods("POST")
 	router.HandleFunc("/signup", handlers.Signup(db, tmpl, sessionStore)).Methods("GET")
 	router.HandleFunc("/auth/signup", handlers.SignupUser(db, sessionStore)).Methods("POST")
 	router.HandleFunc("/auth/login", handlers.LoginUser(db, sessionStore)).Methods("POST")
@@ -65,6 +69,7 @@ func main() {
 	router.HandleFunc("/logout", handlers.Logout(sessionStore)).Methods("GET")
 	router.HandleFunc("/dashboard", handlers.Dashboard(db, tmpl, sessionStore)).Methods("GET")
 	router.HandleFunc("/support", handlers.Support(db, tmpl)).Methods("GET")
+	router.HandleFunc("/medication", handlers.MedicationPageHandler(db, tmpl)).Methods("GET")
 	router.HandleFunc("/addmed", handlers.AddMedication(db)).Methods("POST")
 	router.HandleFunc("/updatemed/{id}", handlers.UpdateMedication(db)).Methods("PUT")
 	router.HandleFunc("/deletemed/{id}", handlers.DeleteMedication(db)).Methods("DELETE")

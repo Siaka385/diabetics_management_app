@@ -219,20 +219,20 @@
     
                             <div class="form-group">
                                 <label for="foodItem">Food Item</label>
-                                <input type="text" id="foodItem" placeholder="Enter food item" required>
+                                <input type="text" id="foodItem" placeholder="Enter food item" required />
                             </div>
     
                             <div class="form-group">
-                                <label for="calories">Calories</label>
-                                <input type="number" id="calories" placeholder="Calories" required>
+                                <label for="calories">Weight (g)</label>
+                                <input type="number" id="weight" placeholder="Weight" required />
                             </div>
     
                             <div class="form-group">
-                                <label for="carbs">Carbohydrates (g)</label>
-                                <input type="number" id="carbs" placeholder="Carbohydrates" required>
+                                <label for="carbs">Proportion Of Plate</label>
+                                <input type="float" id="proportion" placeholder="Proportion Of Plate (eg 0.5)" required />
                             </div>
     
-                            <button type="submit" class="log-btn">Log Meal</button>
+                            <button type="submit"class="log-btn">Log Meal</button>
                         </form>
     
                         <table class="meals-table" id="mealsTable">
@@ -240,8 +240,8 @@
                                 <tr>
                                     <th>Meal Type</th>
                                     <th>Food Item</th>
-                                    <th>Calories</th>
-                                    <th>Carbs (g)</th>
+                                    <th>Weight</th>
+                                    <th>Proportion</th>
                                 </tr>
                             </thead>
                             <tbody id="mealList">

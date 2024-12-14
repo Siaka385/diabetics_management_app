@@ -19,6 +19,12 @@ type Medication struct {
 	Notes            string    `json:"notes"`
 }
 
+type PageData struct {
+	Medications []Medication
+	Reminders   []Medication
+	Error       string
+}
+
 // Adding medication to the database
 func AddMedication(db *gorm.DB, medication Medication) (*Medication, error) {
 	if medication.Medication_id == "" || medication.User_id == "" || medication.Medication_name == "" || medication.Dose == "" || medication.Dosage_time.IsZero() || medication.Dosage_frequency == "" || medication.Notes == "" {
@@ -48,6 +54,15 @@ func GetMedicationsByUserId(db *gorm.DB, userID string) ([]Medication, error) {
 		return nil, fmt.Errorf("failed to get medications: %v", err)
 	}
 
+	return medications, nil
+}
+
+// Get all medications
+func GetMedications(db *gorm.DB) ([]Medication, error) {
+	var medications []Medication
+	if err := db.Find(&medications).Error; err != nil {
+		return nil, err // Return error if database query fails
+	}
 	return medications, nil
 }
 

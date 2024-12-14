@@ -36,7 +36,7 @@
 
         .dashboard {
             display: grid;
-            grid-template-columns: 250px 1fr;
+            grid-template-columns: 1fr;
             min-height: 100vh;
         }
 
@@ -44,7 +44,37 @@
             background: white;
             box-shadow: 2px 0 5px rgba(0,0,0,0.05);
             padding: 2rem 1rem;
-            position: relative;
+            position: fixed;
+            top: 0;
+            left: -300px;
+            width: 250px;
+            height: 100vh;
+            transition: left 0.3s ease;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .sidebar.open {
+            left: 0;
+        }
+
+        .mobile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem;
+            background: white;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
         }
 
         .profile {
@@ -65,21 +95,6 @@
             color: white;
             font-size: 3rem;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-        }
-
-        .edit-profile {
-            position: absolute;
-            top: 0;
-            right: 0;
-            background: var(--accent);
-            color: white;
-            border-radius: 50%;
-            width: 30px;
-            height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
         }
 
         .sidebar-nav {
@@ -108,15 +123,13 @@
         }
 
         .main-content {
-            padding: 2rem;
+            padding: 1rem;
             background: #f4f7fa;
+            margin-top: 60px;
         }
 
         .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 2rem;
+            display: none;
         }
 
         .notifications {
@@ -136,13 +149,36 @@
             top: -10px;
             right: -10px;
             font-size: 0.7rem;
+            cursor: pointer;
         }
 
-        /* Blood Sugar Tracking Specific Styles */
+        .notification-dropdown {
+            display: none;
+            position: absolute;
+            top: 100%;
+            right: 0;
+            width: 250px;
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 1000;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .notification-dropdown.show {
+            display: block;
+        }
+
+        .notification-item {
+            padding: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
         .tracking-container {
             display: grid;
             grid-template-columns: 1fr;
-            gap: 2rem;
+            gap: 1rem;
         }
 
         .chart-section, .log-section {
@@ -216,23 +252,76 @@
             display: flex;
             justify-content: space-between;
         }
+
+        @media (min-width: 768px) {
+            .dashboard {
+                grid-template-columns: 250px 1fr;
+            }
+
+            .sidebar {
+                position: static;
+                left: 0;
+                width: 250px;
+            }
+
+            .mobile-header {
+                display: none;
+            }
+
+            .main-content {
+                margin-top: 0;
+                padding: 2rem;
+            }
+
+            .header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 2rem;
+            }
+
+            .tracking-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .tracking-container {
+                grid-template-columns: 2fr 1fr;
+            }
+        }
     </style>
 </head>
 <body>
+    <div class="mobile-header">
+        <button class="menu-toggle" aria-label="Toggle Menu" onclick="toggleSidebar()">☰</button>
+        <h1>Diawise</h1>
+        <div class="notifications">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" onclick="toggleNotifications()">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            <div class="notification-icon" onclick="toggleNotifications()">3</div>
+            <div class="notification-dropdown" id="notificationDropdown">
+                <div class="notification-item">Your blood sugar is high. Take action!</div>
+                <div class="notification-item">Medication reminder: Take insulin</div>
+                <div class="notification-item">New educational resource available</div>
+            </div>
+        </div>
+    </div>
+
     <div class="dashboard">
-        <aside class="sidebar">
+        <aside class="sidebar" id="sidebar">
             <div class="profile">
                 <div class="profile-image">JD</div>
                 <h2>John Doe</h2>
-                <p>Type 2 Diabetes</p>
-                <div class="edit-profile">✎</div>
             </div>
             <nav>
                 <ul class="sidebar-nav">
                     <li><a href="/dashboard">Dashboard</a></li>
-                    <li><a href="/track">Blood Sugar</a></li>
+                    <li><a href="/track" class="active">Blood Sugar</a></li>
                     <li><a href="/nutrition">Diet & Nutrition</a></li>
-                    <li><a href="/addmedication" class="active">Medications</a></li>
+                    <li><a href="/addmedication">Medications</a></li>
                     <li><a href="/education">Education</a></li>
                     <li><a href="/support">Support Group</a></li>
                 </ul>
@@ -243,11 +332,16 @@
             <div class="header">
                 <h1>Blood Sugar Tracking</h1>
                 <div class="notifications">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" onclick="toggleNotifications()">
                         <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
                         <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
                     </svg>
-                    <div class="notification-icon">3</div>
+                    <div class="notification-icon" onclick="toggleNotifications()">3</div>
+                    <div class="notification-dropdown" id="desktopNotificationDropdown">
+                        <div class="notification-item">Your blood sugar is high. Take action!</div>
+                        <div class="notification-item">Medication reminder: Take insulin</div>
+                        <div class="notification-item">New educational resource available</div>
+                    </div>
                 </div>
             </div>
 
@@ -291,113 +385,205 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.2/echarts.min.js"></script>
     <script>
-        // Blood Sugar Tracking Logic
-        const bloodSugarForm = document.getElementById('bloodSugarForm');
-        const alertMessage = document.getElementById('alertMessage');
-        const recentLogsList = document.getElementById('recentLogsList');
+  // Blood Sugar Tracking Logic
+const bloodSugarForm = document.getElementById('bloodSugarForm');
+const alertMessage = document.getElementById('alertMessage');
+const recentLogsList = document.getElementById('recentLogsList');
+const bloodSugarLevelInput = document.getElementById('bloodSugarLevel');
+const measurementTimeSelect = document.getElementById('measurementTime');
 
-        // Sample blood sugar logs (would typically come from backend/storage)
-        let bloodSugarLogs = [
-            { value: 128, time: 'before_meal', date: '2024-03-15' },
-            { value: 115, time: 'fasting', date: '2024-03-14' },
-            { value: 142, time: 'after_meal', date: '2024-03-13' }
-        ];
+// Sample blood sugar logs (would typically come from backend/storage)
+let bloodSugarLogs = [
+    { value: 128, time: 'before_meal', date: '2024-03-15' },
+    { value: 115, time: 'fasting', date: '2024-03-14' },
+    { value: 142, time: 'after_meal', date: '2024-03-13' }
+];
 
-        // Render recent logs
-        function renderRecentLogs() {
-            recentLogsList.innerHTML = bloodSugarLogs
-                .slice(0, 5)
-                .map(log => `
-                    <div class="log-entry">
-                        <span>${log.value} mg/dL (${log.time})</span>
-                        <span>${log.date}</span>
-                    </div>
-                `).join('');
-        }
+// Render recent logs
+function renderRecentLogs() {
+    recentLogsList.innerHTML = bloodSugarLogs
+        .slice(0, 5)
+        .map(log => `
+            <div class="log-entry">
+                <span>${log.value} mg/dL (${log.time})</span>
+                <span>${log.date}</span>
+            </div>
+        `).join('');
+}
 
-        // Blood sugar level recommendations
-        function getBloodSugarRecommendation(level, time) {
-            const recommendations = {
-                fasting: { low: 80, high: 130 },
-                before_meal: { low: 80, high: 130 },
-                after_meal: { low: 80, high: 180 },
-                bedtime: { low: 100, high: 140 }
-            };
+// Provide guidance for blood sugar levels
+function getBloodSugarGuidance(value) {
+    const numValue = Number(value);
+    
+    // Low Blood Sugar (Hypoglycemia) Guidance
+    if (numValue < 70) {
+        return {
+            type: 'low',
+            message: 'Low Blood Sugar: Immediate Action Required!',
+            guidance: [
+                '1. Consume 15-20 grams of fast-acting carbohydrates immediately:',
+                '   - 4 oz (1/2 cup) of fruit juice',
+                '   - 4-5 glucose tablets',
+                '   - 1 tablespoon of honey or sugar',
+                '2. Wait 15 minutes and recheck your blood sugar',
+                '3. If still below 70 mg/dL, repeat the process',
+                '4. Once blood sugar normalizes, eat a small snack',
+                '5. If symptoms persist or you feel unable to treat yourself, seek medical help'
+            ]
+        };
+    } 
+    // High Blood Sugar (Hyperglycemia) Guidance
+    else if (numValue > 180) {
+        return {
+            type: 'high',
+            message: 'High Blood Sugar: Take Careful Action',
+            guidance: [
+                '1. Check your ketones if blood sugar is consistently above 240 mg/dL',
+                '2. Drink water to help flush out excess sugar',
+                '3. Do light exercise if safe and approved by your doctor',
+                '4. Take insulin or medication as prescribed by your healthcare provider',
+                '5. Avoid high-carb foods',
+                '6. Monitor your blood sugar closely',
+                '7. If blood sugar remains high (>300 mg/dL) or you have symptoms like:',
+                '   - Extreme thirst',
+                '   - Frequent urination',
+                '   - Nausea and vomiting',
+                '   CONTACT YOUR HEALTHCARE PROVIDER IMMEDIATELY'
+            ]
+        };
+    }
+    
+    // Normal Range
+    return {
+        type: 'normal',
+        message: 'Blood Sugar in Normal Range',
+        guidance: [
+            'Keep maintaining your current diet and medication routine',
+            'Continue regular monitoring and healthy lifestyle practices'
+        ]
+    };
+}
 
-            const range = recommendations[time];
-            if (level > range.high) {
-                return {
-                    type: 'high',
-                    message: `Your blood sugar is high for ${time}. Consider: 
-                    - Drink water
-                    - Take a short walk
-                    - Check insulin/medication
-                    - Consult your healthcare provider`
-                };
-            } else if (level < range.low) {
-                return {
-                    type: 'low',
-                    message: `Your blood sugar is low for ${time}. Consider:
-                    - Have a small snack
-                    - Drink juice or glucose drink
-                    - Rest and monitor closely`
-                };
+// Validate blood sugar level
+function validateBloodSugar(value) {
+    const guidance = getBloodSugarGuidance(value);
+    
+    // Update alert message
+    alertMessage.textContent = guidance.message;
+    alertMessage.classList.remove('alert-high', 'alert-normal');
+    
+    if (guidance.type === 'low') {
+        alertMessage.classList.add('alert-normal');
+    } else if (guidance.type === 'high') {
+        alertMessage.classList.add('alert-high');
+    }
+
+    // Create guidance list
+    const guidanceList = document.createElement('ul');
+    guidance.guidance.forEach(step => {
+        const li = document.createElement('li');
+        li.textContent = step;
+        guidanceList.appendChild(li);
+    });
+
+    // Clear previous guidance and append new list
+    const existingList = alertMessage.querySelector('ul');
+    if (existingList) {
+        alertMessage.removeChild(existingList);
+    }
+    alertMessage.appendChild(guidanceList);
+
+    return true;
+}
+
+// Rest of the previous script remains the same (addBloodSugarLog, form submission, chart initialization, etc.)
+
+// CSS to style the guidance list
+const styleTag = document.createElement('style');
+styleTag.textContent = `
+    .alert ul {
+        margin-top: 10px;
+        padding-left: 20px;
+        text-align: left;
+        font-size: 0.9em;
+    }
+    .alert ul li {
+        margin-bottom: 5px;
+        line-height: 1.4;
+    }
+`;
+document.head.appendChild(styleTag);
+
+// Add new blood sugar log
+function addBloodSugarLog(value, time) {
+    const newLog = {
+        value: Number(value),
+        time: time,
+        date: new Date().toISOString().split('T')[0]
+    };
+    bloodSugarLogs.unshift(newLog);
+    renderRecentLogs();
+    updateBloodSugarChart();
+}
+
+// Form submission handler
+bloodSugarForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const bloodSugarLevel = bloodSugarLevelInput.value;
+    const measurementTime = measurementTimeSelect.value;
+
+    if (validateBloodSugar(bloodSugarLevel)) {
+        addBloodSugarLog(bloodSugarLevel, measurementTime);
+        bloodSugarForm.reset();
+    }
+});
+
+// Initialize ECharts Blood Sugar Trend Chart
+function updateBloodSugarChart() {
+    const chartDom = document.getElementById('bloodSugarChart');
+    const myChart = echarts.init(chartDom);
+    
+    const option = {
+        tooltip: {
+            trigger: 'axis',
+            axisPointer: { type: 'line' }
+        },
+        xAxis: {
+            type: 'category',
+            data: bloodSugarLogs.slice(0, 7).map(log => log.date).reverse()
+        },
+        yAxis: {
+            type: 'value',
+            name: 'Blood Sugar (mg/dL)',
+            min: 50,
+            max: 250
+        },
+        series: [{
+            name: 'Blood Sugar',
+            type: 'line',
+            data: bloodSugarLogs.slice(0, 7).map(log => log.value).reverse(),
+            itemStyle: {
+                color: log => {
+                    return log > 180 ? '#ef4444' : (log < 70 ? '#10b981' : '#2563eb');
+                }
+            },
+            lineStyle: {
+                color: '#2563eb'
             }
-            return { type: 'normal', message: 'Your blood sugar is within the target range.' };
-        }
+        }]
+    };
 
-        // Form submission handler
-        bloodSugarForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            const bloodSugarLevel = parseInt(document.getElementById('bloodSugarLevel').value);
-            const measurementTime = document.getElementById('measurementTime').value;
+    myChart.setOption(option);
+}
 
-            const recommendation = getBloodSugarRecommendation(bloodSugarLevel, measurementTime);
-            
-            alertMessage.textContent = recommendation.message;
-            alertMessage.className = `alert alert-${recommendation.type}`;
+// Initial rendering and chart setup
+renderRecentLogs();
+updateBloodSugarChart();
 
-            // Add new log
-            bloodSugarLogs.unshift({ 
-                value: bloodSugarLevel, 
-                time: measurementTime, 
-                date: new Date().toISOString().split('T')[0] 
-            });
-
-            renderRecentLogs();
-            updateBloodSugarChart();
-        });
-
-        // Initialize chart
-        function updateBloodSugarChart() {
-            const chartDom = document.getElementById('bloodSugarChart');
-            const myChart = echarts.init(chartDom);
-            
-            const option = {
-                tooltip: { trigger: 'axis' },
-                xAxis: {
-                    type: 'category',
-                    data: bloodSugarLogs.slice(0, 7).map(log => log.date).reverse()
-                },
-                yAxis: {
-                    type: 'value',
-                    min: 50,
-                    max: 250
-                },
-                series: [{
-                    data: bloodSugarLogs.slice(0, 7).map(log => log.value).reverse(),
-                    type: 'line',
-                    smooth: true,
-                    itemStyle: { color: '#1e3a8a' }
-                }]
-            };
-
-            myChart.setOption(option);
-        }
-
-        // Initial render
-        renderRecentLogs();
-        updateBloodSugarChart();
-    </script>
+// Optional: Add input validation to prevent non-numeric input
+bloodSugarLevelInput.addEventListener('input', function(e) {
+    e.target.value = e.target.value.replace(/[^0-9]/g, '');
+});
+</script>
 </body>
 </html>
