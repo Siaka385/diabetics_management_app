@@ -57,7 +57,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		"1": {
 			Title:  "Understanding Diabetes: A Comprehensive Guide",
 			Author: "Dr. Samantha Johnson",
-			Date:   "2021-01-01",
+			Date:   "March 15, 2024",
 			Content: template.HTML(`<header>
 			<h1>Understanding Diabetes: A Comprehensive Guide</h1>
 		</header>
@@ -153,7 +153,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		"2": {
 			Title:  "How to Monitor Blood Sugar Levels: A Step-by-Step Guide",
 			Author: "Jane Smith",
-			Date:   "January 15, 2025",
+			Date:   "January 15, 2024",
 			Content: template.HTML(`<h1>How to Monitor Blood Sugar Levels: A Step-by-Step Guide</h1>
 
 			<p><strong>Introduction:</strong></p>
@@ -213,7 +213,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		"3": {
 			Title:  "How to Recognize and Prevent Diabetes Complications",
 			Author: "Michael Johnson",
-			Date:   "February 20, 2025",
+			Date:   "December 20, 2023",
 			Content: template.HTML(`<p><strong>"How to Recognize and Prevent Diabetes Complications"</strong></p>
 
 			<p><span>Diabetes is a chronic condition that, if not well-managed, can lead to a range of serious health complications. Recognizing the early signs of complications and taking preventive measures can make a huge difference in maintaining quality of life for people with diabetes. In this post, we’ll cover common complications and practical steps you can take to prevent them.</span></p>
@@ -242,7 +242,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		"4": {
 			Title:  "The Role of Exercise in Managing Diabetes",
 			Author: "Michael Johnson",
-			Date:   "February 20, 2025",
+			Date:   "October 20, 2024",
 			Content: template.HTML(`<h1>The Role of Exercise in Managing Diabetes</h1>
 			
 			<p><strong>Introduction:</strong> Physical activity plays a crucial role in managing diabetes. Regular exercise helps control blood sugar levels, improves cardiovascular health, and boosts overall well-being. Whether you have Type 1, Type 2, or gestational diabetes, incorporating physical activity into your daily routine can make a significant impact on managing the condition. In this post, we’ll explore the benefits of exercise for people with diabetes, the best types of exercises, and tips for incorporating them into your daily life.</p>
@@ -284,7 +284,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		"5": {
 			Title:  "Stress and Diabetes: Understanding the Connection",
 			Author: "Michael Johnson",
-			Date:   "February 20, 2025",
+			Date:   "April 20, 2024",
 			Content: template.HTML(`<h1>Stress and Diabetes: Understanding the Connection</h1>
 
 			<p><strong>Introduction:</strong> Managing stress is a crucial part of diabetes care. While diabetes requires careful attention to blood sugar levels through diet, exercise, and medication, stress is often an overlooked factor that can affect blood sugar control. Understanding the relationship between stress and diabetes is key to improving overall health and managing the condition more effectively. In this article, we’ll explore how stress impacts blood sugar levels and offer strategies for managing stress to improve diabetes outcomes.</p>
