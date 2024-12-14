@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 	"time"
 
 	"diawise/internal/services"
@@ -76,18 +77,41 @@ func UpdateMedication(db *gorm.DB) http.HandlerFunc {
 
 // handler for listing all medications
 func ListMedications(db *gorm.DB) http.HandlerFunc {
-    return func(w http.ResponseWriter, r *http.Request) {
-        userID := r.URL.Query().Get("user_id")
-        if userID == "" {
-            http.Error(w, "user_id is required", http.StatusBadRequest)
-            return
-        }
-        medications, err := services.ListMedicationsByUserId(db, userID)
-        if err != nil {
-            http.Error(w, err.Error(), http.StatusInternalServerError)
-            return
-        }
-        w.WriteHeader(http.StatusOK)
-        json.NewEncoder(w).Encode(medications)
-    }
+	return func(w http.ResponseWriter, r *http.Request) {
+		userID := r.URL.Query().Get("user_id")
+		if userID == "" {
+			http.Error(w, "user_id is required", http.StatusBadRequest)
+			return
+		}
+		medications, err := services.ListMedicationsByUserId(db, userID)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		json.NewEncoder(w).Encode(medications)
+	}
+}
+
+// handler for medication reminder
+func MedicationReminder(db *gorm.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		userID := r.URL.Query().Get("user_id")
+		if userID == "" {
+			http.Error(w, "user_id is required", http.StatusBadRequest)
+			return
+		}
+		// Fixed: Convert userID to int64 before passing it to SendMedicationReminders
+		userIDInt, err := strconv.ParseInt(userID, 10, 64)
+		if err != nil {
+			http.Error(w, "Invalid user_id", http.StatusBadRequest)
+			return
+		}
+		err = services.SendMedicationReminders(db, userIDInt)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+	}
 }
