@@ -61,7 +61,7 @@ func TestGetDefaultMealPlan(t *testing.T) {
 		t.Fatalf("Failed to create request: %v", err)
 	}
 
-	handler := http.HandlerFunc(GetDefaultMealPlan)
+	handler := http.HandlerFunc(GetMealPlan)
 	rr := httptest.NewRecorder()
 
 	handler.ServeHTTP(rr, req)
