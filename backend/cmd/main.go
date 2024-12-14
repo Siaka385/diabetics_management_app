@@ -45,6 +45,7 @@ func main() {
 	router.HandleFunc("/auth/register", handlers.RegisterUser(db)).Methods("POST")
 	router.HandleFunc("/auth/login", handlers.LoginUser(db)).Methods("POST")
 	router.HandleFunc("/support", handlers.Support(db, tmpl)).Methods("GET")
+	router.HandleFunc("/addmed", handlers.AddMedication(db)).Methods("POST")
 	router.HandleFunc("/api/support/message", handlers.Message(db)).Methods("POST")
 	router.HandleFunc("/api/support/events", handlers.SSEvents(db)).Methods("GET")
 
@@ -61,3 +62,5 @@ func main() {
 
 	http.ListenAndServe(portStr, handlerWithCORS)
 }
+
+
