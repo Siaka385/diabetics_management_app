@@ -8,8 +8,6 @@ import (
 	"testing"
 )
 
-var template *template.Template
-
 func TestGlucoseTrackerEndPointHandler(t *testing.T) {
 	tests := []struct {
 		queryParams      string
