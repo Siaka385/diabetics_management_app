@@ -3,11 +3,17 @@ package api
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"diawise/internal/services"
 
 	"gorm.io/gorm"
 )
+
+type Medication struct {
+	Medication   services.Medication
+	ReminderTime time.Duration `json:"reminder_time"`
+}
 
 // handler for adding a new medication
 func AddMedication(db *gorm.DB) http.HandlerFunc {
@@ -66,4 +72,22 @@ func UpdateMedication(db *gorm.DB) http.HandlerFunc {
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(updatedMed)
 	}
+}
+
+// handler for listing all medications
+func ListMedications(db *gorm.DB) http.HandlerFunc {
+    return func(w http.ResponseWriter, r *http.Request) {
+        userID := r.URL.Query().Get("user_id")
+        if userID == "" {
+            http.Error(w, "user_id is required", http.StatusBadRequest)
+            return
+        }
+        medications, err := services.ListMedicationsByUserId(db, userID)
+        if err != nil {
+            http.Error(w, err.Error(), http.StatusInternalServerError)
+            return
+        }
+        w.WriteHeader(http.StatusOK)
+        json.NewEncoder(w).Encode(medications)
+    }
 }
