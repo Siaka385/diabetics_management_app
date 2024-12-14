@@ -19,12 +19,13 @@ import (
 var (
 	db   *gorm.DB // since sqlite is an internal database that is file based, we need to  have a single handler to the database. Use mutexes to prevent race conditions
 	tmpl *template.Template
+	err error
 )
 
 func init() {
 	db = database.InitializeDatabase("data/diawise.db")
-	var err error
-	tmpl, err = template.ParseGlob("../../frontend/**/*.html") // Adjust path if necessary
+	// parse all html files in the frontend and its subdirectories beforehand // optimization
+	tmpl, err = template.ParseGlob("../../frontend/**/*.html")
 	if err != nil {
 		log.Fatal(err)
 	}
