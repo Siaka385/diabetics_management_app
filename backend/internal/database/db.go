@@ -6,7 +6,6 @@ import (
 
 	auth "diawise/internal/auth"
 	medication "diawise/internal/services"
-
 )
 
 func InitializeDatabase(dbPath string) *gorm.DB {

@@ -1,6 +1,8 @@
 package api
 
-import "html/template"
+import (
+	"html/template"
+)
 
 type BlogPost struct {
 	Title   string
@@ -25,10 +27,11 @@ type Issue struct {
 
 // Initialize variable to hold error message and status codes
 
-var hitch Issue
+var Hitch Issue
 
-var LoadTemplate = func() (*template.Template, error) {
-	return template.ParseFiles("../frontend/public/error.html")
+var LoadTemplate = func() *template.Template {
+	tmpl, _ := template.ParseFiles("../../frontend/public/error.html")
+	return tmpl
 }
 
 var Data = struct {

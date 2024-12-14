@@ -1,10 +1,33 @@
-{{define "content"}}
-<article>
-    <h2>{{.Title}}</h2>
-    <p><i>By {{.Author}} on {{.Date}}</i></p>
-    <div>
-        {{.Content}}
-    </div>
-</article>
-<a href="/">Back to Home</a>
-{{end}}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Title}}</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>DiaWise Blog</h1>
+        <nav>
+            <a href="/">Home</a>
+        </nav>
+    </header>
+    <main>
+        <article>
+            <h2>{{.Title}}</h2>
+            <p><i>By {{.Author}} on {{.Date}}</i></p>
+            <div>
+                {{.Content}}
+            </div>
+        </article>
+        <a href="/">Back to Home</a>
+    </main>
+    <footer>
+        <p>&copy; @2024 DiaWise</p>
+    </footer>
+</body>
+</html>
+
+
+

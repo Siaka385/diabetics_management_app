@@ -5,7 +5,6 @@ import (
 	"html/template"
 	"log"
 	"net/http"
-	"text/template"
 
 	"github.com/gorilla/mux"
 
@@ -23,12 +22,11 @@ func Index(db *gorm.DB, tmpl *template.Template) http.HandlerFunc {
 		// auth.RegisterUser(db, "toni", "toni@mail.com", "antony102")
 		// auth.LoginUser(db, "toni", "antony102")
 
-		var templateName string
-		templateName = "index.html"
+		templateName := "index.html"
 
 		err := tmpl.ExecuteTemplate(w, templateName, nil)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			InternalServerErrorHandler(w)
 		}
 	}
 }
@@ -45,59 +43,51 @@ func GlucoseTrackerEndPointHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(glucoseParam)
 }
 
-func PostHandler(w http.ResponseWriter, r *http.Request) {
-	vars := mux.Vars(r)
-	postID := vars["id"]
+func PostHandler(tmpl *template.Template) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		vars := mux.Vars(r)
+		postID := vars["id"]
 
-	post, ok := Posts[postID]
-	if !ok {
-		NotFoundHandler(w)
-		return
-	}
+		post, ok := Posts[postID]
+		if !ok {
+			NotFoundHandler(w)
+			return
+		}
 
-	tmpl, err := template.ParseFiles(
-		"../frontend/public/base.html",
-		"../frontend/public/blog_display.html",
-	)
-	if err != nil {
-		InternalServerErrorHandler(w)
-		return
-	}
-
-	err = tmpl.ExecuteTemplate(w, "base", post)
-	if err != nil {
-		InternalServerErrorHandler(w)
-		return
+		err := tmpl.ExecuteTemplate(w, "blog_display.html", post)
+		if err != nil {
+			log.Printf("Error executing template: %v", err)
+			InternalServerErrorHandler(w)
+			return
+		}
 	}
 }
 
-func BlogHomeHandler(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles(
-		"../frontend/public/base.html",
-		"../frontend/public/blog_home.html",
-	)
-	if err != nil {
-		InternalServerErrorHandler(w)
-		return
-	}
+func BlogHomeHandler(tmpl *template.Template) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// tmpl, err := template.ParseFiles(
+		// 	"../frontend/public/base.html",
+		// 	"../frontend/public/blog_home.html",
+		// )
+		// if err != nil {
+		// 	InternalServerErrorHandler(w)
+		// 	return
+		// }
 
-	if err := tmpl.ExecuteTemplate(w, "base", Data); err != nil {
-		InternalServerErrorHandler(w)
-		return
+		if err := tmpl.ExecuteTemplate(w, "base", Data); err != nil {
+			InternalServerErrorHandler(w)
+			return
+		}
 	}
 }
 
 func BadRequestHandler(w http.ResponseWriter) {
-	tmpl, err := LoadTemplate()
-	if err != nil {
-		http.Error(w, "Could not load template, error page unavailable", http.StatusInternalServerError)
-		return
-	}
+	tmpl := LoadTemplate()
 
-	hitch.StatusCode = http.StatusBadRequest
-	hitch.Problem = "Bad Request!"
+	Hitch.StatusCode = http.StatusBadRequest
+	Hitch.Problem = "Bad Request!"
 
-	err = tmpl.Execute(w, hitch)
+	err := tmpl.Execute(w, Hitch)
 	if err != nil {
 		http.Error(w, "Could not execute error template, error page unavailable", http.StatusInternalServerError)
 		log.Println("Error executing template: ", err)
@@ -105,16 +95,21 @@ func BadRequestHandler(w http.ResponseWriter) {
 }
 
 func InternalServerErrorHandler(w http.ResponseWriter) {
-	tmpl, err := LoadTemplate()
-	if err != nil {
-		http.Error(w, "Could not load template, error page unavailable", http.StatusInternalServerError)
+	// Check if headers have already been written
+	if w.Header().Get("Content-Type") != "" {
+		log.Println("Headers already written. Cannot send error page.")
 		return
 	}
 
-	hitch.StatusCode = http.StatusInternalServerError
-	hitch.Problem = "Internal Server Error!"
+	tmpl := LoadTemplate()
 
-	err = tmpl.Execute(w, hitch)
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(http.StatusInternalServerError)
+
+	Hitch.StatusCode = http.StatusInternalServerError
+	Hitch.Problem = "Internal Server Error!"
+
+	err := tmpl.Execute(w, Hitch)
 	if err != nil {
 		http.Error(w, "Could not execute error template, error page unavailable", http.StatusInternalServerError)
 		log.Println("Error executing template: ", err)
@@ -122,16 +117,12 @@ func InternalServerErrorHandler(w http.ResponseWriter) {
 }
 
 func NotFoundHandler(w http.ResponseWriter) {
-	tmpl, err := LoadTemplate()
-	if err != nil {
-		http.Error(w, "Could not load template, error page unavailable", http.StatusInternalServerError)
-		return
-	}
+	tmpl := LoadTemplate()
 
-	hitch.StatusCode = http.StatusNotFound
-	hitch.Problem = "Not Found!"
+	Hitch.StatusCode = http.StatusNotFound
+	Hitch.Problem = "Not Found!"
 
-	err = tmpl.Execute(w, hitch)
+	err := tmpl.Execute(w, Hitch)
 	if err != nil {
 		http.Error(w, "Could not execute error template, error page unavailable", http.StatusInternalServerError)
 		log.Println("Error executing template: ", err)

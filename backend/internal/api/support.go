@@ -2,8 +2,8 @@ package api
 
 import (
 	"fmt"
+	"html/template"
 	"net/http"
-	"text/template"
 
 	"diawise/internal/services/support"
 

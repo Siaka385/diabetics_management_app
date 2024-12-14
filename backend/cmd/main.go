@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"log"
 	"net/http"
-	"text/template"
 
 	"diawise/internal/api"
 	handlers "diawise/internal/api"
@@ -41,10 +41,6 @@ func main() {
 
 	router := mux.NewRouter()
 
-	// router.HandleFunc("/", Index).Methods("GET")
-	router.HandleFunc("/blog", api.BlogHomeHandler).Methods("GET")
-	router.HandleFunc("/glucose-tracker", api.GlucoseTrackerEndPointHandler).Methods("GET")
-	router.HandleFunc("/post/{id}", api.PostHandler).Methods("GET")
 	router.HandleFunc("/", handlers.Index(db, tmpl)).Methods("GET")
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("../../frontend/src"))))
 	router.HandleFunc("/auth/register", handlers.RegisterUser(db)).Methods("POST")
@@ -52,6 +48,9 @@ func main() {
 	router.HandleFunc("/support", handlers.Support(db, tmpl)).Methods("GET")
 	router.HandleFunc("/api/support/message", handlers.Message(db)).Methods("POST")
 	router.HandleFunc("/api/support/events", handlers.SSEvents(db)).Methods("GET")
+	router.HandleFunc("/blog", api.BlogHomeHandler(tmpl)).Methods("GET")
+	router.HandleFunc("/glucose-tracker", api.GlucoseTrackerEndPointHandler).Methods("GET")
+	router.HandleFunc("/post/{id}", api.PostHandler(tmpl)).Methods("GET")
 
 	// CORS configuration
 	corsHandler := cors.New(cors.Options{
