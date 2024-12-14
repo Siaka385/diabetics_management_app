@@ -129,6 +129,14 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 			</ul>
 			<p>For women, gestational diabetes can increase the risk of Type 2 diabetes later in life.</p>
 		</section>
+
+		<a href="https://www.youtube.com/watch?v=eOsY84oYqKg" target="_blank">
+		<img 
+			src="https://img.youtube.com/vi/eOsY84oYqKg/hqdefault.jpg" 
+			alt="How To Test Blood Sugar | How To Use Glucometer | How To Check Blood Glucose | (2018)" 
+			width="560" 
+			height="315">
+	</a>
 	
 		<section>
 			<h2>Preventing and Managing Diabetes</h2>
@@ -176,6 +184,14 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 				<li><strong>Ease of Use:</strong> Some meters have larger displays, smaller sample sizes, or Bluetooth connectivity for easier data tracking.</li>
 				<li><strong>Cost:</strong> Consider the cost of the glucometer as well as the test strips, which are needed for each measurement.</li>
 			</ul>
+
+			<a href="https://www.youtube.com/watch?v=eOsY84oYqKg" target="_blank">
+			<img 
+				src="https://img.youtube.com/vi/eOsY84oYqKg/hqdefault.jpg" 
+				alt="How To Test Blood Sugar | How To Use Glucometer | How To Check Blood Glucose | (2018)" 
+				width="560" 
+				height="315">
+		</a>
 		
 			<h2>Step 2: When to Check Blood Sugar</h2>
 			<p>How often you monitor your blood sugar depends on your individual needs and your doctor’s advice. However, there are common times when you should check:</p>
@@ -220,6 +236,15 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		
 			<h2><span>Common Diabetes Complications</span></h2>
 			<p>Diabetes can lead to complications that affect various parts of the body. The most common complications include:</p>
+			
+			<a href="https://www.youtube.com/watch?v=pgafmrV5jyY" target="_blank">
+			<img 
+				src="https://img.youtube.com/vi/pgafmrV5jyY/hqdefault.jpg" 
+				alt="Type I and Type II Diabetes, chronic complications and management" 
+				width="560" 
+				height="315">
+		</a>
+
 			<ul>
 				<li><strong>Heart Disease:</strong> Diabetes increases the risk of heart disease due to high blood sugar levels damaging blood vessels.</li>
 				<li><strong>Neuropathy:</strong> High blood sugar can damage the nerves, leading to numbness, tingling, or pain, usually in the feet and hands.</li>
@@ -259,6 +284,13 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 			<h2><span>The Best Types of Exercise for People with Diabetes</span></h2>
 			<p>Not all exercises are created equal when it comes to diabetes management. It’s essential to choose activities that are both effective and sustainable. The best exercises for people with diabetes include:</p>
 			
+			<a href="https://www.youtube.com/watch?v=A3Lm0lQZdFM" target="_blank">
+			<img 
+				src="https://img.youtube.com/vi/A3Lm0lQZdFM/hqdefault.jpg" 
+				alt="Can Exercise Cure Diabetes" 
+				width="560" 
+				height="315">
+		</a>
 			<h3><span>Aerobic Exercise</span></h3>
 			<p>Aerobic activities, such as walking, swimming, cycling, and dancing, are great for improving cardiovascular health and lowering blood sugar levels. These exercises help the body use oxygen more efficiently and improve blood circulation. Aim for at least 150 minutes of moderate aerobic activity per week.</p>
 		
