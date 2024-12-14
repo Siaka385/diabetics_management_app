@@ -19,7 +19,7 @@ import (
 var (
 	db   *gorm.DB // since sqlite is an internal database that is file based, we need to  have a single handler to the database. Use mutexes to prevent race conditions
 	tmpl *template.Template
-	err error
+	err  error
 )
 
 func init() {
@@ -46,6 +46,8 @@ func main() {
 	router.HandleFunc("/auth/login", handlers.LoginUser(db)).Methods("POST")
 	router.HandleFunc("/support", handlers.Support(db, tmpl)).Methods("GET")
 	router.HandleFunc("/addmed", handlers.AddMedication(db)).Methods("POST")
+	router.HandleFunc("/updatemed/{id}", handlers.UpdateMedication(db)).Methods("PUT")
+	router.HandleFunc("/deletemed/{id}", handlers.DeleteMedication(db)).Methods("DELETE")
 	router.HandleFunc("/api/support/message", handlers.Message(db)).Methods("POST")
 	router.HandleFunc("/api/support/events", handlers.SSEvents(db)).Methods("GET")
 
@@ -62,5 +64,3 @@ func main() {
 
 	http.ListenAndServe(portStr, handlerWithCORS)
 }
-
-
