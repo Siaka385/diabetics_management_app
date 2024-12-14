@@ -371,8 +371,8 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 
 func BlogHomeHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl, err := template.ParseFiles(
-		"/home/davodhiambo/github/diabetics_management_app/frontend/public/base.html",
-		"/home/davodhiambo/github/diabetics_management_app/frontend/public/blog_home.html",
+		"frontend/public/base.html",
+		"frontend/public/blog_home.html",
 	)
 
 	data := struct {
