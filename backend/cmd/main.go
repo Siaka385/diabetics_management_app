@@ -29,15 +29,20 @@ func main() {
 	router.HandleFunc("/", handlers.Index(db)).Methods("GET")
 	router.HandleFunc("/auth/register", handlers.RegisterUser(db)).Methods("POST")
 	router.HandleFunc("/auth/login", handlers.LoginUser(db)).Methods("POST")
+	router.HandleFunc("/api/support/message", handlers.Message(db)).Methods("POST")
+	router.HandleFunc("/api/support/events", handlers.SSEvents(db)).Methods("GET")
 
 	// CORS configuration
 	corsHandler := cors.New(cors.Options{
 		AllowedOrigins: []string{"*"},
-		AllowedMethods: []string{"GET", "POST", "OPTIONS"},
+		// AllowedMethods: []string{"GET", "POST", "OPTIONS"},
+		AllowedMethods: []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders: []string{"Content-Type", "Authorization"},
+		AllowCredentials: true,
 	})
 
 	handlerWithCORS := corsHandler.Handler(router) // apply the CORS middleware to the router
 
 	http.ListenAndServe(portStr, handlerWithCORS)
 }
+
