@@ -1,6 +1,7 @@
-
-    /*Support and community*/
        // Modal functionality
+
+
+   window.onload=()=>{    
        const createTopicBtn = document.getElementById('createTopicBtn');
         const createTopicModal = document.getElementById('createTopicModal');
         const closeModal = document.getElementById('closeModal');
@@ -27,3 +28,4 @@
             createTopicModal.style.display = 'none';
             createTopicForm.reset();
         });
+    }
