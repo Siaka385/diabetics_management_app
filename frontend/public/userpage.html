@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diawise - User Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+       <link rel="stylesheet" href="../src/styles/userpage.css">
+</head>
+<body>
+      <!-- Mobile Menu Toggle Button -->
+      <button class="mobile-menu-toggle" aria-label="Toggle Menu">
+        ☰ Menu
+    </button>
+
+    <!-- Overlay for mobile menu -->
+    <div class="overlay"></div>
+
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="profile">
+                <div class="profile-image">JD</div>
+                <h2>John Doe</h2>
+                <p>Type 2 Diabetes</p>
+                <div class="edit-profile">✎</div>
+            </div>
+            <nav>
+                <ul class="sidebar-nav">
+                    <li><a href="#" class="active">Dashboard</a></li>
+                    <li><a href="#">Blood Sugar</a></li>
+                    <li><a href="#">Diet & Nutrition</a></li>
+                    <li><a href="#">Medications</a></li>
+                    <li><a href="#">Education</a></li>
+                    <li><a href="#">Support Group</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+
+
+        <!--Welcome page-->
+        <div class="welcomepage hide">
+        <main class="main-content">
+            <div class="header">
+                <h1>Welcome, John</h1>
+                <div class="notifications">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    <div class="notification-icon">3</div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3>Blood Sugar</h3>
+                        <a href="#">Track</a>
+                    </div>
+                    <div class="quick-stats">
+                        <div class="stat">
+                            <span class="stat-value">128</span>
+                            <span class="stat-label">mg/dL</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value">5.8</span>
+                            <span class="stat-label">HbA1c</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 65%"></div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3>Diet & Nutrition</h3>
+                        <a href="#">Log Meal</a>
+                    </div>
+                    <div class="quick-stats">
+                        <div class="stat">
+                            <span class="stat-value">1800</span>
+                            <span class="stat-label">Calories</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value">45g</span>
+                            <span class="stat-label">Carbs</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 75%"></div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3>Medications</h3>
+                        <a href="#">Manage</a>
+                    </div>
+                    <div class="quick-stats">
+                        <div class="stat">
+                            <span class="stat-value">2</span>
+                            <span class="stat-label">Pending</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value">3</span>
+                            <span class="stat-label">Taken</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 85%"></div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3>Support Group</h3>
+                        <a href="#">Join</a>
+                    </div>
+                    <div class="quick-stats">
+                        <div class="stat">
+                            <span class="stat-value">12</span>
+                            <span class="stat-label">Members</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value">3</span>
+                            <span class="stat-label">New Posts</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 55%"></div>
+                    </div>
+                </div>
+            </div>
+            </main>
+        </div>
+
+
+        <!--MONITOR BLOOOD SUGAR LEVEL-->
+            <main class="main-content bloodsugarMonitorpage hide" >
+                <div class="header">
+                    <h1>Blood Sugar Tracking</h1>
+                    <div class="notifications">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg>
+                        <div class="notification-icon">3</div>
+                    </div>
+                </div>
+    
+                <div class="tracking-container">
+                    <div class="chart-section">
+                        <h2>Blood Sugar Trends</h2>
+                        <div id="bloodSugarChart" style="width: 100%; height: 400px;"></div>
+                    </div>
+                    
+                    <div class="log-section">
+                        <h2>Log Blood Sugar</h2>
+                        <form id="bloodSugarForm" class="log-form">
+                            <div class="form-group">
+                                <label for="bloodSugarLevel">Blood Sugar Level (mg/dL)</label>
+                                <input type="number" id="bloodSugarLevel" required min="50" max="500">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="measurementTime">Time of Measurement</label>
+                                <select id="measurementTime">
+                                    <option value="fasting">Fasting</option>
+                                    <option value="before_meal">Before Meal</option>
+                                    <option value="after_meal">After Meal</option>
+                                    <option value="bedtime">Bedtime</option>
+                                </select>
+                            </div>
+                            
+                            <button type="submit" class="log-btn">Log Reading</button>
+                        </form>
+    
+                        <div id="alertMessage" class="alert"></div>
+    
+                        <div class="recent-logs">
+                            <h3>Recent Logs</h3>
+                            <div id="recentLogsList"></div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!--Diet and Nutrion page-->
+            <main class="main-content dietAndNutrion hide">
+                <div class="header">
+                    <h1>Advanced Nutrition Tracking</h1>
+                    <div class="notifications">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg>
+                        <div class="notification-icon">3</div>
+                    </div>
+                </div>
+    
+                <div class="nutrition-container">
+                    <div class="meal-log">
+                        <h2>Log Your Daily Meals</h2>
+                        <form id="mealLogForm" class="meal-form">
+                            <div class="form-group">
+                                <label for="mealType">Meal Type</label>
+                                <select id="mealType" required>
+                                    <option value="">Select Meal</option>
+                                    <option value="breakfast">Breakfast</option>
+                                    <option value="lunch">Lunch</option>
+                                    <option value="dinner">Dinner</option>
+                                    <option value="snack">Snack</option>
+                                </select>
+                            </div>
+    
+                            <div class="form-group">
+                                <label for="foodItem">Food Item</label>
+                                <input type="text" id="foodItem" placeholder="Enter food item" required>
+                            </div>
+    
+                            <div class="form-group">
+                                <label for="calories">Calories</label>
+                                <input type="number" id="calories" placeholder="Calories" required>
+                            </div>
+    
+                            <div class="form-group">
+                                <label for="carbs">Carbohydrates (g)</label>
+                                <input type="number" id="carbs" placeholder="Carbohydrates" required>
+                            </div>
+    
+                            <button type="submit" class="log-btn">Log Meal</button>
+                        </form>
+    
+                        <table class="meals-table" id="mealsTable">
+                            <thead>
+                                <tr>
+                                    <th>Meal Type</th>
+                                    <th>Food Item</th>
+                                    <th>Calories</th>
+                                    <th>Carbs (g)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="mealList">
+                                <!-- Dynamically populated meal entries -->
+                            </tbody>
+                        </table>
+                    </div>
+    
+                    <div class="meal-plan-generator">
+                        <h2>Personalized Meal Plan Generator</h2>
+                        <form id="mealPlanPreferencesForm" class="preferences-form">
+                            <div class="form-group">
+                                <label>Meal Plan Duration</label>
+                                <div class="preference-tags" id="mealPlanDurationTags">
+                                    <span class="preference-tag" data-value="single-day">Single Day</span>
+                                    <span class="preference-tag" data-value="whole-week">Whole Week</span>
+                                </div>
+                            </div>
+    
+                            <div class="form-group">
+                                <label>Meal Types</label>
+                                <div class="preference-tags" id="mealTypeTags">
+                                    <span class="preference-tag" data-value="breakfast">Breakfast</span>
+                                    <span class="preference-tag" data-value="lunch">Lunch</span>
+                                    <span class="preference-tag" data-value="dinner">Dinner</span>
+                                    <span class="preference-tag" data-value="all-meals">All Meals</span>
+                                </div>
+                            </div>
+    
+                            <div class="form-group">
+                                <label>Dietary Preferences</label>
+                                <div class="preference-tags" id="dietPreferenceTags">
+                                    <span class="preference-tag" data-value="low-carb">Low Carb</span>
+                                    <span class="preference-tag" data-value="high-protein">High Protein</span>
+                                    <span class="preference-tag" data-value="vegetarian">Vegetarian</span>
+                                    <span class="preference-tag" data-value="gluten-free">Gluten-Free</span>
+                                </div>
+                            </div>
+    
+                            <div class="form-group">
+                                <label for="preferredFoods">Preferred Foods (optional)</label>
+                                <input type="text" id="preferredFoods" placeholder="Enter foods you like (comma-separated)">
+                            </div>
+    
+                            <div class="form-group">
+                                <label for="avoidFoods">Foods to Avoid (optional)</label>
+                                <input type="text" id="avoidFoods" placeholder="Enter foods you want to avoid (comma-separated)">
+                            </div>
+    
+                            <button type="submit" class="meal-plan-btn">Generate Personalized Meal Plan</button>
+                        </form>
+    
+                        <table class="meals-table" id="generatedMealPlan">
+                            <thead>
+                                <tr>
+                                    <th>Meal</th>
+                                    <th>Recommended Dish</th>
+                                    <th>Local Alternative</th>
+                                    <th>Carbohydrates (g)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="mealPlanBody">
+                                <!-- Dynamically populated meal plan entries -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+
+            <!--medication-->
+            <div class="med hide">
+            <main class="main-content">
+                <div class="header">
+                    <h1>Medication Management</h1>
+                </div>
+    
+                <div class="medications-container">
+                    <div class="medications-list">
+                        <div class="medication-item">
+                            <div class="medication-details">
+                                <div class="medication-name">Metformin</div>
+                                <div class="medication-info">500mg - 2x daily</div>
+                            </div>
+                            <div class="medication-actions">
+                                <button class="btn btn-taken">Taken</button>
+                                <button class="btn btn-skip">Skip</button>
+                            </div>
+                        </div>
+                        <div class="medication-item">
+                            <div class="medication-details">
+                                <div class="medication-name">Insulin Glargine</div>
+                                <div class="medication-info">10 units - Once daily</div>
+                            </div>
+                            <div class="medication-actions">
+                                <button class="btn btn-taken">Taken</button>
+                                <button class="btn btn-skip">Skip</button>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <div class="sidebar-section">
+                        <button id="addMedicationBtn" class="add-medication-btn">Add Medication</button>
+    
+                        <div class="upcoming-reminders">
+                            <h3>Upcoming Reminders</h3>
+                            <div class="reminder-item">
+                                <div class="reminder-icon">💊</div>
+                                <div>
+                                    <div class="medication-name">Metformin</div>
+                                    <div class="medication-info">Next dose at 6:00 PM</div>
+                                </div>
+                            </div>
+                            <div class="reminder-item">
+                                <div class="reminder-icon">💉</div>
+                                <div>
+                                    <div class="medication-name">Insulin Glargine</div>
+                                    <div class="medication-info">Next dose at 9:00 PM</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+    <div id="addMedicationModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeModal">&times;</span>
+            <h2>Add New Medication</h2>
+            <form id="addMedicationForm">
+                <input type="text" class="modal-input" placeholder="Medication Name" required>
+                <input type="text" class="modal-input" placeholder="Dosage" required>
+                <select class="modal-select" required>
+                    <option value="">Select Frequency</option>
+                    <option value="daily">Once Daily</option>
+                    <option value="twice-daily">Twice Daily</option>
+                    <option value="three-times-daily">Three Times Daily</option>
+                    <option value="as-needed">As Needed</option>
+                </select>
+                <input type="time" class="modal-input" placeholder="Reminder Time" required>
+                <button type="submit" class="submit-btn">Add Medication</button>
+            </form>
+        </div>
+    </div>
+            </div>
+
+
+            <!--Education-->
+            <main class="main-content edu hide">
+                <div class="header">
+                    <h1>Diabetes Education</h1>
+                    <div class="notifications">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg>
+                        <div class="notification-icon">3</div>
+                    </div>
+                </div>
+    
+                <div class="education-grid">
+                    <div class="education-card">
+                        <div class="card-header">
+                            <h3>Diabetes Management Guidelines</h3>
+                            <a href="#" class="view-btn">View All</a>
+                        </div>
+                        <ul class="resource-list">
+                            <li>
+                                <span>ADA 2024 Comprehensive Care Guidelines</span>
+                                <a href="#" target="_blank">Read</a>
+                            </li>
+                            <li>
+                                <span>Self-Management Best Practices</span>
+                                <a href="#" target="_blank">Read</a>
+                            </li>
+                            <li>
+                                <span>Lifestyle Modification Strategies</span>
+                                <a href="#" target="_blank">Read</a>
+                            </li>
+                        </ul>
+                    </div>
+    
+                    <div class="education-card">
+                        <div class="card-header">
+                            <h3>Educational Articles</h3>
+                            <a href="#" class="view-btn">View All</a>
+                        </div>
+                        <ul class="resource-list">
+                            <li>
+                                <span>Understanding Type 2 Diabetes</span>
+                                <a href="#" target="_blank">Read</a>
+                            </li>
+                            <li>
+                                <span>Nutrition for Diabetes Management</span>
+                                <a href="#" target="_blank">Read</a>
+                            </li>
+                            <li>
+                                <span>Exercise and Blood Sugar Control</span>
+                                <a href="#" target="_blank">Read</a>
+                            </li>
+                        </ul>
+                    </div>
+    
+                    <div class="education-card">
+                        <div class="card-header">
+                            <h3>Educational Videos</h3>
+                            <a href="#" class="view-btn">View All</a>
+                        </div>
+                        <ul class="resource-list">
+                            <li>
+                                <span>Insulin Management Explained</span>
+                                <a href="#" target="_blank">Watch</a>
+                            </li>
+                            <li>
+                                <span>Healthy Meal Planning Tips</span>
+                                <a href="#" target="_blank">Watch</a>
+                            </li>
+                            <li>
+                                <span>Managing Diabetes Stress</span>
+                                <a href="#" target="_blank">Watch</a>
+                            </li>
+                        </ul>
+                    </div>
+    
+                    <div class="education-card">
+                        <div class="card-header">
+                            <h3>Interactive Modules</h3>
+                            <a href="#" class="view-btn">View All</a>
+                        </div>
+                        <ul class="resource-list">
+                            <li>
+                                <span>Blood Sugar Tracking Course</span>
+                                <a href="#" target="_blank">Start</a>
+                            </li>
+                            <li>
+                                <span>Medication Management Quiz</span>
+                                <a href="#" target="_blank">Start</a>
+                            </li>
+                            <li>
+                                <span>Diabetes Risk Assessment</span>
+                                <a href="#" target="_blank">Start</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </main>
+
+
+            <!--Support and community-->
+            <div class="commAndSupport hide">
+ <main class="main-content">
+            <div class="header">
+                <h1>Diabetes Support Group</h1>
+                <div class="notifications">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    <div class="notification-icon">3</div>
+                </div>
+            </div>
+
+            <div class="support-group-container">
+                <div class="topics-list">
+                    <div class="topic-item">
+                        <div class="topic-details">
+                            <div class="topic-title">Managing Blood Sugar During Holidays</div>
+                            <div class="topic-meta">
+                                <span>Started by Sarah M.</span>
+                                <span>•</span>
+                                <span>12 Replies</span>
+                                <span>•</span>
+                                <span>2 hours ago</span>
+                            </div>
+                        </div>
+                        <button class="view-topic-btn">View</button>
+                    </div>
+                    <div class="topic-item">
+                        <div class="topic-details">
+                            <div class="topic-title">Exercise Routines for Diabetes Management</div>
+                            <div class="topic-meta">
+                                <span>Started by Mike R.</span>
+                                <span>•</span>
+                                <span>8 Replies</span>
+                                <span>•</span>
+                                <span>1 day ago</span>
+                            </div>
+                        </div>
+                        <button class="view-topic-btn">View</button>
+                    </div>
+                    <div class="topic-item">
+                        <div class="topic-details">
+                            <div class="topic-title">Diet Tips and Meal Planning</div>
+                            <div class="topic-meta">
+                                <span>Started by Emily T.</span>
+                                <span>•</span>
+                                <span>15 Replies</span>
+                                <span>•</span>
+                                <span>3 days ago</span>
+                            </div>
+                        </div>
+                        <button class="view-topic-btn">View</button>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <button id="createTopicBtn" class="create-topic-btn">Create New Topic</button>
+
+                    <div class="active-discussions">
+                        <h3>Active Discussions</h3>
+                        <div class="active-topic">
+                            <div class="active-topic-icon">💬</div>
+                            <div>
+                                <div class="topic-title">Medication Side Effects</div>
+                                <div class="topic-meta">24 new messages</div>
+                            </div>
+                        </div>
+                        <div class="active-topic">
+                            <div class="active-topic-icon">🩺</div>
+                            <div>
+                                <div class="topic-title">Insulin Pump Questions</div>
+                                <div class="topic-meta">18 new messages</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+         <!-- Create Topic Modal -->
+    <div id="createTopicModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create New Topic</h2>
+                <span class="close-modal" id="closeModal">&times;</span>
+            </div>
+            <form id="createTopicForm">
+                <input type="text" class="modal-input" placeholder="Topic Title" required>
+                <textarea class="modal-input" rows="4" placeholder="Describe your topic..." required></textarea>
+                <button type="submit" class="submit-topic-btn">Create Topic</button>
+            </form>
+        </div>
+    </div>
+
+            </div>
+
+        </main>
+    </div>
+
+<script>
+   document.addEventListener('DOMContentLoaded', () => {
+    function setupMobileMenu() {
+        // Create mobile menu toggle
+        const mobileMenuToggle = document.createElement('button');
+        mobileMenuToggle.classList.add('mobile-menu-toggle');
+        mobileMenuToggle.setAttribute('aria-label', 'Toggle Menu');
+
+        // Create menu toggle icon
+        const menuToggleIcon = document.createElement('span');
+        menuToggleIcon.classList.add('mobile-menu-toggle-icon');
+        mobileMenuToggle.appendChild(menuToggleIcon);
+
+        const sidebar = document.querySelector('.sidebar');
+        const mainContent = document.querySelector('.main-content');
+        
+        // Create overlay
+        const overlay = document.createElement('div');
+        overlay.classList.add('overlay');
+
+        // Insert menu toggle and overlay
+        document.body.insertBefore(mobileMenuToggle, document.body.firstChild);
+        document.body.insertBefore(overlay, document.body.firstChild);
+
+        // Toggle menu function
+        function toggleMenu(event) {
+            event.stopPropagation();
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+            mobileMenuToggle.classList.toggle('active');
+            
+            // Prevent body scrolling when menu is open
+            document.body.style.overflow = sidebar.classList.contains('open') ? 'hidden' : '';
+        }
+
+        // Close menu function
+        function closeMenu() {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+            mobileMenuToggle.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        // Add event listeners
+        mobileMenuToggle.addEventListener('click', toggleMenu);
+        overlay.addEventListener('click', closeMenu);
+
+        // Close menu when a sidebar link is clicked
+        const sidebarLinks = sidebar.querySelectorAll('.sidebar-nav a');
+        sidebarLinks.forEach(link => {
+            link.addEventListener('click', closeMenu);
+        });
+
+        // Handle window resize
+        function handleResize() {
+            if (window.innerWidth > 768) {
+                closeMenu();
+            }
+        }
+
+        window.addEventListener('resize', handleResize);
+    }
+
+    // Call mobile menu setup
+    setupMobileMenu();
+});
+    </script>
+    
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.2/echarts.min.js"></script>
+    <script src="../src/pages/Home.js"></script>
+    <script src="../src/pages/BloodSugar.js"></script>
+    <script src="../src/pages/Diet.js"></script>
+    <script src="../src/pages/Medication.js"></script>
+    <script src="../src/pages/Support.js"></script>
+
+<!-- 
+    <script>
+window.onload=()=>{
+        // Notification Center Toggle
+        function toggleNotificationCenter() {
+            const notificationCenter = document.getElementById('notificationCenter');
+            notificationCenter.classList.toggle('active');
+        }
+
+        // Alert System
+        function showAlert(message, type = 'success') {
+            const alertContainer = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.classList.add('alert', `alert-${type}`, 'show');
+            alert.textContent = message;
+            
+            alertContainer.appendChild(alert);
+
+            // Remove alert after 3 seconds
+            setTimeout(() => {
+                alert.classList.remove('show');
+                setTimeout(() => {
+                    alertContainer.removeChild(alert);
+                }, 300);
+            }, 3000);
+        }
+    }
+
+
+
+
+
+    </script> -->
+
+</body>
+</html>
