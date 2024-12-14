@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
-	"strings"
 	"testing"
 )
 
@@ -61,8 +60,4 @@ func TestGlucoseTrackerEndPointHandler(t *testing.T) {
 			}
 		}
 	}
-}
-
-func contains(content, substr string) bool {
-	return strings.Contains(content, substr)
 }
