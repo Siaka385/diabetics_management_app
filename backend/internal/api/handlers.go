@@ -304,15 +304,13 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 				<li><strong>Emotional Eating:</strong> Stress can trigger emotional eating, often leading to poor food choices that may spike blood sugar levels.</li>
 				<li><strong>Decreased Motivation:</strong> When stressed, individuals may feel less motivated to stick to their diabetes management plan, including exercise, medication adherence, and blood sugar monitoring.</li>
 			</ul>
-			<iframe 
-        	width="560" 
-        	height="315" 
-        	src="https://www.youtube-nocookie.com/embed/watch?v=jl-eMcz-7Bw" 
-        	title="Relationship between Stress and Diabetes" 
-			frameborder="0" 
-			allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-			allowfullscreen>
-    		</iframe>
+			<a href="https://www.youtube.com/watch?v=jl-eMcz-7Bw" target="_blank">
+        <img 
+            src="https://img.youtube.com/vi/v=jl-eMcz-7Bw/hqdefault.jpg" 
+            alt="Relationship between Stress and Diabetes" 
+            width="560" 
+            height="315">
+    </a>
 		
 			<h2><span>Strategies for Managing Stress</span></h2>
 			<p>Managing stress effectively can lead to better diabetes control. Here are some strategies that can help reduce stress and its impact on blood sugar levels:</p>
