@@ -237,29 +237,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 				<li><strong>Get Regular Check-ups:</strong> Routine medical visits help catch early signs of complications, allowing for early intervention.</li>
 			</ul>
 		
-			<p><span><strong>Post 6: "Stress and Diabetes: Understanding the Connection"</strong></span></p>
-		
-			<p><span>Stress is a common experience for many people, but for those with diabetes, it can have a direct impact on blood sugar levels and overall health. Understanding the connection between stress and diabetes is crucial for better diabetes management. In this post, we’ll explore how stress affects diabetes and ways to reduce stress to maintain optimal blood sugar levels.</span></p>
-		
-			<h2><span>The Link Between Stress and Diabetes</span></h2>
-			<p>When you’re stressed, your body produces hormones such as cortisol and adrenaline, which prepare you to respond to a perceived threat (the "fight or flight" response). While this can be helpful in emergency situations, chronic stress leads to sustained high levels of these hormones, which can:</p>
-			<ul>
-				<li><strong>Increase Blood Sugar:</strong> Cortisol raises blood sugar by triggering the release of glucose from the liver, which can lead to higher-than-normal blood sugar levels.</li>
-				<li><strong>Promote Insulin Resistance:</strong> Stress hormones can interfere with insulin’s ability to regulate blood sugar, making it more difficult for the body to manage glucose.</li>
-				<li><strong>Lead to Emotional Eating:</strong> Stress can trigger unhealthy eating habits, such as overeating or consuming comfort foods, which may cause blood sugar spikes.</li>
-			</ul>
-		
-			<h2><span>Managing Stress to Improve Diabetes Control</span></h2>
-			<p>Learning how to manage stress is essential for maintaining healthy blood sugar levels. Here are some strategies to help reduce stress:</p>
-			<ul>
-				<li><strong>Practice Deep Breathing or Meditation:</strong> These relaxation techniques help calm the body and lower stress levels.</li>
-				<li><strong>Exercise Regularly:</strong> Physical activity is a proven stress reliever, and it also helps regulate blood sugar.</li>
-				<li><strong>Get Enough Sleep:</strong> Adequate rest is essential for managing stress and keeping blood sugar levels stable.</li>
-				<li><strong>Stay Connected:</strong> Socializing with friends and family or joining support groups can help reduce feelings of isolation and stress.</li>
-				<li><strong>Seek Professional Help:</strong> A counselor or therapist can help you develop healthy coping strategies to manage stress effectively.</li>
-			</ul>
-		
-			<p><strong>Conclusion:</strong> Managing diabetes requires both attention to physical health and mental well-being. Recognizing the signs of complications and understanding how stress impacts diabetes are important steps toward effective diabetes management. By preventing complications through lifestyle changes and managing stress, you can improve your quality of life and overall health.</p>`),
+			`),
 		},
 		"4": {
 			Title:  "The Role of Exercise in Managing Diabetes",
@@ -344,6 +322,34 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 		
 			<h2><span>Conclusion</span></h2>
 			<p>Stress is an inevitable part of life, but understanding its impact on diabetes can empower you to take control of your health. By managing stress through regular exercise, mindfulness, adequate sleep, and a strong support system, you can reduce its negative effects on blood sugar levels and improve your diabetes management. Remember, addressing stress is just as important as managing diet and medication in maintaining healthy blood sugar levels and preventing complications.</p>`),
+		},
+		"6": {
+			Title:  "Stress and Diabetes: Understanding the Connection",
+			Author: "Phil Jones",
+			Date:   "February 20, 2024",
+			Content: template.HTML(`<p><span><strong>Post 6: "Stress and Diabetes: Understanding the Connection"</strong></span></p>
+		
+			<p><span>Stress is a common experience for many people, but for those with diabetes, it can have a direct impact on blood sugar levels and overall health. Understanding the connection between stress and diabetes is crucial for better diabetes management. In this post, we’ll explore how stress affects diabetes and ways to reduce stress to maintain optimal blood sugar levels.</span></p>
+		
+			<h2><span>The Link Between Stress and Diabetes</span></h2>
+			<p>When you’re stressed, your body produces hormones such as cortisol and adrenaline, which prepare you to respond to a perceived threat (the "fight or flight" response). While this can be helpful in emergency situations, chronic stress leads to sustained high levels of these hormones, which can:</p>
+			<ul>
+				<li><strong>Increase Blood Sugar:</strong> Cortisol raises blood sugar by triggering the release of glucose from the liver, which can lead to higher-than-normal blood sugar levels.</li>
+				<li><strong>Promote Insulin Resistance:</strong> Stress hormones can interfere with insulin’s ability to regulate blood sugar, making it more difficult for the body to manage glucose.</li>
+				<li><strong>Lead to Emotional Eating:</strong> Stress can trigger unhealthy eating habits, such as overeating or consuming comfort foods, which may cause blood sugar spikes.</li>
+			</ul>
+		
+			<h2><span>Managing Stress to Improve Diabetes Control</span></h2>
+			<p>Learning how to manage stress is essential for maintaining healthy blood sugar levels. Here are some strategies to help reduce stress:</p>
+			<ul>
+				<li><strong>Practice Deep Breathing or Meditation:</strong> These relaxation techniques help calm the body and lower stress levels.</li>
+				<li><strong>Exercise Regularly:</strong> Physical activity is a proven stress reliever, and it also helps regulate blood sugar.</li>
+				<li><strong>Get Enough Sleep:</strong> Adequate rest is essential for managing stress and keeping blood sugar levels stable.</li>
+				<li><strong>Stay Connected:</strong> Socializing with friends and family or joining support groups can help reduce feelings of isolation and stress.</li>
+				<li><strong>Seek Professional Help:</strong> A counselor or therapist can help you develop healthy coping strategies to manage stress effectively.</li>
+			</ul>
+		
+			<p><strong>Conclusion:</strong> Managing diabetes requires both attention to physical health and mental well-being. Recognizing the signs of complications and understanding how stress impacts diabetes are important steps toward effective diabetes management. By preventing complications through lifestyle changes and managing stress, you can improve your quality of life and overall health.</p>`)
 		},
 	}
 
