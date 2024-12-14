@@ -2,8 +2,8 @@ package api
 
 import (
 	"fmt"
-	"net/http"
 	"html/template"
+	"net/http"
 
 	"github.com/gorilla/sessions"
 	"gorm.io/gorm"
@@ -33,8 +33,7 @@ func Dashboard(db *gorm.DB, tmpl *template.Template, sessionStore *sessions.Cook
 		}
 
 		// Serve dashboard page if authenticated
-		fmt.Fprintf(w, "Welcome to your dashboard, %s!", username)
-		err = tmpl.ExecuteTemplate(w, "dashboard.html", nil)
+		err = tmpl.ExecuteTemplate(w, "UserDashboard.html", username)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
