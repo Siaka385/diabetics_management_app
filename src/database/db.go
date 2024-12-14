@@ -4,8 +4,8 @@ import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 
-	auth "diawise/internal/auth"
-	medication "diawise/internal/services"
+	auth "diawise/src/auth"
+	medication "diawise/src/services"
 )
 
 func InitializeDatabase(dbPath string) *gorm.DB {
