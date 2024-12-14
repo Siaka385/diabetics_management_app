@@ -3,42 +3,7 @@ package api
 import (
 	"encoding/json"
 	"fmt"
-	"net/http"
-
-	"gorm.io/gorm"
 )
-
-func LogMealHandler(db *gorm.DB) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		var foodLog FoodLog
-		err := json.NewDecoder(r.Body).Decode(&foodLog)
-		if err != nil {
-			http.Error(w, "Invalid input", http.StatusBadRequest)
-			return
-		}
-		nutrientInfo, err := CalculateMealNutrition(foodLog)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-		fmt.Println(nutrientInfo)
-
-		err = SaveMealLog(db, foodLog, nutrientInfo)
-		if err != nil {
-			http.Error(w, "Failed to save meal log", http.StatusInternalServerError)
-			return
-		}
-
-		mealInsights := GenerateMealInsights(nutrientInfo)
-
-		response := NutritionResponse{
-			Message:      "Meal logged successfully!",
-			MealInsights: mealInsights,
-		}
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(response)
-	}
-}
 
 func stringifyVitaminsAndMinerals(minrals, vitamins map[string]float64, info NutrientInfo) error {
 	vitaminsJSON, err := json.Marshal(vitamins)
@@ -93,20 +58,6 @@ func CalculateMealNutrition(foodLog FoodLog) (NutrientInfo, error) {
 	stringifyVitaminsAndMinerals(totalMinerals, totalVitamins, info)
 
 	return info, nil
-}
-
-func SaveMealLog(db *gorm.DB, foodLog FoodLog, nutrientInfo NutrientInfo) error {
-	tx := db.Begin()
-	if err := tx.Create(&foodLog).Error; err != nil {
-		tx.Rollback()
-		return err
-	}
-	if err := tx.Create(&nutrientInfo).Error; err != nil {
-		tx.Rollback()
-		return err
-	}
-	tx.Commit()
-	return nil
 }
 
 func GenerateMealInsights(nutrientInfo NutrientInfo) string {

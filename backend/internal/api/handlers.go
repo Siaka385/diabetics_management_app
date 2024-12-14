@@ -2,10 +2,12 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"html/template"
 	"log"
-	"fmt"
 	"net/http"
+
+	"diawise/internal/services"
 
 	"github.com/gorilla/mux"
 
@@ -14,6 +16,35 @@ import (
 
 func GetMealSuggestions(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Getting meal suggestions...")
+}
+
+func LogMealHandler(db *gorm.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var mealEntry services.MealLogEntry
+		fmt.Println("Here")
+		// Decode the request body into the new struct
+		err := json.NewDecoder(r.Body).Decode(&mealEntry)
+		if err != nil {
+			http.Error(w, "Invalid input", http.StatusBadRequest)
+			return
+		}
+		err = services.SaveMealLog(db, mealEntry)
+		if err != nil {
+			http.Error(w, "Failed to save meal log", http.StatusInternalServerError)
+			return
+		}
+		fmt.Println("here", mealEntry)
+
+		// Prepare response
+		response := NutritionResponse{
+			Message:      "Meal logged successfully!",
+			MealInsights: "Looks good",
+		}
+
+		// Send JSON response
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(response)
+	}
 }
 
 func EditPlan(w http.ResponseWriter, r *http.Request) {
