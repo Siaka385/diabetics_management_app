@@ -11,7 +11,6 @@ import (
 	database "diawise/internal/database"
 	support "diawise/internal/services/support"
 	utils "diawise/pkg"
-	"diawise/internal/api"
 
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
@@ -66,14 +65,4 @@ func main() {
 	handlerWithCORS := corsHandler.Handler(router) // apply the CORS middleware to the router
 
 	http.ListenAndServe(portStr, handlerWithCORS)
-	
-
-}
-
-func Index(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello")
-}
-
-func Index(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello")
 }
