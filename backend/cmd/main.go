@@ -56,6 +56,11 @@ func main() {
 	router := mux.NewRouter()
 
 	router.HandleFunc("/", handlers.Index(db, tmpl)).Methods("GET")
+	router.HandleFunc("/education", handlers.Education(db, tmpl)).Methods("GET")
+	router.HandleFunc("/track", handlers.BloodSugar(db, tmpl)).Methods("GET")
+	router.HandleFunc("/nutrition", handlers.DietAndNutrient(db, tmpl)).Methods("GET")
+	router.HandleFunc("/addmedication", handlers.DietAndNutrient(db, tmpl)).Methods("GET")
+
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("../../frontend/src"))))
 	router.HandleFunc("/signup", handlers.Signup(db, tmpl, sessionStore)).Methods("GET")
 	router.HandleFunc("/auth/signup", handlers.SignupUser(db, sessionStore)).Methods("POST")
