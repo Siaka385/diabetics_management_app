@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diawise - Advanced Nutrition & Meal Planning</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #2563eb;
+            --accent: #3b82f6;
+            --background: #f0f9ff;
+            --text: #0f172a;
+            --warning: #e11d48;
+            --white: #ffffff;
+            --green: #10b981;
+            --yellow: #f59e0b;
+            --red: #ef4444;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: #f4f7fa;
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background: white;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+            padding: 2rem 1rem;
+            position: relative;
+        }
+
+        .profile {
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .profile-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .sidebar-nav {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-nav a {
+            text-decoration: none;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-nav a:hover, .sidebar-nav a.active {
+            background-color: var(--background);
+            color: var(--primary);
+            transform: translateX(5px);
+        }
+        
+
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            padding: 2rem;
+            background: #f4f7fa;
+            gap: 2rem;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .notifications {
+            position: relative;
+        }
+
+        .notification-icon {
+            background: var(--warning);
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            font-size: 0.7rem;
+        }
+
+        .nutrition-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .meal-log, .meal-plan-generator {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .meal-form, .preferences-form {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        input, select {
+            padding: 0.75rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .log-btn, .meal-plan-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            text-align: center;
+        }
+
+        .log-btn:hover, .meal-plan-btn:hover {
+            background: var(--secondary);
+        }
+
+        .meals-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .meals-table th, .meals-table td {
+            border: 1px solid #e2e8f0;
+            padding: 0.75rem;
+            text-align: left;
+        }
+
+        .meals-table th {
+            background-color: var(--background);
+            font-weight: 600;
+        }
+
+        .preference-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .preference-tag {
+            background: var(--background);
+            color: var(--primary);
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+        }
+
+        .preference-tag.selected {
+            background: var(--primary);
+            color: white;
+        }
+
+        .generated-meal-plan {
+            margin-top: 1rem;
+            background: var(--background);
+            border-radius: 0.5rem;
+            padding: 1rem;
+        }
+        /* Existing styles remain the same, adding mobile responsiveness */
+    @media screen and (max-width: 768px) {
+        .dashboard {
+            grid-template-columns: 1fr;
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -250px;
+            width: 250px;
+            height: 100vh;
+            z-index: 1000;
+            transition: left 0.3s ease;
+        }
+
+        .sidebar.open {
+            left: 0;
+        }
+
+        .main-content {
+            padding: 1rem;
+            margin-left: 0;
+        }
+
+        .nutrition-container {
+            grid-template-columns: 1fr;
+            gap: 1rem;
+        }
+
+        .header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .profile-image {
+            width: 100px;
+            height: 100px;
+            font-size: 2.5rem;
+        }
+
+        .meals-table {
+            font-size: 0.9rem;
+        }
+
+        .meals-table th, .meals-table td {
+            padding: 0.5rem;
+        }
+
+        .preference-tags {
+            flex-direction: column;
+        }
+
+        .preference-tag {
+            width: 100%;
+            text-align: center;
+        }
+
+        /* Mobile Menu Toggle */
+        .mobile-menu-toggle {
+            display: block;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 1100;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+
+        .overlay.active {
+            display: block;
+        }
+    }
+
+    @media screen and (max-width: 480px) {
+        .form-group {
+            flex-direction: column;
+        }
+
+        input, select {
+            width: 100%;
+        }
+
+        .log-btn, .meal-plan-btn {
+            width: 100%;
+        }
+    }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="profile">
+                <div class="profile-image">JD</div>
+                <h2>John Doe</h2>
+                <p>Type 2 Diabetes</p>
+            </div>
+            <nav>
+                <ul class="sidebar-nav">
+                    <li><a href="#">Dashboard</a></li>
+                    <li><a href="#">Blood Sugar</a></li>
+                    <li><a href="#" class="active">Diet & Nutrition</a></li>
+                    <li><a href="#">Medications</a></li>
+                    <li><a href="#">Education</a></li>
+                    <li><a href="#">Support Group</a></li>
+                </ul>
+            </nav>
+        </aside>
+        
+        <main class="main-content">
+            <div class="header">
+                <h1>Advanced Nutrition Tracking</h1>
+                <div class="notifications">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    <div class="notification-icon">3</div>
+                </div>
+            </div>
+
+            <div class="nutrition-container">
+                <div class="meal-log">
+                    <h2>Log Your Daily Meals</h2>
+                    <form id="mealLogForm" class="meal-form">
+                        <div class="form-group">
+                            <label for="mealType">Meal Type</label>
+                            <select id="mealType" required>
+                                <option value="">Select Meal</option>
+                                <option value="breakfast">Breakfast</option>
+                                <option value="lunch">Lunch</option>
+                                <option value="dinner">Dinner</option>
+                                <option value="snack">Snack</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="foodItem">Food Item</label>
+                            <input type="text" id="foodItem" placeholder="Enter food item" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="calories">Calories</label>
+                            <input type="number" id="calories" placeholder="Calories" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="carbs">Carbohydrates (g)</label>
+                            <input type="number" id="carbs" placeholder="Carbohydrates" required>
+                        </div>
+
+                        <button type="submit" class="log-btn">Log Meal</button>
+                    </form>
+
+                    <table class="meals-table" id="mealsTable">
+                        <thead>
+                            <tr>
+                                <th>Meal Type</th>
+                                <th>Food Item</th>
+                                <th>Calories</th>
+                                <th>Carbs (g)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mealList">
+                            <!-- Dynamically populated meal entries -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="meal-plan-generator">
+                    <h2>Personalized Meal Plan Generator</h2>
+                    <form id="mealPlanPreferencesForm" class="preferences-form">
+                        <div class="form-group">
+                            <label>Meal Plan Duration</label>
+                            <div class="preference-tags" id="mealPlanDurationTags">
+                                <span class="preference-tag" data-value="single-day">Single Day</span>
+                                <span class="preference-tag" data-value="whole-week">Whole Week</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Meal Types</label>
+                            <div class="preference-tags" id="mealTypeTags">
+                                <span class="preference-tag" data-value="breakfast">Breakfast</span>
+                                <span class="preference-tag" data-value="lunch">Lunch</span>
+                                <span class="preference-tag" data-value="dinner">Dinner</span>
+                                <span class="preference-tag" data-value="all-meals">All Meals</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Dietary Preferences</label>
+                            <div class="preference-tags" id="dietPreferenceTags">
+                                <span class="preference-tag" data-value="low-carb">Low Carb</span>
+                                <span class="preference-tag" data-value="high-protein">High Protein</span>
+                                <span class="preference-tag" data-value="vegetarian">Vegetarian</span>
+                                <span class="preference-tag" data-value="gluten-free">Gluten-Free</span>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="preferredFoods">Preferred Foods (optional)</label>
+                            <input type="text" id="preferredFoods" placeholder="Enter foods you like (comma-separated)">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="avoidFoods">Foods to Avoid (optional)</label>
+                            <input type="text" id="avoidFoods" placeholder="Enter foods you want to avoid (comma-separated)">
+                        </div>
+
+                        <button type="submit" class="meal-plan-btn">Generate Personalized Meal Plan</button>
+                    </form>
+
+                    <table class="meals-table" id="generatedMealPlan">
+                        <thead>
+                            <tr>
+                                <th>Meal</th>
+                                <th>Recommended Dish</th>
+                                <th>Local Alternative</th>
+                                <th>Carbohydrates (g)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mealPlanBody">
+                            <!-- Dynamically populated meal plan entries -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Preference Tag Selection Logic
+            function setupPreferenceTags() {
+                const tagSections = ['mealPlanDurationTags', 'mealTypeTags', 'dietPreferenceTags'];
+                
+                tagSections.forEach(sectionId => {
+                    const section = document.getElementById(sectionId);
+                    section.addEventListener('click', (e) => {
+                        if (e.target.classList.contains('preference-tag')) {
+                            // Remove selection from other tags in the same section
+                            section.querySelectorAll('.preference-tag').forEach(tag => {
+                                tag.classList.remove('selected');
+                            });
+                            
+                            // Select the clicked tag
+                            e.target.classList.add('selected');
+                        }
+                    });
+                });
+            }
+        
+            // Meal Logging Logic
+            function logMeal(e) {
+                e.preventDefault();
+                
+                const mealType = document.getElementById('mealType').value;
+                const foodItem = document.getElementById('foodItem').value;
+                const calories = document.getElementById('calories').value;
+                const carbs = document.getElementById('carbs').value;
+                
+                const mealList = document.getElementById('mealList');
+                const newRow = mealList.insertRow();
+                
+                newRow.innerHTML = `
+                    <td>${mealType}</td>
+                    <td>${foodItem}</td>
+                    <td>${calories}</td>
+                    <td>${carbs}</td>
+                `;
+                
+                // Optional: Save to local storage
+                saveMealToLocalStorage(mealType, foodItem, calories, carbs);
+                
+                // Reset form
+                e.target.reset();
+            }
+        
+            // Save Meal to Local Storage
+            function saveMealToLocalStorage(mealType, foodItem, calories, carbs) {
+                let meals = JSON.parse(localStorage.getItem('meals')) || [];
+                meals.push({ mealType, foodItem, calories, carbs });
+                localStorage.setItem('meals', JSON.stringify(meals));
+            }
+        
+            // Meal Plan Generation Logic
+            function generateMealPlan(e) {
+                e.preventDefault();
+                
+                const selectedDuration = document.querySelector('#mealPlanDurationTags .selected')?.dataset.value;
+                const selectedMealType = document.querySelector('#mealTypeTags .selected')?.dataset.value;
+                const selectedDietPref = document.querySelector('#dietPreferenceTags .selected')?.dataset.value;
+                const preferredFoods = document.getElementById('preferredFoods').value.split(',').map(f => f.trim()).filter(f => f);
+                const avoidFoods = document.getElementById('avoidFoods').value.split(',').map(f => f.trim()).filter(f => f);
+        
+                const mealPlanBody = document.getElementById('mealPlanBody');
+                mealPlanBody.innerHTML = ''; // Clear previous results
+                
+                // Meal Plan Generation Logic with Diabetes-Friendly Considerations
+                const mealPlans = {
+                    'low-carb': [
+                        { meal: 'Breakfast', dish: 'Spinach and Feta Egg White Omelet', localAlternative: 'Tofu Scramble', carbs: 8 },
+                        { meal: 'Lunch', dish: 'Grilled Chicken Salad', localAlternative: 'Fish Tikka Salad', carbs: 10 },
+                        { meal: 'Dinner', dish: 'Baked Salmon with Roasted Vegetables', localAlternative: 'Tandoori Fish with Cauliflower Rice', carbs: 12 }
+                    ],
+                    'high-protein': [
+                        { meal: 'Breakfast', dish: 'Greek Yogurt Parfait', localAlternative: 'Paneer Bhurji', carbs: 15 },
+                        { meal: 'Lunch', dish: 'Turkey and Quinoa Bowl', localAlternative: 'Chicken Kebab with Mint Chutney', carbs: 20 },
+                        { meal: 'Dinner', dish: 'Lean Beef Stir Fry', localAlternative: 'Mutton Seekh Kebab with Raita', carbs: 18 }
+                    ],
+                    'vegetarian': [
+                        { meal: 'Breakfast', dish: 'Tofu Scramble', localAlternative: 'Masala Dosa', carbs: 25 },
+                        { meal: 'Lunch', dish: 'Lentil and Vegetable Curry', localAlternative: 'Dal Makhani with Cauliflower Rice', carbs: 30 },
+                        { meal: 'Dinner', dish: 'Stuffed Bell Peppers', localAlternative: 'Vegetable Biryani with Raita', carbs: 35 }
+                    ],
+                    'gluten-free': [
+                        { meal: 'Breakfast', dish: 'Chia Seed Pudding', localAlternative: 'Sabudana Khichdi', carbs: 20 },
+                        { meal: 'Lunch', dish: 'Grilled Shrimp with Zucchini Noodles', localAlternative: 'Prawn Curry with Rice', carbs: 25 },
+                        { meal: 'Dinner', dish: 'Roasted Vegetable Quinoa Bowl', localAlternative: 'Mixed Vegetable Curry', carbs: 22 }
+                    ]
+                };
+        
+                // Determine meal plan based on selected preferences
+                const selectedPlan = mealPlans[selectedDietPref] || mealPlans['low-carb'];
+        
+                // Filter meals based on selection
+                let mealsToDisplay = selectedPlan;
+                if (selectedMealType && selectedMealType !== 'all-meals') {
+                    mealsToDisplay = selectedPlan.filter(m => m.meal.toLowerCase() === selectedMealType);
+                }
+        
+                // Populate meal plan
+                mealsToDisplay.forEach(item => {
+                    const newRow = mealPlanBody.insertRow();
+                    newRow.innerHTML = `
+                        <td>${item.meal}</td>
+                        <td>${item.dish}</td>
+                        <td>${item.localAlternative}</td>
+                        <td>${item.carbs}</td>
+                    `;
+                });
+            }
+        
+            // Initialize Event Listeners
+            function initializeEventListeners() {
+                setupPreferenceTags();
+                
+                const mealLogForm = document.getElementById('mealLogForm');
+                if (mealLogForm) {
+                    mealLogForm.addEventListener('submit', logMeal);
+                }
+                
+                const mealPlanForm = document.getElementById('mealPlanPreferencesForm');
+                if (mealPlanForm) {
+                    mealPlanForm.addEventListener('submit', generateMealPlan);
+                }
+            }
+        
+            // Load Saved Meals on Page Load
+            function loadSavedMeals() {
+                const meals = JSON.parse(localStorage.getItem('meals')) || [];
+                const mealList = document.getElementById('mealList');
+                
+                meals.forEach(meal => {
+                    const newRow = mealList.insertRow();
+                    newRow.innerHTML = `
+                        <td>${meal.mealType}</td>
+                        <td>${meal.foodItem}</td>
+                        <td>${meal.calories}</td>
+                        <td>${meal.carbs}</td>
+                    `;
+                });
+            }
+        
+            // Initialize the application
+            initializeEventListeners();
+            loadSavedMeals();
+        });
+        </script>
+</body>
+</html>

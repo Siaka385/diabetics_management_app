@@ -1,28 +1,19 @@
 package database
 
 import (
-	"database/sql"
-	"log"
+    "gorm.io/driver/sqlite"
+    "gorm.io/gorm"
 
-	_ "github.com/mattn/go-sqlite3"
+	auth "diawise/internal/auth"
 )
 
-var DB *sql.DB
+func InitializeDatabase(dbPath string) *gorm.DB {
+    db, err := gorm.Open(sqlite.Open(dbPath), &gorm.Config{})
+    if err != nil {
+        panic("failed to connect to the database")
+    }
 
-// initialize the database connection
-func initDB(dataSourceName string) error {
-	var err error
-	DB, err = sql.Open("sqlite3", dataSourceName)
-	if err != nil {
-		log.Fatal(err)
-	}
+	db.AutoMigrate(&auth.User{})
 
-	err = DB.Ping()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return nil
+    return db
 }
-
-// Close the database connection

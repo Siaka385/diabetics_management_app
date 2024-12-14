@@ -1,0 +1,2 @@
+# ignore committing the database during development
+backend/cmd/data/diawise.db
