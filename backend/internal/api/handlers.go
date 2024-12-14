@@ -55,143 +55,100 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 	postID := vars["id"]
 	posts := map[string]Post{
 		"1": {
-			ID:    "1",
-			Title: "Understanding Diabetes: A Comprehensive Guide",
-			Excerpt: template.HTML(`<h1><span style="font-size:20pt;font-family:Arial,sans-serif;">&quot;Understanding Diabetes: A Comprehensive Guide&quot;</span></h1>
-			<h2><strong><span style="font-size:16pt;font-family:Arial,sans-serif;">Introduction:</span></strong></h2>
-			<p><span style="font-size:11pt;font-family:Arial,sans-serif;">Diabetes is a condition that affects millions of people worldwide, yet many are still unfamiliar with it. Whether you&apos;re newly diagnosed or looking to learn more, this guide will introduce you to the basics of diabetes, its types, symptoms, causes, and risk factors. By understanding these key elements, you&apos;ll be better equipped to manage the condition, either for yourself or a loved one.</span></p>
-			<p><br></p>
-			<h2><strong><span style="font-size:16pt;font-family:Arial,sans-serif;">What is Diabetes?</span></strong></h2>
-			<p><span style="font-size:11pt;font-family:Arial,sans-serif;">Diabetes occurs when your body either cannot produce enough insulin or cannot use it effectively. Insulin is a hormone that helps your cells absorb glucose (a type of sugar) from your bloodstream for energy. Without effective insulin action, glucose builds up in your blood, leading to symptoms and potential complications.</span></p>
-			<p><br></p>
-			<h2><strong><span style="font-size:16pt;font-family:Arial,sans-serif;">The Three Main Types of Diabetes:</span></strong></h2>
-			<ol>
-				<li style="list-style-type:decimal;font-size:11pt;font-family:Arial,sans-serif;">
-					<p><strong><span style="font-size:11pt;font-family:Arial,sans-serif;">Type 1 Diabetes:</span></strong></p>
-					<ul>
-						<li style="list-style-type:circle;font-size:11pt;font-family:Arial,sans-serif;">
-							<p><strong><span style="font-size:11pt;font-family:Arial,sans-serif;">What is it?&nbsp;</span></strong><span style="font-size:11pt;font-family:Arial,sans-serif;">An autoimmune condition where the body attacks its insulin-producing cells in the pancreas. It&rsquo;s often diagnosed in children or young adults.</span></p>
-						</li>
-						<li style="list-style-type:circle;font-size:11pt;font-family:Arial,sans-serif;">
-							<p><strong><span style="font-size:11pt;font-family:Arial,sans-serif;">How is it managed?&nbsp;</span></strong><span style="font-size:11pt;font-family:Arial,sans-serif;">People with Type 1 diabetes must take insulin injections daily to regulate blood sugar.</span></p>
-						</li>
-					</ul>
-				</li>
-				<li style="list-style-type:decimal;font-size:11pt;font-family:Arial,sans-serif;">
-					<p><strong><span style="font-size:11pt;font-family:Arial,sans-serif;">Type 2 Diabetes:</span></strong></p>
-					<ul>
-						<li style="list-style-type:circle;font-size:11pt;font-family:Arial,sans-serif;">
-							<p><strong><span style="font-size:11pt;font-family:Arial,sans-serif;">What is it?&nbsp;</span></strong><span style="font-size:11pt;font-family:Arial,sans-serif;">The most common form of diabetes, where the body becomes resistant to insulin or doesn&rsquo;t produce enough of it. It typically develops in adults, but is increasingly seen in younger individuals due to lifestyle factors.</span></p>
-						</li>
-						<li style="list-style-type:circle;font-size:11pt;font-family:Arial,sans-serif;">
-							<p><strong><span style="font-size:11pt;font-family:Arial,sans-serif;">How is it managed?&nbsp;</span></strong><span style="font-size:11pt;font-family:Arial,sans-serif;">Often managed with lifestyle changes like diet and exercise, though medication or insulin may be required.</span></p>
-						</li>
-					</ul>
-				</li>
-				<li style="list-style-type:decimal;font-size:11pt;font-family:Arial,sans-serif;">
-					<p><strong><span style="font-size:11pt;font-family:Arial,sans-serif;">Gestational Diabetes:</span></strong></p>
-					<ul>
-						<li style="list-style-type:circle;font-size:11pt;font-family:Arial,sans-serif;">
-							<p><strong><span style="font-size:11pt;font-family:Arial,sans-serif;">What is it?&nbsp;</span></strong><span style="font-size:11pt;font-family:Arial,sans-serif;">Occurs during pregnancy when the body cannot produce enough insulin. This type usually disappears after childbirth but increases the risk of developing Type 2 diabetes later in life.</span></p>
-						</li>
-						<li style="list-style-type:circle;font-size:11pt;font-family:Arial,sans-serif;">
-							<p><strong><span style="font-size:11pt;font-family:Arial,sans-serif;">How is it managed?&nbsp;</span></strong><span style="font-size:11pt;font-family:Arial,sans-serif;">Managed through diet, exercise, and sometimes insulin, with close monitoring during pregnancy.</span></p>
-						</li>
-					</ul>
-				</li>
-			</ol>
-			<p><br></p>
-			<h2><strong><span style="font-size:16pt;font-family:Arial,sans-serif;">Symptoms of Diabetes:</span></strong></h2>
-			<p><span style="font-size:11pt;font-family:Arial,sans-serif;">Recognizing the symptoms early can help prevent complications. Common signs include:</span></p>
+			Title:  "Understanding Diabetes: A Comprehensive Guide",
+			Author: "Dr. Samantha Johnson",
+			Date:   "2021-01-01",
+			Content: template.HTML(`<header>
+			<h1>Understanding Diabetes: A Comprehensive Guide</h1>
+		</header>
+	
+		<section>
+			<h2>Introduction</h2>
+			<p>Diabetes is a condition that affects millions of people worldwide, yet many are still unfamiliar with it. Whether you're newly diagnosed or looking to learn more, this guide will introduce you to the basics of diabetes, its types, symptoms, causes, and risk factors. By understanding these key elements, you'll be better equipped to manage the condition, either for yourself or a loved one.</p>
+		</section>
+	
+		<section>
+			<h2>What is Diabetes?</h2>
+			<p>Diabetes occurs when your body either cannot produce enough insulin or cannot use it effectively. Insulin is a hormone that helps your cells absorb glucose (a type of sugar) from your bloodstream for energy. Without effective insulin action, glucose builds up in your blood, leading to symptoms and potential complications.</p>
+		</section>
+	
+		<section>
+			<h2>The Three Main Types of Diabetes</h2>
+			<article>
+				<h3>Type 1 Diabetes</h3>
+				<p><strong>What is it?</strong> An autoimmune condition where the body attacks its insulin-producing cells in the pancreas. It’s often diagnosed in children or young adults.</p>
+				<p><strong>How is it managed?</strong> People with Type 1 diabetes must take insulin injections daily to regulate blood sugar.</p>
+			</article>
+	
+			<article>
+				<h3>Type 2 Diabetes</h3>
+				<p><strong>What is it?</strong> The most common form of diabetes, where the body becomes resistant to insulin or doesn’t produce enough of it. It typically develops in adults, but is increasingly seen in younger individuals due to lifestyle factors.</p>
+				<p><strong>How is it managed?</strong> Often managed with lifestyle changes like diet and exercise, though medication or insulin may be required.</p>
+			</article>
+	
+			<article>
+				<h3>Gestational Diabetes</h3>
+				<p><strong>What is it?</strong> Occurs during pregnancy when the body cannot produce enough insulin. This type usually disappears after childbirth but increases the risk of developing Type 2 diabetes later in life.</p>
+				<p><strong>How is it managed?</strong> Managed through diet, exercise, and sometimes insulin, with close monitoring during pregnancy.</p>
+			</article>
+		</section>
+	
+		<section>
+			<h2>Symptoms of Diabetes</h2>
+			<p>Recognizing the symptoms early can help prevent complications. Common signs include:</p>
 			<ul>
-				<li style="list-style-type:disc;font-size:11pt;font-family:Arial,sans-serif;">
-					<p><strong><span style="font-size:11pt;font-family:Arial,sans-serif;">Frequent urination:&nbsp;</span></strong><span style="font-size:11pt;font-family:Arial,sans-serif;">High blood sugar levels lead to increased urination as the kidneys filter excess glucose.</span></p>
-				</li>
-				<li style="list-style-type:disc;font-size:11pt;font-family:Arial,sans-serif;">
-					<p><strong><span style="font-size:11pt;font-family:Arial,sans-serif;">Increased thirst:&nbsp;</span></strong><span style="font-size:11pt;font-family:Arial,sans-serif;">Frequent urination causes dehydration, which triggers thirst.</span></p>
-				</li>
-				<li style="list-style-type:disc;font-size:11pt;font-family:Arial,sans-serif;">
-					<p><strong><span style="font-size:11pt;font-family:Arial,sans-serif;">Fatigue:&nbsp;</span></strong><span style="font-size:11pt;font-family:Arial,sans-serif;">When glucose isn&apos;t used effectively, your cells don&apos;t get the energy they need.</span></p>
-				</li>
-				<li style="list-style-type:disc;font-size:11pt;font-family:Arial,sans-serif;">
-					<p><strong><span style="font-size:11pt;font-family:Arial,sans-serif;">Blurred vision:&nbsp;</span></strong><span style="font-size:11pt;font-family:Arial,sans-serif;">High blood sugar can cause fluid to shift in the eyes, leading to blurry vision.</span></p>
-				</li>
-				<li style="list-style-type:disc;font-size:11pt;font-family:Arial,sans-serif;">
-					<p><strong><span style="font-size:11pt;font-family:Arial,sans-serif;">Unexplained weight loss:&nbsp;</span></strong><span style="font-size:11pt;font-family:Arial,sans-serif;">Despite eating well, the body starts breaking down fat and muscle for energy.</span></p>
-				</li>
+				<li><strong>Frequent urination:</strong> High blood sugar levels lead to increased urination as the kidneys filter excess glucose.</li>
+				<li><strong>Increased thirst:</strong> Frequent urination causes dehydration, which triggers thirst.</li>
+				<li><strong>Fatigue:</strong> When glucose isn't used effectively, your cells don't get the energy they need.</li>
+				<li><strong>Blurred vision:</strong> High blood sugar can cause fluid to shift in the eyes, leading to blurry vision.</li>
+				<li><strong>Unexplained weight loss:</strong> Despite eating well, the body starts breaking down fat and muscle for energy.</li>
 			</ul>
-			<p><span style="font-size:11pt;font-family:Arial,sans-serif;">If you experience these symptoms, consult with a healthcare provider for testing and diagnosis.</span></p>
-			<p><br></p>
-			<h2><strong><span style="font-size:16pt;font-family:Arial,sans-serif;">What Causes Diabetes?</span></strong></h2>
-			<p><span style="font-size:11pt;font-family:Arial,sans-serif;">The causes of diabetes vary depending on the type, but common contributing factors include:</span></p>
+			<p>If you experience these symptoms, consult with a healthcare provider for testing and diagnosis.</p>
+		</section>
+	
+		<section>
+			<h2>What Causes Diabetes?</h2>
+			<p>The causes of diabetes vary depending on the type, but common contributing factors include:</p>
 			<ul>
-				<li style="list-style-type:disc;font-size:11pt;font-family:Arial,sans-serif;">
-					<p><strong><span style="font-size:11pt;font-family:Arial,sans-serif;">Genetics:&nbsp;</span></strong><span style="font-size:11pt;font-family:Arial,sans-serif;">Family history plays a significant role, particularly for Type 1 and Type 2 diabetes.</span></p>
-				</li>
-				<li style="list-style-type:disc;font-size:11pt;font-family:Arial,sans-serif;">
-					<p><strong><span style="font-size:11pt;font-family:Arial,sans-serif;">Lifestyle:&nbsp;</span></strong><span style="font-size:11pt;font-family:Arial,sans-serif;">Poor diet, lack of exercise, and obesity are major contributors to Type 2 diabetes.</span></p>
-				</li>
-				<li style="list-style-type:disc;font-size:11pt;font-family:Arial,sans-serif;">
-					<p><strong><span style="font-size:11pt;font-family:Arial,sans-serif;">Autoimmune response:</span></strong><span style="font-size:11pt;font-family:Arial,sans-serif;">&nbsp;In Type 1 diabetes, the immune system mistakenly attacks the insulin-producing cells in the pancreas.</span></p>
-				</li>
-				<li style="list-style-type:disc;font-size:11pt;font-family:Arial,sans-serif;">
-					<p><strong><span style="font-size:11pt;font-family:Arial,sans-serif;">Hormonal changes:&nbsp;</span></strong><span style="font-size:11pt;font-family:Arial,sans-serif;">Pregnancy-related hormonal shifts can cause gestational diabetes.</span></p>
-				</li>
+				<li><strong>Genetics:</strong> Family history plays a significant role, particularly for Type 1 and Type 2 diabetes.</li>
+				<li><strong>Lifestyle:</strong> Poor diet, lack of exercise, and obesity are major contributors to Type 2 diabetes.</li>
+				<li><strong>Autoimmune response:</strong> In Type 1 diabetes, the immune system mistakenly attacks the insulin-producing cells in the pancreas.</li>
+				<li><strong>Hormonal changes:</strong> Pregnancy-related hormonal shifts can cause gestational diabetes.</li>
 			</ul>
-			<p><br></p>
-			<h2><strong><span style="font-size:16pt;font-family:Arial,sans-serif;">Risk Factors for Diabetes:</span></strong></h2>
-			<p><span style="font-size:11pt;font-family:Arial,sans-serif;">Certain factors increase your chances of developing diabetes, including:</span></p>
+		</section>
+	
+		<section>
+			<h2>Risk Factors for Diabetes</h2>
+			<p>Certain factors increase your chances of developing diabetes, including:</p>
 			<ul>
-				<li style="list-style-type:disc;font-size:11pt;font-family:Arial,sans-serif;">
-					<p><strong><span style="font-size:11pt;font-family:Arial,sans-serif;">Family history:&nbsp;</span></strong><span style="font-size:11pt;font-family:Arial,sans-serif;">Having a close relative with diabetes increases your risk.</span></p>
-				</li>
-				<li style="list-style-type:disc;font-size:11pt;font-family:Arial,sans-serif;">
-					<p><strong><span style="font-size:11pt;font-family:Arial,sans-serif;">Age:&nbsp;</span></strong><span style="font-size:11pt;font-family:Arial,sans-serif;">Risk increases with age, especially after 45, but Type 2 diabetes is becoming more common in younger people.</span></p>
-				</li>
-				<li style="list-style-type:disc;font-size:11pt;font-family:Arial,sans-serif;">
-					<p><strong><span style="font-size:11pt;font-family:Arial,sans-serif;">Obesity:&nbsp;</span></strong><span style="font-size:11pt;font-family:Arial,sans-serif;">Extra fat, especially around the abdomen, raises the risk of insulin resistance.</span></p>
-				</li>
-				<li style="list-style-type:disc;font-size:11pt;font-family:Arial,sans-serif;">
-					<p><strong><span style="font-size:11pt;font-family:Arial,sans-serif;">Physical inactivity:&nbsp;</span></strong><span style="font-size:11pt;font-family:Arial,sans-serif;">A sedentary lifestyle contributes to weight gain and increases the risk of developing Type 2 diabetes.</span></p>
-				</li>
-				<li style="list-style-type:disc;font-size:11pt;font-family:Arial,sans-serif;">
-					<p><strong><span style="font-size:11pt;font-family:Arial,sans-serif;">Unhealthy diet:&nbsp;</span></strong><span style="font-size:11pt;font-family:Arial,sans-serif;">Diets high in sugar, fats, and low in fiber are linked to the development of Type 2 diabetes.</span></p>
-				</li>
+				<li><strong>Family history:</strong> Having a close relative with diabetes increases your risk.</li>
+				<li><strong>Age:</strong> Risk increases with age, especially after 45, but Type 2 diabetes is becoming more common in younger people.</li>
+				<li><strong>Obesity:</strong> Extra fat, especially around the abdomen, raises the risk of insulin resistance.</li>
+				<li><strong>Physical inactivity:</strong> A sedentary lifestyle contributes to weight gain and increases the risk of developing Type 2 diabetes.</li>
+				<li><strong>Unhealthy diet:</strong> Diets high in sugar, fats, and low in fiber are linked to the development of Type 2 diabetes.</li>
 			</ul>
-			<p><span style="font-size:11pt;font-family:Arial,sans-serif;">For women, gestational diabetes can increase the risk of Type 2 diabetes later in life.</span></p>
-			<p><br></p>
-			<h2><strong><span style="font-size:16pt;font-family:Arial,sans-serif;">Preventing and Managing Diabetes:</span></strong></h2>
-			<p><span style="font-size:11pt;font-family:Arial,sans-serif;">While Type 1 diabetes cannot be prevented, Type 2 and gestational diabetes can often be managed or even prevented with lifestyle changes. Here&rsquo;s how:</span></p>
-			<ol>
-				<li style="list-style-type:decimal;font-size:11pt;font-family:Arial,sans-serif;">
-					<p><strong><span style="font-size:11pt;font-family:Arial,sans-serif;">Healthy eating:&nbsp;</span></strong><span style="font-size:11pt;font-family:Arial,sans-serif;">A balanced diet with plenty of vegetables, fruits, whole grains, and lean proteins can help control blood sugar.</span></p>
-				</li>
-				<li style="list-style-type:decimal;font-size:11pt;font-family:Arial,sans-serif;">
-					<p><strong><span style="font-size:11pt;font-family:Arial,sans-serif;">Exercise:&nbsp;</span></strong><span style="font-size:11pt;font-family:Arial,sans-serif;">Physical activity improves insulin sensitivity and helps manage weight.</span></p>
-				</li>
-				<li style="list-style-type:decimal;font-size:11pt;font-family:Arial,sans-serif;">
-					<p><strong><span style="font-size:11pt;font-family:Arial,sans-serif;">Weight management:&nbsp;</span></strong><span style="font-size:11pt;font-family:Arial,sans-serif;">Losing excess weight can prevent or help manage Type 2 diabetes.</span></p>
-				</li>
-				<li style="list-style-type:decimal;font-size:11pt;font-family:Arial,sans-serif;">
-					<p><strong><span style="font-size:11pt;font-family:Arial,sans-serif;">Regular check-ups:&nbsp;</span></strong><span style="font-size:11pt;font-family:Arial,sans-serif;">Monitoring blood sugar levels and having routine doctor visits are essential for early detection and long-term management.</span></p>
-				</li>
-			</ol>
-			<p><br></p>
-			<h2><strong><span style="font-size:16pt;font-family:Arial,sans-serif;">Conclusion:</span></strong></h2>
-			<p><span style="font-size:11pt;font-family:Arial,sans-serif;">Diabetes is a serious condition, but with proper knowledge and management, those living with diabetes can lead healthy lives. Whether you&apos;re managing the condition yourself or supporting a loved one, understanding the basics is the first step toward effective diabetes care.</span></p>
-			<p><span style="font-size:11pt;font-family:Arial,sans-serif;">Stay tuned for future blog posts where we&rsquo;ll dive deeper into managing blood sugar, healthy eating, exercise, and more. With the right care, diabetes is manageable, and a healthy future is within reach.</span></p>
-			<p><br></p>
-			<h2><strong><span style="font-size:16pt;font-family:Arial,sans-serif;">Call to Action:</span></strong></h2>
+			<p>For women, gestational diabetes can increase the risk of Type 2 diabetes later in life.</p>
+		</section>
+	
+		<section>
+			<h2>Preventing and Managing Diabetes</h2>
+			<p>While Type 1 diabetes cannot be prevented, Type 2 and gestational diabetes can often be managed or even prevented with lifestyle changes. Here’s how:</p>
 			<ul>
-				<li style="list-style-type:disc;font-size:11pt;font-family:Arial,sans-serif;">
-					<p><em><span style="font-size:11pt;font-family:Arial,sans-serif;">Have you or someone you know been recently diagnosed with diabetes? What questions do you have about managing the condition? Drop them in the comments below and let&rsquo;s start a conversation!</span></em></p>
-				</li>
-				<li style="list-style-type:disc;font-size:11pt;font-family:Arial,sans-serif;">
-					<p><em><span style="font-size:11pt;font-family:Arial,sans-serif;">Share this guide with your friends and family to help spread awareness about diabetes!</span></em></p>
-				</li>
+				<li><strong>Healthy eating:</strong> A balanced diet with plenty of vegetables, fruits, whole grains, and lean proteins can help control blood sugar.</li>
+				<li><strong>Exercise:</strong> Physical activity improves insulin sensitivity and helps manage weight.</li>
+				<li><strong>Weight management:</strong> Losing excess weight can prevent or help manage Type 2 diabetes.</li>
+				<li><strong>Regular check-ups:</strong> Monitoring blood sugar levels and having routine doctor visits are essential for early detection and long-term management.</li>
 			</ul>
-			<p><br></p>
-			<p><br></p>`),
+		</section>
+	
+		<footer>
+			<h2>Conclusion</h2>
+			<p>Diabetes is a serious condition, but with proper knowledge and management, those living with diabetes can lead healthy lives. Whether you're managing the condition yourself or supporting a loved one, understanding the basics is the first step toward effective diabetes care.</p>
+			<p>Stay tuned for future blog posts where we’ll dive deeper into managing blood sugar, healthy eating, exercise, and more. With the right care, diabetes is manageable, and a healthy future is within reach.</p>
+			<p><strong>Call to Action:</strong></p>
+			<p>Have you or someone you know been recently diagnosed with diabetes? What questions do you have about managing the condition? Drop them in the comments below and let’s start a conversation!</p>
+			<p>Share this guide with your friends and family to help spread awareness about diabetes!</p>
+		</footer>`),
 		},
 		"2": {
 			Title:  "How to Monitor Blood Sugar Levels: A Step-by-Step Guide",
@@ -397,10 +354,9 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tmpl, err := template.ParseFiles(
-		"/home/davodhiambo/github/diabetics_management_app/frontend/public/base.html",
-		"/home/davodhiambo/github/diabetics_management_app/frontend/public/blog_display.html",
+		"frontend/public/base.html",
+		"frontend/public/blog_display.html",
 	)
-
 	if err != nil {
 		InternalServerErrorHandler(w)
 		return
@@ -427,22 +383,10 @@ func BlogHomeHandler(w http.ResponseWriter, r *http.Request) {
 		Posts: []Post{
 			{ID: "1", Title: "Understanding Diabetes: A Comprehensive Guide", Excerpt: template.HTML(`Diabetes occurs when your body either cannot produce enough insulin or cannot use it effectively. Insulin is a hormone that helps your cells absorb glucose (a type of sugar) from your bloodstream for energy. Without effective insulin action, glucose builds up in your blood, leading to symptoms and potential complications.</span></p>
 			<p><br></p>`)},
-			{ID: "2", Title: "How to Monitor Blood Sugar Levels: A Step-by-Step Guide", Excerpt: template.HTML(`<p>Monitoring blood sugar levels is a crucial part of managing diabetes. Whether you have diabetes or are caring for someone with the condition, understanding how and when to check blood sugar can make a significant difference in overall health and well-being. In this step-by-step guide, we’ll explain how to effectively monitor blood sugar levels, the tools you need, and why regular checks are essential.</p>
-		
-			<h2>Why Monitoring Blood Sugar is Important:</h2>
-			<p>Keeping blood sugar levels within a healthy range is key to preventing complications of diabetes, such as heart disease, nerve damage, and vision problems. By regularly monitoring blood sugar, you can:</p>`)},
-			{ID: "3", Title: "How to Recognize and Prevent Diabetes Complications", Excerpt: template.HTML(`<p><span>Diabetes is a chronic condition that, if not well-managed, can lead to a range of serious health complications. Recognizing the early signs of complications and taking preventive measures can make a huge difference in maintaining quality of life for people with diabetes. In this post, we’ll cover common complications and practical steps you can take to prevent them.</span></p>
-		
-			<h2><span>Common Diabetes Complications</span></h2>
-			<p>Diabetes can lead to complications that affect various parts of the body. The most common complications include:</p>`)},
-			{ID: "4", Title: "The Role of Exercise in Managing Diabetes", Excerpt: template.HTML(`<p><strong>Introduction:</strong> Physical activity plays a crucial role in managing diabetes. Regular exercise helps control blood sugar levels, improves cardiovascular health, and boosts overall well-being. Whether you have Type 1, Type 2, or gestational diabetes, incorporating physical activity into your daily routine can make a significant impact on managing the condition. In this post, we’ll explore the benefits of exercise for people with diabetes, the best types of exercises, and tips for incorporating them into your daily life.</p>
-		
-			<h2><span>Why Exercise Matters for Diabetes Management</span></h2>
-			<p>Exercise is an effective way to manage blood sugar levels and improve insulin sensitivity. For people with diabetes, physical activity has numerous benefits, including:</p>`)},
-			{ID: "5", Title: "Stress and Diabetes: Understanding the Connection", Excerpt: template.HTML(`Managing stress is a crucial part of diabetes care. While diabetes requires careful attention to blood sugar levels through diet, exercise, and medication, stress is often an overlooked factor that can affect blood sugar control. Understanding the relationship between stress and diabetes is key to improving overall health and managing the condition more effectively. In this article, we’ll explore how stress impacts blood sugar levels and offer strategies for managing stress to improve diabetes outcomes.</p>
-		
-			<h2><span>The Link Between Stress and Blood Sugar</span></h2>
-			<p>When you experience stress, your body reacts by releasing stress hormones like cortisol and adrenaline. These hormones trigger the “fight-or-flight” response, which prepares your body for immediate action. However, this physiological response can have unintended consequences for individuals with diabetes.</p>`)},
+			{ID: "2", Title: "How to Monitor Blood Sugar Levels: A Step-by-Step Guide", Excerpt: template.HTML(`<p>Monitoring blood sugar levels is a crucial part of managing diabetes. Whether you have diabetes or are caring for someone with the condition, understanding how and when to check blood sugar can make a significant difference in overall health and well-being. In this step-by-step guide, we’ll explain how to effectively monitor blood sugar levels, the tools you need, and why regular checks are essential.</p>`)},
+			{ID: "3", Title: "How to Recognize and Prevent Diabetes Complications", Excerpt: template.HTML(`<p><span>Diabetes is a chronic condition that, if not well-managed, can lead to a range of serious health complications. Recognizing the early signs of complications and taking preventive measures can make a huge difference in maintaining quality of life for people with diabetes. In this post, we’ll cover common complications and practical steps you can take to prevent them.</span></p>`)},
+			{ID: "4", Title: "The Role of Exercise in Managing Diabetes", Excerpt: template.HTML(`<p>Physical activity plays a crucial role in managing diabetes. Regular exercise helps control blood sugar levels, improves cardiovascular health, and boosts overall well-being. Whether you have Type 1, Type 2, or gestational diabetes, incorporating physical activity into your daily routine can make a significant impact on managing the condition. In this post, we’ll explore the benefits of exercise for people with diabetes, the best types of exercises, and tips for incorporating them into your daily life.</p>`)},
+			{ID: "5", Title: "Stress and Diabetes: Understanding the Connection", Excerpt: template.HTML(`Managing stress is a crucial part of diabetes care. While diabetes requires careful attention to blood sugar levels through diet, exercise, and medication, stress is often an overlooked factor that can affect blood sugar control. Understanding the relationship between stress and diabetes is key to improving overall health and managing the condition more effectively. In this article, we’ll explore how stress impacts blood sugar levels and offer strategies for managing stress to improve diabetes outcomes.</p>`)},
 		},
 	}
 

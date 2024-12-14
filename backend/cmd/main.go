@@ -20,6 +20,7 @@ func main() {
 	//router.HandleFunc("/", Index).Methods("GET")
 	router.HandleFunc("/blog", api.BlogHomeHandler).Methods("GET")
 	router.HandleFunc("/glucose-tracker", api.GlucoseTrackerEndPointHandler).Methods("GET")
+	router.HandleFunc("/post/{id}", api.PostHandler).Methods("GET")
 
 	http.ListenAndServe(portStr, router)
 }
