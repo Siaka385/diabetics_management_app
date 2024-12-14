@@ -1,0 +1,1704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diawise - User Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #2563eb;
+            --accent: #3b82f6;
+            --background: #f0f9ff;
+            --text: #0f172a;
+            --warning: #e11d48;
+            --white: #ffffff;
+            --green: #10b981;
+            --yellow: #f59e0b;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: #f4f7fa;
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background: white;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+            padding: 2rem 1rem;
+            position: relative;
+        }
+
+        .profile {
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .profile-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .edit-profile {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-nav a {
+            text-decoration: none;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-nav a:hover, .sidebar-nav a.active {
+            background-color: var(--background);
+            color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .main-content {
+            padding: 2rem;
+            background: #f4f7fa;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .notifications {
+            position: relative;
+        }
+
+        .notification-icon {
+            background: var(--warning);
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            font-size: 0.7rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .dashboard-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-header h3 {
+            color: var(--primary);
+        }
+
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .stat {
+            background: var(--background);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text);
+            opacity: 0.7;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: var(--background);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 1rem;
+        }
+
+        .progress {
+            height: 100%;
+            background: var(--green);
+        }
+
+        .hide{
+            display: none;
+        }
+
+ /* Blood Sugar Tracking Specific Styles */
+ .tracking-container {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        .chart-section, .log-section {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .log-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        input, select {
+            padding: 0.75rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .log-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .log-btn:hover {
+            background: var(--secondary);
+        }
+
+        .alert {
+            display: none;
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .alert-high {
+            display: block;
+            background: var(--red);
+            color: white;
+        }
+
+        .alert-normal {
+            display: block;
+            background: var(--green);
+            color: white;
+        }
+
+        .recent-logs {
+            margin-top: 1.5rem;
+        }
+
+        .log-entry {
+            background: var(--background);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+
+
+        /*Nutrition and diet*/
+
+        .nutrition-container {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 2rem;
+        }
+
+        .meal-log, .nutrition-advice {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .meal-form, .food-input-form, .meal-plan-form {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        input, select {
+            padding: 0.75rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .log-btn, .add-food-btn, .meal-plan-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            text-align: center;
+        }
+
+        .log-btn:hover, .add-food-btn:hover, .meal-plan-btn:hover {
+            background: var(--secondary);
+        }
+
+        .meal-list, .food-list, .meal-plan-list {
+            margin-top: 1.5rem;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .meal-entry, .food-entry, .meal-plan-entry {
+            background: var(--background);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nutrition-advice {
+            position: sticky;
+            top: 2rem;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .advice-section {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            background: var(--background);
+            border-radius: 0.5rem;
+        }
+
+        .advice-tag, .food-tag, .nutrition-tag {
+            display: inline-block;
+            padding: 0.25rem 0.5rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            background: var(--primary);
+            color: white;
+            border-radius: 0.25rem;
+            font-size: 0.8rem;
+        }
+
+      
+        
+        /* Additional styles for new features */
+        .meal-plan-generator {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            margin-top: 1rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .preferences-form {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .preference-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .preference-tag {
+            background: var(--background);
+            color: var(--primary);
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+        }
+
+        .preference-tag.selected {
+            background: var(--primary);
+            color: white;
+        }
+
+        .generated-meal-plan {
+            margin-top: 1rem;
+            background: var(--background);
+            border-radius: 0.5rem;
+            padding: 1rem;
+        }
+
+
+
+
+        /*Medication*/
+        .main-content {
+            padding: 2rem;
+            background: #f4f7fa;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .medications-container {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 2rem;
+        }
+
+        .medications-list {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .medication-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--light-gray);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .medication-details {
+            flex-grow: 1;
+        }
+
+        .medication-name {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .medication-info {
+            color: var(--text);
+            opacity: 0.7;
+            font-size: 0.9rem;
+        }
+
+        .medication-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn {
+            border: none;
+            border-radius: 0.5rem;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-taken {
+            background: var(--green);
+            color: white;
+        }
+
+        .btn-skip {
+            background: var(--warning);
+            color: white;
+        }
+
+        .sidebar-section {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .add-medication-btn {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .add-medication-btn:hover {
+            background: var(--secondary);
+        }
+
+        .upcoming-reminders {
+            margin-top: 1.5rem;
+        }
+
+        .reminder-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background: var(--light-gray);
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .reminder-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 2rem;
+            border-radius: 1rem;
+            width: 500px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .modal-input, .modal-select {
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--light-gray);
+            border-radius: 0.5rem;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: var(--green);
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            background: var(--primary);
+        }
+
+        .close-modal {
+            float: right;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--warning);
+        }
+
+
+
+        /**Education*/
+        .education-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .education-card {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .education-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .card-header h3 {
+            color: var(--primary);
+        }
+
+        .resource-list {
+            list-style-type: none;
+        }
+
+        .resource-list li {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            background: var(--background);
+            border-radius: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .resource-list li a {
+            color: var(--secondary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .resource-list li a:hover {
+            color: var(--primary);
+        }
+
+        .view-btn {
+            background: var(--secondary);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            text-decoration: none;
+            transition: background 0.3s ease;
+        }
+
+        .view-btn:hover {
+            background: var(--primary);
+        }
+
+
+
+
+        /*COMMUNITY SUPPORT*/
+        .support-group-container {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 2rem;
+        }
+
+        .topics-list {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .topic-item {
+            background: var(--light-gray);
+            border-radius: 0.75rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .topic-item:hover {
+            background: var(--background);
+            transform: translateX(5px);
+        }
+
+        .topic-details {
+            flex-grow: 1;
+        }
+
+        .topic-title {
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .topic-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.8rem;
+            color: var(--text);
+            opacity: 0.7;
+        }
+
+        .sidebar-section {
+            background: white;
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .create-topic-btn {
+            width: 100%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .create-topic-btn:hover {
+            background: var(--secondary);
+        }
+
+        .active-discussions {
+            margin-top: 1.5rem;
+        }
+
+        .active-topic {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            transition: background 0.3s ease;
+        }
+
+        .active-topic:hover {
+            background: var(--light-gray);
+        }
+
+        .active-topic-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 2rem;
+            border-radius: 1rem;
+            width: 500px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .close-modal {
+            color: var(--warning);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .modal-input {
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--light-gray);
+            border-radius: 0.5rem;
+        }
+
+        .submit-topic-btn {
+            width: 100%;
+            background: var(--green);
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .submit-topic-btn:hover {
+            background: var(--primary);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="profile">
+                <div class="profile-image">JD</div>
+                <h2>John Doe</h2>
+                <p>Type 2 Diabetes</p>
+                <div class="edit-profile">✎</div>
+            </div>
+            <nav>
+                <ul class="sidebar-nav">
+                    <li><a href="#" class="active">Dashboard</a></li>
+                    <li><a href="#">Blood Sugar</a></li>
+                    <li><a href="#">Diet & Nutrition</a></li>
+                    <li><a href="#">Medications</a></li>
+                    <li><a href="#">Education</a></li>
+                    <li><a href="#">Support Group</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!--Welcome page-->
+        <div class="welcomepage hide">
+        <main class="main-content">
+            <div class="header">
+                <h1>Welcome, John</h1>
+                <div class="notifications">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    <div class="notification-icon">3</div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3>Blood Sugar</h3>
+                        <a href="#">Track</a>
+                    </div>
+                    <div class="quick-stats">
+                        <div class="stat">
+                            <span class="stat-value">128</span>
+                            <span class="stat-label">mg/dL</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value">5.8</span>
+                            <span class="stat-label">HbA1c</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 65%"></div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3>Diet & Nutrition</h3>
+                        <a href="#">Log Meal</a>
+                    </div>
+                    <div class="quick-stats">
+                        <div class="stat">
+                            <span class="stat-value">1800</span>
+                            <span class="stat-label">Calories</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value">45g</span>
+                            <span class="stat-label">Carbs</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 75%"></div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3>Medications</h3>
+                        <a href="#">Manage</a>
+                    </div>
+                    <div class="quick-stats">
+                        <div class="stat">
+                            <span class="stat-value">2</span>
+                            <span class="stat-label">Pending</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value">3</span>
+                            <span class="stat-label">Taken</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 85%"></div>
+                    </div>
+                </div>
+
+                <div class="dashboard-card">
+                    <div class="card-header">
+                        <h3>Support Group</h3>
+                        <a href="#">Join</a>
+                    </div>
+                    <div class="quick-stats">
+                        <div class="stat">
+                            <span class="stat-value">12</span>
+                            <span class="stat-label">Members</span>
+                        </div>
+                        <div class="stat">
+                            <span class="stat-value">3</span>
+                            <span class="stat-label">New Posts</span>
+                        </div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: 55%"></div>
+                    </div>
+                </div>
+            </div>
+            </main>
+        </div>
+
+
+        <!--MONITOR BLOOOD SUGAR LEVEL-->
+            <main class="main-content bloodsugarMonitorpage hide" >
+                <div class="header">
+                    <h1>Blood Sugar Tracking</h1>
+                    <div class="notifications">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg>
+                        <div class="notification-icon">3</div>
+                    </div>
+                </div>
+    
+                <div class="tracking-container">
+                    <div class="chart-section">
+                        <h2>Blood Sugar Trends</h2>
+                        <div id="bloodSugarChart" style="width: 100%; height: 400px;"></div>
+                    </div>
+                    
+                    <div class="log-section">
+                        <h2>Log Blood Sugar</h2>
+                        <form id="bloodSugarForm" class="log-form">
+                            <div class="form-group">
+                                <label for="bloodSugarLevel">Blood Sugar Level (mg/dL)</label>
+                                <input type="number" id="bloodSugarLevel" required min="50" max="500">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="measurementTime">Time of Measurement</label>
+                                <select id="measurementTime">
+                                    <option value="fasting">Fasting</option>
+                                    <option value="before_meal">Before Meal</option>
+                                    <option value="after_meal">After Meal</option>
+                                    <option value="bedtime">Bedtime</option>
+                                </select>
+                            </div>
+                            
+                            <button type="submit" class="log-btn">Log Reading</button>
+                        </form>
+    
+                        <div id="alertMessage" class="alert"></div>
+    
+                        <div class="recent-logs">
+                            <h3>Recent Logs</h3>
+                            <div id="recentLogsList"></div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!--Diet and Nutrion page-->
+            <main class="main-content dietAndNutrion hide">
+                <div class="header">
+                    <h1>Advanced Nutrition Tracking</h1>
+                    <div class="notifications">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg>
+                        <div class="notification-icon">3</div>
+                    </div>
+                </div>
+    
+                <div class="nutrition-container">
+                    <div class="meal-log">
+                        <h2>Log Your Daily Meals</h2>
+                        <form id="mealLogForm" class="meal-form">
+                            <div class="form-group">
+                                <label for="mealType">Meal Type</label>
+                                <select id="mealType" required>
+                                    <option value="">Select Meal</option>
+                                    <option value="breakfast">Breakfast</option>
+                                    <option value="lunch">Lunch</option>
+                                    <option value="dinner">Dinner</option>
+                                    <option value="snack">Snack</option>
+                                </select>
+                            </div>
+    
+                            <div class="form-group">
+                                <label for="foodItem">Food Item</label>
+                                <input type="text" id="foodItem" placeholder="Enter food item" required>
+                            </div>
+    
+                            <div class="form-group">
+                                <label for="calories">Calories</label>
+                                <input type="number" id="calories" placeholder="Calories" required>
+                            </div>
+    
+                            <div class="form-group">
+                                <label for="carbs">Carbohydrates (g)</label>
+                                <input type="number" id="carbs" placeholder="Carbohydrates" required>
+                            </div>
+    
+                            <button type="submit" class="log-btn">Log Meal</button>
+                        </form>
+    
+                        <div class="meal-list" id="mealList">
+                            <h3>Today's Meals</h3>
+                            <!-- Dynamically populated meal entries -->
+                        </div>
+                    </div>
+    
+                    <div class="nutrition-advice" id="nutritionAdvice">
+                        <div class="meal-plan-generator">
+                            <h2>Personalized Meal Plan Generator</h2>
+                            <form id="mealPlanPreferencesForm" class="preferences-form">
+                                <div class="form-group">
+                                    <label>Meal Plan Duration</label>
+                                    <div class="preference-tags" id="mealPlanDurationTags">
+                                        <span class="preference-tag" data-value="single-day">Single Day</span>
+                                        <span class="preference-tag" data-value="whole-week">Whole Week</span>
+                                    </div>
+                                </div>
+    
+                                <div class="form-group">
+                                    <label>Meal Types</label>
+                                    <div class="preference-tags" id="mealTypeTags">
+                                        <span class="preference-tag" data-value="breakfast">Breakfast</span>
+                                        <span class="preference-tag" data-value="lunch">Lunch</span>
+                                        <span class="preference-tag" data-value="dinner">Dinner</span>
+                                        <span class="preference-tag" data-value="all-meals">All Meals</span>
+                                    </div>
+                                </div>
+    
+                                <div class="form-group">
+                                    <label>Dietary Preferences</label>
+                                    <div class="preference-tags" id="dietPreferenceTags">
+                                        <span class="preference-tag" data-value="low-carb">Low Carb</span>
+                                        <span class="preference-tag" data-value="high-protein">High Protein</span>
+                                        <span class="preference-tag" data-value="vegetarian">Vegetarian</span>
+                                        <span class="preference-tag" data-value="gluten-free">Gluten-Free</span>
+                                    </div>
+                                </div>
+    
+                                <div class="form-group">
+                                    <label for="preferredFoods">Preferred Foods (optional)</label>
+                                    <input type="text" id="preferredFoods" placeholder="Enter foods you like (comma-separated)">
+                                </div>
+    
+                                <div class="form-group">
+                                    <label for="avoidFoods">Foods to Avoid (optional)</label>
+                                    <input type="text" id="avoidFoods" placeholder="Enter foods you want to avoid (comma-separated)">
+                                </div>
+    
+                                <button type="submit" class="meal-plan-btn">Generate Personalized Meal Plan</button>
+                            </form>
+    
+                            <div id="generatedMealPlan" class="generated-meal-plan">
+                                <!-- Dynamically populated meal plan -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+
+            <!--medication-->
+            <div class="med hide">
+            <main class="main-content">
+                <div class="header">
+                    <h1>Medication Management</h1>
+                </div>
+    
+                <div class="medications-container">
+                    <div class="medications-list">
+                        <div class="medication-item">
+                            <div class="medication-details">
+                                <div class="medication-name">Metformin</div>
+                                <div class="medication-info">500mg - 2x daily</div>
+                            </div>
+                            <div class="medication-actions">
+                                <button class="btn btn-taken">Taken</button>
+                                <button class="btn btn-skip">Skip</button>
+                            </div>
+                        </div>
+                        <div class="medication-item">
+                            <div class="medication-details">
+                                <div class="medication-name">Insulin Glargine</div>
+                                <div class="medication-info">10 units - Once daily</div>
+                            </div>
+                            <div class="medication-actions">
+                                <button class="btn btn-taken">Taken</button>
+                                <button class="btn btn-skip">Skip</button>
+                            </div>
+                        </div>
+                    </div>
+    
+                    <div class="sidebar-section">
+                        <button id="addMedicationBtn" class="add-medication-btn">Add Medication</button>
+    
+                        <div class="upcoming-reminders">
+                            <h3>Upcoming Reminders</h3>
+                            <div class="reminder-item">
+                                <div class="reminder-icon">💊</div>
+                                <div>
+                                    <div class="medication-name">Metformin</div>
+                                    <div class="medication-info">Next dose at 6:00 PM</div>
+                                </div>
+                            </div>
+                            <div class="reminder-item">
+                                <div class="reminder-icon">💉</div>
+                                <div>
+                                    <div class="medication-name">Insulin Glargine</div>
+                                    <div class="medication-info">Next dose at 9:00 PM</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+    <div id="addMedicationModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeModal">&times;</span>
+            <h2>Add New Medication</h2>
+            <form id="addMedicationForm">
+                <input type="text" class="modal-input" placeholder="Medication Name" required>
+                <input type="text" class="modal-input" placeholder="Dosage" required>
+                <select class="modal-select" required>
+                    <option value="">Select Frequency</option>
+                    <option value="daily">Once Daily</option>
+                    <option value="twice-daily">Twice Daily</option>
+                    <option value="three-times-daily">Three Times Daily</option>
+                    <option value="as-needed">As Needed</option>
+                </select>
+                <input type="time" class="modal-input" placeholder="Reminder Time" required>
+                <button type="submit" class="submit-btn">Add Medication</button>
+            </form>
+        </div>
+    </div>
+            </div>
+
+
+            <!--Education-->
+            <main class="main-content hide">
+                <div class="header">
+                    <h1>Diabetes Education</h1>
+                    <div class="notifications">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                        </svg>
+                        <div class="notification-icon">3</div>
+                    </div>
+                </div>
+    
+                <div class="education-grid">
+                    <div class="education-card">
+                        <div class="card-header">
+                            <h3>Diabetes Management Guidelines</h3>
+                            <a href="#" class="view-btn">View All</a>
+                        </div>
+                        <ul class="resource-list">
+                            <li>
+                                <span>ADA 2024 Comprehensive Care Guidelines</span>
+                                <a href="#" target="_blank">Read</a>
+                            </li>
+                            <li>
+                                <span>Self-Management Best Practices</span>
+                                <a href="#" target="_blank">Read</a>
+                            </li>
+                            <li>
+                                <span>Lifestyle Modification Strategies</span>
+                                <a href="#" target="_blank">Read</a>
+                            </li>
+                        </ul>
+                    </div>
+    
+                    <div class="education-card">
+                        <div class="card-header">
+                            <h3>Educational Articles</h3>
+                            <a href="#" class="view-btn">View All</a>
+                        </div>
+                        <ul class="resource-list">
+                            <li>
+                                <span>Understanding Type 2 Diabetes</span>
+                                <a href="#" target="_blank">Read</a>
+                            </li>
+                            <li>
+                                <span>Nutrition for Diabetes Management</span>
+                                <a href="#" target="_blank">Read</a>
+                            </li>
+                            <li>
+                                <span>Exercise and Blood Sugar Control</span>
+                                <a href="#" target="_blank">Read</a>
+                            </li>
+                        </ul>
+                    </div>
+    
+                    <div class="education-card">
+                        <div class="card-header">
+                            <h3>Educational Videos</h3>
+                            <a href="#" class="view-btn">View All</a>
+                        </div>
+                        <ul class="resource-list">
+                            <li>
+                                <span>Insulin Management Explained</span>
+                                <a href="#" target="_blank">Watch</a>
+                            </li>
+                            <li>
+                                <span>Healthy Meal Planning Tips</span>
+                                <a href="#" target="_blank">Watch</a>
+                            </li>
+                            <li>
+                                <span>Managing Diabetes Stress</span>
+                                <a href="#" target="_blank">Watch</a>
+                            </li>
+                        </ul>
+                    </div>
+    
+                    <div class="education-card">
+                        <div class="card-header">
+                            <h3>Interactive Modules</h3>
+                            <a href="#" class="view-btn">View All</a>
+                        </div>
+                        <ul class="resource-list">
+                            <li>
+                                <span>Blood Sugar Tracking Course</span>
+                                <a href="#" target="_blank">Start</a>
+                            </li>
+                            <li>
+                                <span>Medication Management Quiz</span>
+                                <a href="#" target="_blank">Start</a>
+                            </li>
+                            <li>
+                                <span>Diabetes Risk Assessment</span>
+                                <a href="#" target="_blank">Start</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </main>
+
+
+            <!--Support and community-->
+            <div class="commAndSupport">
+ <main class="main-content">
+            <div class="header">
+                <h1>Diabetes Support Group</h1>
+                <div class="notifications">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    <div class="notification-icon">3</div>
+                </div>
+            </div>
+
+            <div class="support-group-container">
+                <div class="topics-list">
+                    <div class="topic-item">
+                        <div class="topic-details">
+                            <div class="topic-title">Managing Blood Sugar During Holidays</div>
+                            <div class="topic-meta">
+                                <span>Started by Sarah M.</span>
+                                <span>•</span>
+                                <span>12 Replies</span>
+                                <span>•</span>
+                                <span>2 hours ago</span>
+                            </div>
+                        </div>
+                        <button class="view-topic-btn">View</button>
+                    </div>
+                    <div class="topic-item">
+                        <div class="topic-details">
+                            <div class="topic-title">Exercise Routines for Diabetes Management</div>
+                            <div class="topic-meta">
+                                <span>Started by Mike R.</span>
+                                <span>•</span>
+                                <span>8 Replies</span>
+                                <span>•</span>
+                                <span>1 day ago</span>
+                            </div>
+                        </div>
+                        <button class="view-topic-btn">View</button>
+                    </div>
+                    <div class="topic-item">
+                        <div class="topic-details">
+                            <div class="topic-title">Diet Tips and Meal Planning</div>
+                            <div class="topic-meta">
+                                <span>Started by Emily T.</span>
+                                <span>•</span>
+                                <span>15 Replies</span>
+                                <span>•</span>
+                                <span>3 days ago</span>
+                            </div>
+                        </div>
+                        <button class="view-topic-btn">View</button>
+                    </div>
+                </div>
+
+                <div class="sidebar-section">
+                    <button id="createTopicBtn" class="create-topic-btn">Create New Topic</button>
+
+                    <div class="active-discussions">
+                        <h3>Active Discussions</h3>
+                        <div class="active-topic">
+                            <div class="active-topic-icon">💬</div>
+                            <div>
+                                <div class="topic-title">Medication Side Effects</div>
+                                <div class="topic-meta">24 new messages</div>
+                            </div>
+                        </div>
+                        <div class="active-topic">
+                            <div class="active-topic-icon">🩺</div>
+                            <div>
+                                <div class="topic-title">Insulin Pump Questions</div>
+                                <div class="topic-meta">18 new messages</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+         <!-- Create Topic Modal -->
+    <div id="createTopicModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Create New Topic</h2>
+                <span class="close-modal" id="closeModal">&times;</span>
+            </div>
+            <form id="createTopicForm">
+                <input type="text" class="modal-input" placeholder="Topic Title" required>
+                <textarea class="modal-input" rows="4" placeholder="Describe your topic..." required></textarea>
+                <button type="submit" class="submit-topic-btn">Create Topic</button>
+            </form>
+        </div>
+    </div>
+
+            </div>
+
+        </main>
+    </div>
+
+
+   <script defer src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.2/echarts.min.js"></script>
+    <script>
+
+
+window.onload=()=>{
+        // Notification Center Toggle
+        function toggleNotificationCenter() {
+            const notificationCenter = document.getElementById('notificationCenter');
+            notificationCenter.classList.toggle('active');
+        }
+
+        // Alert System
+        function showAlert(message, type = 'success') {
+            const alertContainer = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.classList.add('alert', `alert-${type}`, 'show');
+            alert.textContent = message;
+            
+            alertContainer.appendChild(alert);
+
+            // Remove alert after 3 seconds
+            setTimeout(() => {
+                alert.classList.remove('show');
+                setTimeout(() => {
+                    alertContainer.removeChild(alert);
+                }, 300);
+            }, 3000);
+        }
+
+
+
+
+
+        /* BLOOD SUGAR MONITOR*/
+         // Blood Sugar Tracking Logic
+         const bloodSugarForm = document.getElementById('bloodSugarForm');
+        const alertMessage = document.getElementById('alertMessage');
+        const recentLogsList = document.getElementById('recentLogsList');
+
+        // Sample blood sugar logs (would typically come from backend/storage)
+        let bloodSugarLogs = [
+            { value: 128, time: 'before_meal', date: '2024-03-15' },
+            { value: 115, time: 'fasting', date: '2024-03-14' },
+            { value: 142, time: 'after_meal', date: '2024-03-13' }
+        ];
+
+        // Render recent logs
+        function renderRecentLogs() {
+            recentLogsList.innerHTML = bloodSugarLogs
+                .slice(0, 5)
+                .map(log => `
+                    <div class="log-entry">
+                        <span>${log.value} mg/dL (${log.time})</span>
+                        <span>${log.date}</span>
+                    </div>
+                `).join('');
+        }
+
+        // Blood sugar level recommendations
+        function getBloodSugarRecommendation(level, time) {
+            const recommendations = {
+                fasting: { low: 80, high: 130 },
+                before_meal: { low: 80, high: 130 },
+                after_meal: { low: 80, high: 180 },
+                bedtime: { low: 100, high: 140 }
+            };
+
+            const range = recommendations[time];
+            if (level > range.high) {
+                return {
+                    type: 'high',
+                    message: `Your blood sugar is high for ${time}. Consider: 
+                    - Drink water
+                    - Take a short walk
+                    - Check insulin/medication
+                    - Consult your healthcare provider`
+                };
+            } else if (level < range.low) {
+                return {
+                    type: 'low',
+                    message: `Your blood sugar is low for ${time}. Consider:
+                    - Have a small snack
+                    - Drink juice or glucose drink
+                    - Rest and monitor closely`
+                };
+            }
+            return { type: 'normal', message: 'Your blood sugar is within the target range.' };
+        }
+
+        // Form submission handler
+        bloodSugarForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const bloodSugarLevel = parseInt(document.getElementById('bloodSugarLevel').value);
+            const measurementTime = document.getElementById('measurementTime').value;
+
+            const recommendation = getBloodSugarRecommendation(bloodSugarLevel, measurementTime);
+            
+            alertMessage.textContent = recommendation.message;
+            alertMessage.className = `alert alert-${recommendation.type}`;
+
+            // Add new log
+            bloodSugarLogs.unshift({ 
+                value: bloodSugarLevel, 
+                time: measurementTime, 
+                date: new Date().toISOString().split('T')[0] 
+            });
+
+            renderRecentLogs();
+            updateBloodSugarChart();
+        });
+
+        // Initialize chart
+        function updateBloodSugarChart() {
+            const chartDom = document.getElementById('bloodSugarChart');
+            const myChart = echarts.init(chartDom);
+            
+            const option = {
+                tooltip: { trigger: 'axis' },
+                xAxis: {
+                    type: 'category',
+                    data: bloodSugarLogs.slice(0, 7).map(log => log.date).reverse()
+                },
+                yAxis: {
+                    type: 'value',
+                    min: 50,
+                    max: 250
+                },
+                series: [{
+                    data: bloodSugarLogs.slice(0, 7).map(log => log.value).reverse(),
+                    type: 'line',
+                    smooth: true,
+                    itemStyle: { color: '#1e3a8a' }
+                }]
+            };
+
+            myChart.setOption(option);
+        }
+
+        // Initial render
+        renderRecentLogs();
+        updateBloodSugarChart();
+
+
+
+
+
+
+        //DIETs AND NUTRITION
+         // Preference Tag Selection Logic
+        function setupPreferenceTags() {
+            const tagSections = ['mealPlanDurationTags', 'mealTypeTags', 'dietPreferenceTags'];
+            
+            tagSections.forEach(sectionId => {
+                const section = document.getElementById(sectionId);
+                section.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('preference-tag')) {
+                        // Remove selection from other tags in the same section
+                        section.querySelectorAll('.preference-tag').forEach(tag => {
+                            tag.classList.remove('selected');
+                        });
+                        
+                        // Select the clicked tag
+                        e.target.classList.add('selected');
+                    }
+                });
+            });
+        }
+
+        // Meal Plan Generation Logic
+        function generateMealPlan(e) {
+            e.preventDefault();
+            
+            const selectedDuration = document.querySelector('#mealPlanDurationTags .selected')?.dataset.value;
+            const selectedMealType = document.querySelector('#mealTypeTags .selected')?.dataset.value;
+            const selectedDietPref = document.querySelector('#dietPreferenceTags .selected')?.dataset.value;
+            const preferredFoods = document.getElementById('preferredFoods').value.split(',').map(f => f.trim());
+            const avoidFoods = document.getElementById('avoidFoods').value.split(',').map(f => f.trim());
+
+            const mealPlanContainer = document.getElementById('generatedMealPlan');
+            
+            // Simulated Meal Plan Generation with Local Alternatives
+            const mealPlans = {
+                'low-carb': {
+                    breakfast: {
+                        main: 'Scrambled Eggs with Spinach',
+                        local_alt: 'Tofu Scramble with Local Greens',
+                        carbs: 3
+                    },
+                    lunch: {
+                        main: 'Grilled Chicken Salad',
+                        local_alt: 'Grilled Fish with Mixed Vegetable Salad',
+                        carbs: 10
+                    },
+                    dinner: {
+                        main: 'Baked Salmon with Roasted Vegetables',
+                        local_alt: 'Steamed Local Fish with Stir-fried Vegetables',
+                        carbs: 8
+                    }
+                },
+                // Add more diet preference meal plans
+            };
+
+            let generatedPlan = `<h3>Personalized Meal Plan</h3>`;
+            
+            if (selectedDietPref && mealPlans[selectedDietPref]) {
+                const plan = mealPlans[selectedDietPref];
+                
+                for (const [meal, details] of Object.entries(plan)) {
+                    generatedPlan += `
+                        <div class="meal-plan-entry">
+                            <h4>${meal.charAt(0).toUpperCase() + meal.slice(1)}</h4>
+                            <p><strong>Recommended:</strong> ${details.main}</p>
+                            <p><strong>Local Alternative:</strong> ${details.local_alt}</p>
+                            <p><strong>Carbohydrates:</strong> ${details.carbs}g</p>
+                        </div>
+                    `;
+                }
+            } else {
+                generatedPlan += `<p>Unable to generate a meal plan. Please select preferences.</p>`;
+            }
+
+            mealPlanContainer.innerHTML = generatedPlan;
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', () => {
+            setupPreferenceTags();
+            
+            const mealPlanForm = document.getElementById('mealPlanPreferencesForm');
+            mealPlanForm.addEventListener('submit', generateMealPlan);
+        });
+
+
+
+
+
+
+        //medication script
+           // Modal functionality for adding medication
+           const addMedicationBtn = document.getElementById('addMedicationBtn');
+        const addMedicationModal = document.getElementById('addMedicationModal');
+        const closeModal = document.getElementById('closeModal');
+        const addMedicationForm = document.getElementById('addMedicationForm');
+
+        addMedicationBtn.addEventListener('click', () => {
+            addMedicationModal.style.display = 'block';
+        });
+
+        closeModal.addEventListener('click', () => {
+            addMedicationModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target === addMedicationModal) {
+                addMedicationModal.style.display = 'none';
+            }
+        });
+
+        addMedicationForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            // In a real application, you would send this data to a backend
+            alert('Medication added successfully!');
+            addMedicationModal.style.display = 'none';
+            addMedicationForm.reset();
+        });
+
+        // Medication tracking buttons
+        const medicationItems = document.querySelectorAll('.medication-item');
+        medicationItems.forEach(item => {
+            const takenBtn = item.querySelector('.btn-taken');
+            const skipBtn = item.querySelector('.btn-skip');
+
+            takenBtn.addEventListener('click', () => {
+                alert('Medication marked as taken!');
+                // In a real app, this would update the medication history
+            });
+
+            skipBtn.addEventListener('click', () => {
+                alert('Medication skipped. Please consult your doctor if you regularly miss doses.');
+                // In a real app, this would log the skipped medication
+            });
+        });
+
+
+    }
+
+
+
+
+    /*Support and community*/
+       // Modal functionality
+       const createTopicBtn = document.getElementById('createTopicBtn');
+        const createTopicModal = document.getElementById('createTopicModal');
+        const closeModal = document.getElementById('closeModal');
+        const createTopicForm = document.getElementById('createTopicForm');
+
+        createTopicBtn.addEventListener('click', () => {
+            createTopicModal.style.display = 'block';
+        });
+
+        closeModal.addEventListener('click', () => {
+            createTopicModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target === createTopicModal) {
+                createTopicModal.style.display = 'none';
+            }
+        });
+
+        createTopicForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            // In a real application, you would send this data to a backend
+            alert('Topic created successfully!');
+            createTopicModal.style.display = 'none';
+            createTopicForm.reset();
+        });
+
+
+    </script>
+
+</body>
+</html>
