@@ -1,5 +1,94 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Preference Tag Selection Logic
+    const mealLogForm = document.getElementById('mealLogForm');
+    
+    mealLogForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        // Collect form data
+        const mealLogData = {
+            mealType: document.getElementById('mealType').value,
+            foodItem: document.getElementById('foodItem').value,
+            weight: parseFloat(document.getElementById('weight').value),
+            proportion: parseFloat(document.getElementById('proportion').value)
+        };
+        
+        try {
+            // Send data to backend
+            const response = await fetch('/nutrition/meal/log', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(mealLogData)
+            });
+            
+            if (!response.ok) {
+                throw new Error('Failed to log meal');
+            }
+            
+            const result = await response.json();
+            
+            console.log("here",JSON.stringify(result));
+            // Handle successful response
+            displayMealLogSuccess(result);
+            updateMealTable(mealLogData);
+            
+            // Reset form
+            mealLogForm.reset();
+        } catch (error) {
+            console.error('Error logging meal:', error);
+            displayErrorMessage('Failed to log meal. Please try again.');
+        }
+    });
+
+    function updateMealTable(mealData) {
+        const mealList = document.getElementById('mealList');
+        const newRow = mealList.insertRow();
+        
+        newRow.innerHTML = `
+            <td>${mealData.mealType}</td>
+            <td>${mealData.foodItem}</td>
+            <td>${calculateCalories(mealData)}</td>
+            <td>${calculateCarbs(mealData)}</td>
+        `;
+    }
+    
+    // Placeholder functions for calorie and carb calculations
+    function calculateCalories(mealData) {
+        // Implement your calorie calculation logic
+        return Math.round(mealData.weight * 0.5); // Example calculation
+    }
+    
+    function calculateCarbs(mealData) {
+        // Implement your carb calculation logic
+        return Math.round(mealData.weight * 0.2); // Example calculation
+    }
+    
+    function displayMealLogSuccess(result) {
+        const alertMessage = document.getElementById('alertMessage');
+        alertMessage.textContent = result.message;
+        alertMessage.classList.add('success');
+        
+        // Remove success message after 3 seconds
+        setTimeout(() => {
+            alertMessage.textContent = '';
+            alertMessage.classList.remove('success');
+        }, 3000);
+    }
+    
+    function displayErrorMessage(message) {
+        const alertMessage = document.getElementById('alertMessage');
+        alertMessage.textContent = message;
+        alertMessage.classList.add('error');
+        
+        // Remove error message after 3 seconds
+        setTimeout(() => {
+            alertMessage.textContent = '';
+            alertMessage.classList.remove('error');
+        }, 3000);
+    }
+
+
     function setupPreferenceTags() {
         const tagSections = ['mealPlanDurationTags', 'mealTypeTags', 'dietPreferenceTags'];
 
@@ -19,49 +108,46 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function logMeal(e) {
-        e.preventDefault();
+    // function logMeal(e) {
+    //     e.preventDefault();
 
-        const mealType = document.getElementById("mealType").value;
-        const food_item = document.getElementById("foodItem").value;
-        const weight = document.getElementById("weight").value;
-        const proportion = document.getElementById("proportion").value;
+    //     const mealType = document.getElementById("mealType").value;
+    //     const food_item = document.getElementById("foodItem").value;
+    //     const weight = document.getElementById("weight").value;
+    //     const proportion = document.getElementById("proportion").value;
 
-        const mealData = {
-            // mealType,
-            food_item,
-            weight,
-            proportion,
-        };
+    //     const mealData = {
+    //         mealType,
+    //         food_item,
+    //         weight,
+    //         proportion,
+    //     };
 
-        newRow.innerHTML = `
-            <td>${mealType}</td>
-            <td>${food_item}</td>
-            <td>${calories}</td>
-            <td>${carbs}</td>
-        `;
+    //     newRow.innerHTML = `
+    //         <td>${mealType}</td>
+    //         <td>${food_item}</td>
+    //         <td>${calories}</td>
+    //         <td>${carbs}</td>
+    //     `;
 
-        fetch("/nutrition/meal/log", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(mealData),
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                console.log("Success:", data);
-                // You can add code here to update the UI or show a success message
-                alert("Meal logged successfully!");
-                document.getElementById("mealLogForm").reset(); // Reset the form
-            })
-            .catch((error) => {
-                console.error("Error:", error);
-                // You can add code here to show an error message to the user
-                alert("Error logging meal. Please try again.");
-            });
-        e.target.reset();
-    }
+    //     fetch("/nutrition/meal/log", {
+    //         method: "POST",
+    //         headers: {
+    //             "Content-Type": "application/json",
+    //         },
+    //         body: JSON.stringify(mealData),
+    //     })
+    //         .then((response) => response.json())
+    //         .then((data) => {
+    //             console.log("Success:", data);
+    //             alert("Meal logged successfully!");
+    //             document.getElementById("mealLogForm").reset();
+    //         })
+    //         .catch((error) => {
+    //             console.error("Error:", error);
+    //             alert("Error logging meal. Please try again.");
+    //         });
+    // }
 
     // Meal Plan Generation Logic
     function generateMealPlan(e) {
@@ -90,7 +176,6 @@ document.addEventListener('DOMContentLoaded', () => {
             },
             body: JSON.stringify(genInfo),
         });
-        console.log(JSON.stringify(genInfo));
 
         const mealPlans = {
             'low-carb': [
@@ -140,10 +225,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function initializeEventListeners() {
         setupPreferenceTags();
 
-        const mealLogForm = document.getElementById('mealLogForm');
-        if (mealLogForm) {
-            mealLogForm.addEventListener('submit', logMeal);
-        }
+        // const mealLogForm = document.getElementById('mealLogForm');
+        // if (mealLogForm) {
+        //     mealLogForm.addEventListener('submit', logMeal);
+        // }
 
         const mealPlanForm = document.getElementById('mealPlanPreferencesForm');
         if (mealPlanForm) {
