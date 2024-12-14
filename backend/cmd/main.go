@@ -48,6 +48,7 @@ func main() {
 	router.HandleFunc("/addmed", handlers.AddMedication(db)).Methods("POST")
 	router.HandleFunc("/updatemed/{id}", handlers.UpdateMedication(db)).Methods("PUT")
 	router.HandleFunc("/deletemed/{id}", handlers.DeleteMedication(db)).Methods("DELETE")
+	router.HandleFunc("/listmed", handlers.ListMedications(db)).Methods("GET")
 	router.HandleFunc("/api/support/message", handlers.Message(db)).Methods("POST")
 	router.HandleFunc("/api/support/events", handlers.SSEvents(db)).Methods("GET")
 
