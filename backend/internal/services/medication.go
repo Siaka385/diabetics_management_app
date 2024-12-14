@@ -91,3 +91,12 @@ func DeleteMedication(db *gorm.DB, medication Medication) error {
 
 	return nil
 }
+
+// list medication
+func ListMedicationsByUserId(db *gorm.DB, userID string) ([]Medication, error) {
+	var medications []Medication
+	if err := db.Where("user_id = ?", userID).Find(&medications).Error; err != nil {
+		return nil, fmt.Errorf("failed to get medications: %v", err)
+	}
+	return medications, nil
+}
