@@ -306,7 +306,7 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 			</ul>
 			<a href="https://www.youtube.com/watch?v=jl-eMcz-7Bw" target="_blank">
         <img 
-            src="https://img.youtube.com/vi/v=jl-eMcz-7Bw/hqdefault.jpg" 
+            src="https://img.youtube.com/vi/jl-eMcz-7Bw/hqdefault.jpg" 
             alt="Relationship between Stress and Diabetes" 
             width="560" 
             height="315">
