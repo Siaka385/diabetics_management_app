@@ -392,10 +392,12 @@
                                     <span>{{.Date}}</span>
                                 </div>
                             </div>
-                            <div class="topic-excerpt">
-                                {{.Excerpt}}
-                            </div>
-                            <a href="/post/{{.ID}}" class="view-topic-btn" style="text-decoration: none;" >See More</a>
+                            <div class="topic-excerpt" style="display: inline;">{{.Excerpt}}</div>
+                            <a href="/post/{{.ID}}" 
+                                class="view-topic-btn" 
+                                style="display: inline-block; text-align: center; padding: 10px 20px; background-color: #007BFF; color: white; text-decoration: none; border-radius: 5px;">
+                                See More
+                            </a>
                         </div>
                         {{end}}
                     </div>
