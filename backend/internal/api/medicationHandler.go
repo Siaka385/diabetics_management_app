@@ -2,18 +2,31 @@ package api
 
 import (
 	"encoding/json"
+	"html/template"
+	"log"
 	"net/http"
 	"strconv"
 	"time"
 
 	"diawise/internal/services"
 
+	"github.com/gorilla/mux"
 	"gorm.io/gorm"
 )
 
 type Medication struct {
 	Medication   services.Medication
 	ReminderTime time.Duration `json:"reminder_time"`
+}
+
+func MedicationPageHandler(db *gorm.DB, tmpl *template.Template) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Implement logic to fetch medications and render the medication page
+		if err := tmpl.ExecuteTemplate(w, "medication.html", nil); err != nil {
+			log.Printf("Error executing template: %v", err)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		}
+	}
 }
 
 // handler for adding a new medication
@@ -31,7 +44,7 @@ func AddMedication(db *gorm.DB) http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		w.WriteHeader(http.StatusCreated)
+		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(newMed)
 	}
 }
@@ -39,19 +52,16 @@ func AddMedication(db *gorm.DB) http.HandlerFunc {
 // handler for deleting a medication
 func DeleteMedication(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var med services.Medication
+		vars := mux.Vars(r)
+		id := vars["id"]
 
-		if err := json.NewDecoder(r.Body).Decode(&med); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-
-		err := services.DeleteMedication(db, med)
-		if err != nil {
+		med := services.Medication{Medication_id: id}
+		if err := services.DeleteMedication(db, med); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		w.WriteHeader(http.StatusOK)
+
+		w.WriteHeader(http.StatusNoContent)
 	}
 }
 
@@ -88,7 +98,7 @@ func ListMedications(db *gorm.DB) http.HandlerFunc {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
-		w.WriteHeader(http.StatusOK)
+		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(medications)
 	}
 }
@@ -113,5 +123,54 @@ func MedicationReminder(db *gorm.DB) http.HandlerFunc {
 			return
 		}
 		w.WriteHeader(http.StatusOK)
+	}
+}
+
+func AddMedicationHandler(db *gorm.DB, tmpl *template.Template) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodPost {
+			http.Error(w, "Invalid method", http.StatusMethodNotAllowed)
+			return
+		}
+
+		err := r.ParseForm()
+		if err != nil {
+			http.Error(w, "Error parsing form", http.StatusBadRequest)
+			return
+		}
+
+		medicationName := r.FormValue("medication_name")
+		dose := r.FormValue("dose")
+		frequency := r.FormValue("frequency")
+		reminderTime := r.FormValue("reminder_time")
+
+		dosageTime, err := time.Parse("15:04", reminderTime)
+		if err != nil {
+			http.Error(w, "Invalid reminder time format (HH:MM)", http.StatusBadRequest)
+			return
+		}
+
+		// Create a new Medication struct
+		newMedication := services.Medication{
+			Medication_name:  medicationName,
+			Dose:             dose,
+			Dosage_frequency: frequency,
+			Dosage_time:      dosageTime,
+			// Set User_id and Medication_id as needed
+			User_id:       "user123", // Replace with actual user ID from session
+			Medication_id: "med_" + time.Now().Format("20060102150405"),
+			Notes:         r.FormValue("notes"), // Add notes if available in the form
+		}
+
+		// Call the AddMedication function from the services package
+		addedMedication, err := services.AddMedication(db, newMedication)
+		if err != nil {
+			http.Error(w, "Failed to add medication: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		// Return the added medication as JSON
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(addedMedication)
 	}
 }
