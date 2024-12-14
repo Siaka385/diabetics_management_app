@@ -4,8 +4,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"text/template"
 
 	auth "diawise/internal/auth"
+
+	// auth "diawise/internal/auth"
 
 	"gorm.io/gorm"
 )
@@ -205,6 +208,7 @@ func LogMealHandler(db *gorm.DB) http.HandlerFunc {
 		json.NewEncoder(w).Encode(response)
 	}
 }
+
 func stringifyVitaminsAndMinerals(minrals, vitamins map[string]float64, info NutrientInfo) error {
 	vitaminsJSON, err := json.Marshal(vitamins)
 	if err != nil {
@@ -220,6 +224,7 @@ func stringifyVitaminsAndMinerals(minrals, vitamins map[string]float64, info Nut
 
 	return nil
 }
+
 func CalculateMealNutrition(foodLog FoodLog) (NutrientInfo, error) {
 	var totalCalories, totalCarbs, totalProtein, totalFat, totalFiber float64
 	totalVitamins := make(map[string]float64)
@@ -286,10 +291,24 @@ func GenerateMealInsights(nutrientInfo NutrientInfo) string {
 	return "Your meal is well-balanced!"
 }
 
-func Index(db *gorm.DB) http.HandlerFunc {
+/*
+*	Frontend server
+*
+ */
+func Index(db *gorm.DB, tmpl *template.Template) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// auth.RegisterUser(db, "toni", "toni@mail.com", "antony102")
 		auth.LoginUser(db, "toni", "antony102")
 		fmt.Fprintf(w, "Hello")
+		// auth.RegisterUser(db, "toni", "toni@mail.com", "antony102")
+		// auth.LoginUser(db, "toni", "antony102")
+
+		var templateName string
+		templateName = "index.html"
+
+		err := tmpl.ExecuteTemplate(w, templateName, nil)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
 	}
 }

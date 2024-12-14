@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        /* Basic Styling for the Form */
+        #message-form {
+            width: 400px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+    
+        .form-control {
+            margin-bottom: 20px;
+        }
+    
+        /* Label Styling */
+        .form-label {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            display: block;
+        }
+    
+        /* Textarea Styling */
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: vertical; /* Allow vertical resizing */
+            box-sizing: border-box; /* Include padding in width */
+        }
+    
+        .form-input:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+    
+        /* Submit Button Styling */
+        .form-submit {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+    
+        .form-submit:hover {
+            background-color: #45a049;
+        }
+    
+        .form-submit:active {
+            background-color: #388e3c;
+        }
+    
+        .message-div {
+            border: 1px solid rgba(30, 30, 30, 0.4);
+            border-radius: 5%;
+            padding: 1.2rem;
+            margin: 1rem auto;
+        }
+    </style>
+</head>
+<body>
+    <main>
+        <div>
+            <form action="/message" method="POST" id="message-form">
+                <div class="form-control">
+                    <label for="message" class="form-label">Message</label>
+                    <textarea rows="10" cols="35" class="form-input" id="message" name="message"></textarea>
+                </div>
+                <div class="form-control">
+                    <input type="submit" class="form-submit" value="Message" />
+                </div>
+            </form>
+        </div>
+        
+        <div id="messages-container"></div>
+    </main>
+
+    <script>
+        const form = document.getElementById("message-form");
+        const messageField = document.getElementById("message");
+        const messagesContainer = document.getElementById("messages-container");
+    
+        form.addEventListener("submit", function(event) {
+            event.preventDefault(); // prevent the page from refreshing
+    
+            // create FormData object from the form
+            const formData = new FormData(form);
+    
+            // send form data via AJAX (POST request)
+            fetch('/api/support/message', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.text())
+            .then(data => {
+                messageField.value = ""; // clear the form's text-area
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    
+        // set up EventSource to listen for SSE events from the server
+        const eventSource = new EventSource('/api/support/events');
+        eventSource.onmessage = function(event) {
+            const messageDiv = document.createElement("div");
+
+            const msgTime = document.createElement("div");
+            msgTime.textContent = event.time;
+            const msgData = document.createElement("div");
+            msgData.textContent = event.data;
+
+            messageDiv.appendChild(msgTime);
+            messageDiv.appendChild(msgData);
+
+            messageDiv.classList.add("message-div")
+
+            messagesContainer.appendChild(messageDiv);
+        };
+    </script>    
+</body>
+</html>

@@ -1,0 +1,109 @@
+@import url("https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,500,600,700&display=swap");
+
+html {
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: #27a5d6;
+  background: -webkit-linear-gradient(to right, #96c93d, #00b09b);
+}
+
+.navbar {
+  height: 5vh;
+  width: 90vw;
+  margin: 0 auto;
+  margin-top: 3em;
+  padding: 1em 1em;
+  backdrop-filter: blur(10px);
+  transition: background-color 0.3s ease;
+  box-sizing: border-box;
+  display: block;
+  box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.15),
+    0px 10px 10px rgba(0, 0, 0, 0.2);
+  border-radius: 2em;
+  position: relative;
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 2;
+}
+
+.navbar .logo {
+  clip-path: circle();
+  height: 3em;
+  width: 3em;
+  background: url(logo.png) no-repeat center center;
+  background-size: cover;
+}
+
+.navbar-links {
+  display: flex;
+  align-items: center;
+  margin-right: 1.5em;
+  size-adjust: 2em !important;
+  margin-left: 1em !important;
+ }
+
+.navbar .logo a {
+  text-decoration: none;
+  color: #090909;
+}
+
+.navbar ul {
+  list-style: none;
+  margin: 60;
+  padding: 20;
+  margin-left: 4em;
+}
+
+.navbar ul li {
+  display: inline;
+  text-decoration: none;
+}
+
+.navbar ul li a {
+  padding: 0.25em 1em 0.25em 1em;
+  color: #090909;
+  text-decoration: none;
+  font-family: "Source Sans Pro", sans-serif;
+  font-weight: 400;
+}
+
+.navbar a:hover {
+  color: #777;
+  transition-duration: 0.3s;
+}
+
+.container-fluid h1 {
+  padding-top: 1em;
+  text-align: center;
+  font-family: "Source Sans Pro", sans-serif;
+  font-weight: 700;
+  font-size: 24pt;
+  margin-top: .5em;
+}
+
+.page-title {
+    font-size: 36px;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 20px;
+    color: #fff;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-gap: 20px;
+    margin-top: 5em;
+}
+
+.add-section {
+    padding-top: 3em;
+    height: 2vh;
+    width: 90vw;
+  margin: 0 auto;
+}
