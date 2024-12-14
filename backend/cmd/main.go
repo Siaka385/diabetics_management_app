@@ -30,6 +30,10 @@ func main() {
 	router.HandleFunc("/", handlers.Index(db)).Methods("GET")
 	router.HandleFunc("/auth/register", handlers.RegisterUser(db)).Methods("POST")
 	router.HandleFunc("/auth/login", handlers.LoginUser(db)).Methods("POST")
+	router.HandleFunc("/api/nutrition/meal/log", api.LogMealHandler(db)).Methods("POST")
+	// router.HandleFunc("/nutrition/mealplan", api.GetDefaultMealPlan).Methods("GET")
+	// router.HandleFunc("/nutrition/editplan", api.EditPlan).Methods("POST")
+	// router.HandleFunc("/nutrition/suggestions", api.GetMealSuggestions).Methods("POST")
 
 	// CORS configuration
 	corsHandler := cors.New(cors.Options{
@@ -41,13 +45,8 @@ func main() {
 	handlerWithCORS := corsHandler.Handler(router) // apply the CORS middleware to the router
 
 	http.ListenAndServe(portStr, handlerWithCORS)
-	router.HandleFunc("/", Index).Methods("GET")
-	router.HandleFunc("/nutrition/mealplan", api.GetDefaultMealPlan).Methods("GET")
-	router.HandleFunc("/nutrition/editplan", api.EditPlan).Methods("POST")
-	router.HandleFunc("/api/nutrition/meal/log", api.LogMealHandler).Methods("POST")
-	router.HandleFunc("/nutrition/suggestions", api.GetMealSuggestions).Methods("POST")
+	
 
-	http.ListenAndServe(portStr, router)
 }
 
 func Index(w http.ResponseWriter, r *http.Request) {
