@@ -35,7 +35,7 @@ type Issue struct {
 var hitch Issue
 
 var LoadTemplate = func() (*template.Template, error) {
-	return template.ParseFiles("frontend/public/error.html")
+	return template.ParseFiles("../frontend/public/error.html")
 }
 
 func GlucoseTrackerEndPointHandler(w http.ResponseWriter, r *http.Request) {
@@ -354,8 +354,8 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tmpl, err := template.ParseFiles(
-		"frontend/public/base.html",
-		"frontend/public/blog_display.html",
+		"../frontend/public/base.html",
+		"../frontend/public/blog_display.html",
 	)
 	if err != nil {
 		InternalServerErrorHandler(w)
@@ -371,8 +371,8 @@ func PostHandler(w http.ResponseWriter, r *http.Request) {
 
 func BlogHomeHandler(w http.ResponseWriter, r *http.Request) {
 	tmpl, err := template.ParseFiles(
-		"frontend/public/base.html",
-		"frontend/public/blog_home.html",
+		"../frontend/public/base.html",
+		"../frontend/public/blog_home.html",
 	)
 
 	data := struct {
