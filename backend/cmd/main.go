@@ -8,7 +8,7 @@ import (
 
 	handlers "diawise/internal/api"
 	database "diawise/internal/database"
-	"diawise/internal/services/support"
+	support "diawise/internal/services/support"
 	utils "diawise/pkg"
 
 	"github.com/gorilla/mux"
