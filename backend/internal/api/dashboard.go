@@ -23,7 +23,7 @@ func Dashboard(db *gorm.DB, tmpl *template.Template, sessionStore *sessions.Cook
 
 		// Check if user is authenticated
 		auth, ok := session.Values["authenticated"].(bool)
-		username, usernameOk := session.Values["username"].(string)
+		_, usernameOk := session.Values["username"].(string)
 
 		// Validate authentication
 		if !ok || !auth || !usernameOk {
@@ -33,7 +33,7 @@ func Dashboard(db *gorm.DB, tmpl *template.Template, sessionStore *sessions.Cook
 		}
 
 		// Serve dashboard page if authenticated
-		err = tmpl.ExecuteTemplate(w, "UserDashboard.html", username)
+		err = tmpl.ExecuteTemplate(w, "UserDashboard.html", nil)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
