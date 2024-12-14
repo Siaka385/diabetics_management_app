@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Title}}</title>
+    <link rel="stylesheet" href="/static/css/styles.css">
+</head>
+<body>
+    <header>
+        <h1>DiaWise Blog</h1>
+        <nav>
+            <a href="/">Home</a>
+        </nav>
+    </header>
+    <main>
+        <h2>Blog Posts</h2>
+<ul>
+    {{range .Posts}}
+    <li>
+        <a href="/post/{{.ID}}">{{.Title}}</a>
+        <p>{{.Excerpt}}</p>
+    </li>
+    {{end}}
+</ul>
+    </main>
+    <footer>
+        <p>&copy; @2024 DiaWise</p>
+    </footer>
+</body>
+</html>
+

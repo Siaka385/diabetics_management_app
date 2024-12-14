@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 
+	"diawise/internal/api"
 	handlers "diawise/internal/api"
 	database "diawise/internal/database"
 	support "diawise/internal/services/support"
@@ -70,6 +71,9 @@ func main() {
 	router.HandleFunc("/listmed", handlers.ListMedications(db)).Methods("GET")
 	router.HandleFunc("/api/support/message", handlers.Message(db)).Methods("POST")
 	router.HandleFunc("/api/support/events", handlers.SSEvents(db)).Methods("GET")
+	router.HandleFunc("/blog", api.BlogHomeHandler(tmpl)).Methods("GET")
+	router.HandleFunc("/glucose-tracker", api.GlucoseTrackerEndPointHandler).Methods("GET")
+	router.HandleFunc("/post/{id}", api.PostHandler(tmpl)).Methods("GET")
 
 	// CORS configuration
 	corsHandler := cors.New(cors.Options{

@@ -28,7 +28,7 @@ func Port() int16 {
 
 /*
 * GenerateRandomString generates a random string of the specified length
-*/
+ */
 func GenerateRandomString(length int) string {
 	source := rand.NewSource(time.Now().UnixNano())
 	r := rand.New(source) // Create a new random generator

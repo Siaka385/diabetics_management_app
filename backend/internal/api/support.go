@@ -2,8 +2,8 @@ package api
 
 import (
 	"fmt"
-	"net/http"
 	"html/template"
+	"net/http"
 
 	"diawise/internal/services/support"
 
@@ -16,8 +16,7 @@ func Support(db *gorm.DB, tmpl *template.Template) http.HandlerFunc {
 		// auth.LoginUser(db, "toni", "antony102")
 
 		// Choose a template based on URL path
-		var templateName string
-		templateName = "support.html"
+		templateName := "support.html"
 
 		err := tmpl.ExecuteTemplate(w, templateName, nil)
 		if err != nil {
