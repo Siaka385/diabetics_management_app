@@ -280,22 +280,136 @@ input, select {
 
 
 
-/*Nutrition and diet*/
 
+
+
+
+
+
+/* Mobile Menu Toggle Styles */
+.mobile-menu-toggle {
+    display: none;
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 1100;
+    width: 40px;
+    height: 30px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    transition: all 0.3s ease;
+}
+
+.mobile-menu-toggle-icon {
+    position: relative;
+    width: 100%;
+    height: 4px;
+    background-color: var(--primary);
+    border-radius: 2px;
+    display: block;
+    transition: all 0.3s ease;
+}
+
+.mobile-menu-toggle-icon::before,
+.mobile-menu-toggle-icon::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 4px;
+    background-color: var(--primary);
+    border-radius: 2px;
+    transition: all 0.3s ease;
+    left: 0;
+}
+
+.mobile-menu-toggle-icon::before {
+    top: -10px;
+}
+
+.mobile-menu-toggle-icon::after {
+    bottom: -10px;
+}
+
+/* Menu Toggle Animation */
+.mobile-menu-toggle.active .mobile-menu-toggle-icon {
+    background-color: transparent;
+}
+
+.mobile-menu-toggle.active .mobile-menu-toggle-icon::before {
+    transform: rotate(45deg);
+    top: 0;
+}
+
+.mobile-menu-toggle.active .mobile-menu-toggle-icon::after {
+    transform: rotate(-45deg);
+    bottom: 0;
+}
+
+@media screen and (max-width: 768px) {
+    .mobile-menu-toggle {
+        display: block;
+    }
+
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: -250px;
+        width: 250px;
+        height: 100vh;
+        z-index: 1000;
+        transition: left 0.3s ease;
+        background: white;
+        box-shadow: 2px 0 15px rgba(0,0,0,0.2);
+        overflow-y: auto;
+    }
+
+    .sidebar.open {
+        left: 0;
+    }
+
+    .main-content {
+        width: 100%;
+        padding: 1rem;
+    }
+
+    .overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        z-index: 999;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+
+    .overlay.active {
+        display: block;
+        opacity: 1;
+    }
+}
+
+
+
+/*Nutrition and diet*/
 .nutrition-container {
     display: grid;
-    grid-template-columns: 1fr 400px;
+    grid-template-columns: 1fr 1fr;
     gap: 2rem;
 }
 
-.meal-log, .nutrition-advice {
+.meal-log, .meal-plan-generator {
     background: white;
     border-radius: 1rem;
     padding: 1.5rem;
     box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
-.meal-form, .food-input-form, .meal-plan-form {
+.meal-form, .preferences-form {
     display: grid;
     gap: 1rem;
 }
@@ -312,7 +426,7 @@ input, select {
     margin-top: 0.5rem;
 }
 
-.log-btn, .add-food-btn, .meal-plan-btn {
+.log-btn, .meal-plan-btn {
     background: var(--primary);
     color: white;
     border: none;
@@ -323,65 +437,25 @@ input, select {
     text-align: center;
 }
 
-.log-btn:hover, .add-food-btn:hover, .meal-plan-btn:hover {
+.log-btn:hover, .meal-plan-btn:hover {
     background: var(--secondary);
 }
 
-.meal-list, .food-list, .meal-plan-list {
-    margin-top: 1.5rem;
-    max-height: 300px;
-    overflow-y: auto;
-}
-
-.meal-entry, .food-entry, .meal-plan-entry {
-    background: var(--background);
-    padding: 1rem;
-    border-radius: 0.5rem;
-    margin-bottom: 0.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.nutrition-advice {
-    position: sticky;
-    top: 2rem;
-    max-height: 80vh;
-    overflow-y: auto;
-}
-
-.advice-section {
-    margin-bottom: 1.5rem;
-    padding: 1rem;
-    background: var(--background);
-    border-radius: 0.5rem;
-}
-
-.advice-tag, .food-tag, .nutrition-tag {
-    display: inline-block;
-    padding: 0.25rem 0.5rem;
-    margin-right: 0.5rem;
-    margin-bottom: 0.5rem;
-    background: var(--primary);
-    color: white;
-    border-radius: 0.25rem;
-    font-size: 0.8rem;
-}
-
-
-
-/* Additional styles for new features */
-.meal-plan-generator {
-    background: white;
-    border-radius: 1rem;
-    padding: 1.5rem;
+.meals-table {
+    width: 100%;
+    border-collapse: collapse;
     margin-top: 1rem;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
 }
 
-.preferences-form {
-    display: grid;
-    gap: 1rem;
+.meals-table th, .meals-table td {
+    border: 1px solid #e2e8f0;
+    padding: 0.75rem;
+    text-align: left;
+}
+
+.meals-table th {
+    background-color: var(--background);
+    font-weight: 600;
 }
 
 .preference-tags {
@@ -410,7 +484,109 @@ input, select {
     border-radius: 0.5rem;
     padding: 1rem;
 }
+/* Existing styles remain the same, adding mobile responsiveness */
+@media screen and (max-width: 768px) {
+.dashboard {
+    grid-template-columns: 1fr;
+}
 
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: -250px;
+    width: 250px;
+    height: 100vh;
+    z-index: 1000;
+    transition: left 0.3s ease;
+}
+
+.sidebar.open {
+    left: 0;
+}
+
+.main-content {
+    padding: 1rem;
+    margin-left: 0;
+}
+
+.nutrition-container {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+}
+
+.header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.profile-image {
+    width: 100px;
+    height: 100px;
+    font-size: 2.5rem;
+}
+
+.meals-table {
+    font-size: 0.9rem;
+}
+
+.meals-table th, .meals-table td {
+    padding: 0.5rem;
+}
+
+.preference-tags {
+    flex-direction: column;
+}
+
+.preference-tag {
+    width: 100%;
+    text-align: center;
+}
+
+/* Mobile Menu Toggle */
+.mobile-menu-toggle {
+    display: block;
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 1100;
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 999;
+}
+
+.overlay.active {
+    display: block;
+}
+}
+
+@media screen and (max-width: 480px) {
+.form-group {
+    flex-direction: column;
+}
+
+input, select {
+    width: 100%;
+}
+
+.log-btn, .meal-plan-btn {
+    width: 100%;
+}
+}
 
 
 

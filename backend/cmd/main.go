@@ -18,10 +18,9 @@ import (
 )
 
 var (
-	db           *gorm.DB // since sqlite is an internal database that is file based, we need to  have a single handler to the database. Use mutexes to prevent race conditions
-	tmpl         *template.Template
-	err          error
-	sessionStore *sessions.CookieStore
+	db   *gorm.DB // since sqlite is an internal database that is file based, we need to  have a single handler to the database. Use mutexes to prevent race conditions
+	tmpl *template.Template
+	err  error
 )
 
 func init() {

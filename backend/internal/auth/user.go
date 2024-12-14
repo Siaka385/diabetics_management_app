@@ -18,7 +18,7 @@ func RegisterUser(db *gorm.DB, username, email, password string) bool {
 
 	user := &User{
 		Username: username,
-		Email: email,
+		Email:    email,
 		Password: string(hashedPassword),
 	}
 	db.Create(user)
