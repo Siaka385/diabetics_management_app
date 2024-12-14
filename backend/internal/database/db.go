@@ -9,6 +9,7 @@ import (
 
 var DB *sql.DB
 
+// initialize the database connection
 func initDB(dataSourceName string) error {
 	var err error
 	DB, err = sql.Open("sqlite3", dataSourceName)
@@ -23,3 +24,5 @@ func initDB(dataSourceName string) error {
 
 	return nil
 }
+
+// Close the database connection
