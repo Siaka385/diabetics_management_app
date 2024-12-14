@@ -1,18 +1,29 @@
 package api
 
 import (
-	"fmt"
 	"net/http"
+	"text/template"
 
-	auth "diawise/internal/auth"
+	// auth "diawise/internal/auth"
 
 	"gorm.io/gorm"
 )
 
-func Index(db *gorm.DB) http.HandlerFunc {
+/*
+*	Frontend server
+*
+ */
+func Index(db *gorm.DB, tmpl *template.Template) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		//auth.RegisterUser(db, "toni", "toni@mail.com", "antony102")
-		auth.LoginUser(db, "toni", "antony102")
-		fmt.Fprintf(w, "Hello")
+		// auth.RegisterUser(db, "toni", "toni@mail.com", "antony102")
+		// auth.LoginUser(db, "toni", "antony102")
+
+		var templateName string
+		templateName = "index.html"
+
+		err := tmpl.ExecuteTemplate(w, templateName, nil)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
 	}
 }
