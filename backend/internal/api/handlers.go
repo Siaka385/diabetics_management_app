@@ -1,8 +1,13 @@
 package api
 
 import (
+	"encoding/json"
+	"html/template"
+	"log"
 	"net/http"
 	"text/template"
+
+	"github.com/gorilla/mux"
 
 	// auth "diawise/internal/auth"
 
@@ -27,16 +32,6 @@ func Index(db *gorm.DB, tmpl *template.Template) http.HandlerFunc {
 		}
 	}
 }
-
-
-import (
-	"encoding/json"
-	"html/template"
-	"log"
-	"net/http"
-
-	"github.com/gorilla/mux"
-)
 
 func GlucoseTrackerEndPointHandler(w http.ResponseWriter, r *http.Request) {
 	// Capture glucose level and date from the request query parameters
