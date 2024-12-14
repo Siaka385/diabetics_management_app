@@ -2,7 +2,7 @@ package api
 
 import (
 	"net/http"
-	"text/template"
+	"html/template"
 
 	// auth "diawise/internal/auth"
 

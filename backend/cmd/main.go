@@ -2,9 +2,9 @@ package main
 
 import (
 	"fmt"
+	"html/template"
 	"log"
 	"net/http"
-	"text/template"
 
 	handlers "diawise/internal/api"
 	database "diawise/internal/database"
@@ -12,14 +12,16 @@ import (
 	utils "diawise/pkg"
 
 	"github.com/gorilla/mux"
+	"github.com/gorilla/sessions"
 	"github.com/rs/cors"
 	"gorm.io/gorm"
 )
 
 var (
-	db   *gorm.DB // since sqlite is an internal database that is file based, we need to  have a single handler to the database. Use mutexes to prevent race conditions
-	tmpl *template.Template
-	err error
+	db           *gorm.DB // since sqlite is an internal database that is file based, we need to  have a single handler to the database. Use mutexes to prevent race conditions
+	tmpl         *template.Template
+	err          error
+	sessionStore *sessions.CookieStore
 )
 
 func init() {
@@ -30,7 +32,20 @@ func init() {
 		log.Fatal(err)
 	}
 
+	// initialize all the structures needed for the support
+	// includes the mutex to help coordinate the clients' map
 	support.Init()
+
+	// sessions and cookies
+	secret := utils.GenerateRandomString(32)
+	sessionStore = sessions.NewCookieStore([]byte(secret))
+
+	sessionStore.Options = &sessions.Options{
+		Path:     "/dashboard",
+		MaxAge:   3600,  // expiration time in seconds
+		HttpOnly: true,  // the cookie should be only accessible by HTTP(S)
+		Secure:   false, // set to true in production to use with HTTPS
+	}
 }
 
 func main() {
@@ -43,7 +58,10 @@ func main() {
 	router.HandleFunc("/", handlers.Index(db, tmpl)).Methods("GET")
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("../../frontend/src"))))
 	router.HandleFunc("/auth/register", handlers.RegisterUser(db)).Methods("POST")
-	router.HandleFunc("/auth/login", handlers.LoginUser(db)).Methods("POST")
+	router.HandleFunc("/auth/login", handlers.LoginUser(db, sessionStore)).Methods("POST")
+	router.HandleFunc("/login", handlers.Login(db, tmpl, sessionStore)).Methods("GET")
+	router.HandleFunc("/logout", handlers.Logout(sessionStore)).Methods("GET")
+	router.HandleFunc("/dashboard", handlers.Dashboard(db, tmpl, sessionStore)).Methods("GET")
 	router.HandleFunc("/support", handlers.Support(db, tmpl)).Methods("GET")
 	router.HandleFunc("/api/support/message", handlers.Message(db)).Methods("POST")
 	router.HandleFunc("/api/support/events", handlers.SSEvents(db)).Methods("GET")
