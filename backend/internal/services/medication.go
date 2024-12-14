@@ -1,6 +1,7 @@
 package services
 
 import (
+	"database/sql"
 	"errors"
 	"fmt"
 	"time"
@@ -25,7 +26,9 @@ type Medication struct {
 	Notes            string    `json:"notes"`
 }
 
-type MedicationService struct{}
+type MedicationService struct{
+	DB *sql.DB
+}
 
 // new medication creates a new medication
 func NewMedicationService() *MedicationService {
@@ -103,4 +106,32 @@ func (s *MedicationService) UpdateMedication(medication Medication) (Medication,
 		return Medication{}, fmt.Errorf("failed to get updated medication: %v", err)
 	}
 	return med, nil
+}
+
+// Delete medications by medication_id
+func (s *MedicationService) DeleteMedication(medication Medication) error {
+	if medication.Medication_id == "" || medication.User_id == "" {
+		return errors.New("missing required fields")
+	}
+
+	if s.DB == nil {
+		return errors.New("database connection not initialized")
+	}
+
+	result, err := database.DB.Exec("DELETE FROM medications WHERE medication_id=? AND user_id=?", medication.Medication_id, medication.User_id)
+	if err != nil {
+		return fmt.Errorf("failed to delete medication: %v", err)
+	}
+
+	// Get the number of rows affected by the DELETE statement
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("failed to get rows affected: %v", err)
+	}
+
+	if rowsAffected == 0 {
+		return fmt.Errorf("medication not found")
+	}
+
+	return nil
 }
