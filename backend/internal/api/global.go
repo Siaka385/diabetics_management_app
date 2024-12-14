@@ -18,9 +18,9 @@ type Meal struct {
 }
 
 type MealPlanResponse struct {
-	Duration string      `json:"duration"`
-	Meals    []Meal      `json:"meals"`
-	Message  string      `json:"message"`
+	Duration string `json:"duration"`
+	Meals    []Meal `json:"meals"`
+	Message  string `json:"message"`
 }
 
 // Meal log

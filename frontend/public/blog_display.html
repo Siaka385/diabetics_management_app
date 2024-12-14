@@ -1,33 +1,296 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{.Title}}</title>
-    <link rel="stylesheet" href="/static/css/styles.css">
-</head>
-<body>
-    <header>
-        <h1>DiaWise Blog</h1>
-        <nav>
-            <a href="/">Home</a>
-        </nav>
-    </header>
-    <main>
+<html><head><base href="https://cdn.example.com"/>
+    <style>
+    /* Root Variables */
+    :root {
+      --primary: #1e3a8a;
+      --secondary: #2563eb;
+      --accent: #3b82f6;
+      --background: #f0f9ff;
+      --text: #0f172a;
+      --warning: #e11d48;
+      --white: #ffffff;
+      --green: #10b981;
+      --yellow: #f59e0b;
+      --light-gray: #f4f7fa;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+    
+    body {
+      background-color: #f4f7fa;
+      color: var(--text);
+      line-height: 1.6;
+    }
+    
+    .container {
+      display: grid;
+      grid-template-columns: 250px 1fr 300px;
+      min-height: 100vh;
+    }
+    
+    /* Sidebar Styles */
+    .sidebar {
+      background: white;
+      box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+      padding: 2rem 1rem;
+      position: relative;
+    }
+    
+    .profile {
+      text-align: center;
+      margin-bottom: 2rem;
+      position: relative;
+    }
+    
+    .profile-image {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+      margin: 0 auto 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 3rem;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .sidebar-nav {
+      list-style: none;
+    }
+    
+    .sidebar-nav li {
+      margin-bottom: 0.5rem;
+    }
+    
+    .sidebar-nav a {
+      text-decoration: none;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      transition: all 0.3s ease;
+    }
+    
+    .sidebar-nav a:hover,
+    .sidebar-nav a.active {
+      background-color: var(--background);
+      color: var(--primary);
+      transform: translateX(5px);
+    }
+    
+    /* Main Content Styles */
+    .main-content {
+      padding: 2rem;
+      background: #f4f7fa;
+    }
+    
+    article {
+      background: white;
+      border-radius: 8px;
+      padding: 2rem;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    .article-header {
+      margin-bottom: 2rem;
+    }
+    
+    .article-title {
+      font-size: 2.5rem;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+    
+    .article-meta {
+      color: var(--secondary);
+      font-size: 0.9rem;
+    }
+    
+    .article-content {
+      font-size: 1.1rem;
+      line-height: 1.8;
+    }
+    
+    .article-content p {
+      margin-bottom: 1.5rem;
+    }
+    
+    .article-image {
+      width: 100%;
+      height: 300px;
+      margin: 2rem 0;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    
+    .tags {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 2rem;
+    }
+    
+    .tag {
+      background: var(--accent);
+      color: white;
+      padding: 0.3rem 0.8rem;
+      border-radius: 20px;
+      font-size: 0.8rem;
+    }
+    
+    /* Right Sidebar Styles */
+    .right-sidebar {
+      background: white;
+      padding: 2rem;
+      box-shadow: -2px 0 5px rgba(0,0,0,0.05);
+    }
+    
+    .similar-articles {
+      list-style: none;
+    }
+    
+    .similar-articles h2 {
+      color: var(--primary);
+      margin-bottom: 1.5rem;
+      font-size: 1.5rem;
+    }
+    
+    .article-card {
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1rem;
+      transition: all 0.3s ease;
+      border: 1px solid var(--light-gray);
+    }
+    
+    .article-card:hover {
+      background: var(--background);
+      transform: translateX(-5px);
+    }
+    
+    .article-card h3 {
+      color: var(--primary);
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .article-card p {
+      color: var(--text);
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+    
+    .article-card .date {
+      color: var(--secondary);
+      font-size: 0.8rem;
+      margin-top: 0.5rem;
+    }
+    
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    article, .sidebar, .right-sidebar {
+      animation: fadeIn 0.6s ease-out;
+    }
+    </style>
+    </head>
+    <body>
+      <div class="container">
+        <aside class="sidebar">
+          <div class="profile">
+            <div class="profile-image">JD</div>
+            <h2>John Doe</h2>
+            <p>Type 2 Diabetes</p>
+          </div>
+          <nav>
+            <ul class="sidebar-nav">
+              <li><a href="https://example.com/dashboard">Dashboard</a></li>
+              <li><a href="https://example.com/track">Blood Sugar</a></li>
+              <li><a href="https://example.com/nutrition">Diet & Nutrition</a></li>
+              <li><a href="https://example.com/addmedication" class="active">Medications</a></li>
+              <li><a href="https://example.com/education">Education</a></li>
+              <li><a href="https://example.com/support">Support Group</a></li>
+            </ul>
+          </nav>
+        </aside>
+    
         <article>
-            <h2>{{.Title}}</h2>
-            <p><i>By {{.Author}} on {{.Date}}</i></p>
-            <div>
-                {{.Content}}
+          <header class="article-header">
+            <h1 class="article-title">{{.Title}}</h1>
+            <div class="article-meta">
+              <span>Published on {{.Date}}</span> • 
+              <span>By {{.Author}}</span>
             </div>
+          </header>
+    
+          <div class="article-image">
+            <svg viewBox="0 0 800 300" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                  <stop offset="0%" style="stop-color:#3498db;stop-opacity:1" />
+                  <stop offset="100%" style="stop-color:#2980b9;stop-opacity:1" />
+                </linearGradient>
+              </defs>
+              <rect width="100%" height="100%" fill="url(#grad)"/>
+              <circle cx="200" cy="150" r="50" fill="white" opacity="0.1"/>
+              <circle cx="600" cy="150" r="80" fill="white" opacity="0.1"/>
+              <path d="M100,150 Q400,50 700,150" stroke="white" fill="none" stroke-width="2"/>
+              <text x="400" y="150" text-anchor="middle" fill="white" font-size="24">{{.Title}}</text>
+            </svg>
+          </div>
+    
+          <div class="article-content">
+            {{.Content}}
+          </div>
+    
+          <div class="tags">
+            <span class="tag">diabetes management</span>
+            <span class="tag">diet</span>
+            <span class="tag">insullin</span>
+          </div>
         </article>
-        <a href="/">Back to Home</a>
-    </main>
-    <footer>
-        <p>&copy; @2024 DiaWise</p>
-    </footer>
-</body>
-</html>
-
-
-
+    
+        <aside class="right-sidebar">
+          <div class="similar-articles">
+            <h2>Similar Articles</h2>
+            <div class="article-card">
+              <h3>{{.Title}}</h3>
+              <p>{{.Excerpt}}</p>
+              <div class="date">{{.Date}}</div>
+            </div>
+            <div class="article-card">
+              <h3>{{.Title}}</h3>
+              <p>{{.Excerpt}}</p>
+              <div class="date"> {{.Date}}</div>
+            </div>
+            <div class="article-card">
+              <h3>{{.Title}}</h3>
+              <p>{{.Excerpt}}</p>
+              <div class="date">{{.Date}}</div>
+            </div>
+            <div class="article-card">
+              <h3>{{.Title}}</h3>
+              <p>{{.Excerpt}}</p>
+              <div class="date">{{.Date}}</div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </body>
+    </html>
