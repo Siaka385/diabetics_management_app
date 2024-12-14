@@ -23,8 +23,6 @@ func RegisterUser(db *gorm.DB, username, email, password string) bool {
 	}
 	db.Create(user)
 
-	fmt.Println("USER: ", user)
-
 	// Read
 	var userFromDB User
 	db.First(&userFromDB, 1) // Find user with id 1
@@ -49,6 +47,5 @@ func LoginUser(db *gorm.DB, username, password string) (*User, error) {
 		return nil, fmt.Errorf("incorrect password")
 	}
 
-	println("Success")
 	return &user, nil
 }

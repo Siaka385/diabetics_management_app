@@ -2,8 +2,8 @@ package api
 
 import (
 	"encoding/json"
-	"net/http"
 	"html/template"
+	"net/http"
 
 	auth "diawise/internal/auth"
 
@@ -38,7 +38,16 @@ import (
 // 	}
 // }
 
-func RegisterUser(db *gorm.DB) http.HandlerFunc {
+func Signup(db *gorm.DB, tmpl *template.Template, sessionStore *sessions.CookieStore) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		err := tmpl.ExecuteTemplate(w, "signup.html", nil)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+	}
+}
+
+func SignupUser(db *gorm.DB, sessionStore *sessions.CookieStore) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		var response map[string]string
@@ -51,15 +60,21 @@ func RegisterUser(db *gorm.DB) http.HandlerFunc {
 		}
 
 		// Register user
-		err := auth.RegisterUser(db, user.Username, user.Email, user.Password)
-		if !err {
-			response = map[string]string{"status": "error", "message": "unable to register user"}
+		success := auth.RegisterUser(db, user.Username, user.Email, user.Password)
+		if !success {
+			// If there is an error (e.g., email already registered), return error response
+			response = map[string]string{"status": "error", "message": "Unable to register user"}
 			w.WriteHeader(http.StatusInternalServerError)
 		} else {
-			response = map[string]string{"status": "success", "message": "User registered successfully"}
+			// User registered successfully
+			response = map[string]string{
+				"status":   "success",
+				"message":  "User registered successfully",
+				"redirect": "/", // redirect the user to dashboard after successful registration
+			}
 			w.WriteHeader(http.StatusCreated)
 		}
-
+		// Send the response back to the frontend
 		json.NewEncoder(w).Encode(response)
 	}
 }
