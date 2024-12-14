@@ -621,23 +621,6 @@ input, select {
 
 
 /*Medication*/
-.main-content {
-    padding: 2rem;
-    background: #f4f7fa;
-}
-
-.header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 2rem;
-}
-
-.medications-container {
-    display: grid;
-    grid-template-columns: 1fr 350px;
-    gap: 2rem;
-}
 
 .medications-list {
     background: white;
@@ -791,8 +774,6 @@ input, select {
     cursor: pointer;
     color: var(--warning);
 }
-
-
 
 /**Education*/
 .education-grid {
