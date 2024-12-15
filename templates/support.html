@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diawise Community</title>
+
+    <!-- Google Fonts for Gothic Style -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/static/css/support.css">
+
+    <style>
+        body {
+            background: #e6f0f8; /* Soft dull blue background */
+            color: #000000;
+            font-family: 'Cinzel', serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            height: 100vh;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .chat-container {
+            display: flex;
+            max-width: 1000px;
+            width: 100%;
+            background: rgba(240, 248, 255, 0.9); /* Dull blue with slight transparency */
+            color: whitesmoke;
+            border: 2px solid #5c6e83; /* Dull blue-gray border */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.7);
+            flex-direction: row;
+        }
+
+        .room-list-container {
+            width: 250px;
+            background-color: #5c6e83; /* Dull blue-gray */
+            padding: 20px;
+            margin-right: 20px;
+            border-radius: 10px;
+            height: auto;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        .chat-details-container {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            max-width: 100%;
+        }
+
+        h2 {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #2b3e55; /* Dull blue */
+        }
+
+        #roomName {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+        }
+
+        #userInfo {
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            font-style: italic;
+            color: #000000;
+        }
+
+        label, button {
+            font-size: 1.1em;
+            color: #fff;
+            font-weight: bold;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 8px;
+            margin: 10px 0;
+            border: 1px solid #444;
+            font-family: 'Cinzel', serif;
+            font-size: 1em;
+            border-radius: 5px;
+        }
+
+        textarea {
+            resize: none;
+            height: 100px;
+        }
+
+        button {
+            background-color: #6f7e99; /* Dull blue-gray button */
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        button:hover {
+            background-color: #4f5e72; /* Darker blue-gray on hover */
+        }
+
+        #messages {
+            height: 300px;
+            overflow-y: scroll;
+            margin-bottom: 20px;
+            background-color: #7c8a99; /* Dull blue-gray background for messages */
+            border-radius: 5px;
+            padding: 10px;
+            font-size: 1em;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .system-message {
+            font-style: italic;
+            color: #ff6347;
+        }
+
+        .user-message {
+            font-weight: bold;
+        }
+
+        .join-message {
+            font-style: italic;
+        }
+
+        /* Style for Room List buttons */
+        .room-list-container {
+            height: fit-content;
+        }
+        .room-list-container button {
+            background-color: #4f5e72; /* Dull blue-gray */
+            color: #fff;
+            width: 100%;
+            padding: 10px;
+            border: none;
+            margin: 5px 0;
+            text-align: left;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+        }
+
+        .room-list-container button:hover {
+            background-color: #3c4958; /* Darker blue-gray on hover */
+        }
+
+        /* Scrollable room list */
+        .room-list-container ul {
+            padding: 0;
+            margin: 0;
+            list-style-type: none;
+        }
+
+        .room-list-container li {
+            margin-bottom: 10px;
+        }
+
+        /* Button container above the chat area */
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="chat-container">
+    <!-- Room List -->
+    <div class="room-list-container">
+        <h3>Rooms:</h3>
+        <ul id="roomList"></ul>
+    </div>
+
+    <!-- Chat Details -->
+    <div class="chat-details-container">
+        <div class="button-container">
+            <button onclick="createRoom()">Create Room</button>
+            <button onclick="listRooms()">Refresh Rooms</button>
+        </div>
+
+        <h2>Diawise Community</h2>
+        
+        <!-- Room Name -->
+        <div id="roomName" style="display:none;"></div>
+
+        <!-- User Info -->
+        <div id="userInfo" style="display:none;">
+            <p><strong>User:</strong> <span id="userName"></span> (<span id="userId"></span>)</p>
+        </div>
+
+        <!-- Username input -->
+        <label for="username">Username:</label>
+        <input type="text" id="username" placeholder="Enter your username" required>
+
+        <!-- Message Area -->
+        <div id="roomDetails" style="display:none;">
+            <h3>Messages:</h3>
+            <div id="messages"></div>
+            <textarea id="messageInput" placeholder="Enter your message..."></textarea>
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentRoomId = null;
+    let currentUserId = null;
+    let currentUserName = null;
+
+    // Create a new chat room
+    function createRoom() {
+        const roomName = prompt("Enter Room Name:");
+        fetch('/createroom', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({name: roomName})
+        }).then(response => response.json())
+          .then(data => {
+              if (data.error) {
+                  alert("Error: " + data.error);
+              } else {
+                  alert("Room created with ID: " + data.roomId);
+                  listRooms();  // Refresh room list
+              }
+          }).catch(error => {
+              console.error("Error:", error);
+              alert("An error occurred while creating the room.");
+          });
+    }
+
+    // List all available rooms
+    function listRooms() {
+        fetch('/listrooms')
+            .then(response => response.json())
+            .then(rooms => {
+                const roomList = document.getElementById("roomList");
+                roomList.innerHTML = '';
+                rooms.forEach(room => {
+                    const li = document.createElement("li");
+                    li.innerHTML = `<button onclick="joinRoom('${room.roomId}')">${room.name}</button>`;
+                    roomList.appendChild(li);
+                });
+            });
+    }
+
+    // Join a room
+    function joinRoom(roomId) {
+        currentRoomId = roomId;
+        currentUserId = prompt("Enter your user ID:");
+        currentUserName = document.getElementById("username").value;
+
+        // Display room name and user info
+        const roomNameElem = document.getElementById("roomName");
+        roomNameElem.textContent = `Room: ${roomId}`;
+        roomNameElem.style.display = "block";
+
+        document.getElementById("userName").textContent = currentUserName;
+        document.getElementById("userId").textContent = currentUserId;
+        document.getElementById("userInfo").style.display = "block";
+
+        fetch(`/joinroom?roomId=${roomId}&userId=${currentUserId}`)
+            .then(response => {
+                document.getElementById("roomDetails").style.display = "block";
+                startListeningForMessages();
+            });
+    }
+
+    // Start listening for messages from the room
+    function startListeningForMessages() {
+        const source = new EventSource(`/joinroom?roomId=${currentRoomId}&userId=${currentUserId}`);
+        source.onmessage = function(event) {
+            const message = JSON.parse(event.data);
+            const messagesDiv = document.getElementById("messages");
+
+            if (message.sender === "System") {
+                messagesDiv.innerHTML += `<p class="join-message"><em>${message.content}</em></p>`;
+            } else {
+                messagesDiv.innerHTML += `<p class="user-message"><strong>${message.sender}</strong>: ${message.content}</p>`;
+            }
+
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        };
+    }
+
+    // Send a message to the current room
+    function sendMessage() {
+        const messageContent = document.getElementById("messageInput").value;
+        fetch('/sendmessage', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                roomId: currentRoomId,
+                userId: currentUserId,
+                message: messageContent
+            })
+        }).then(() => {
+            document.getElementById("messageInput").value = '';  // Clear message input
+        });
+    }
+</script>
+
+</body>
+</html>
