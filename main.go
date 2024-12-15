@@ -31,7 +31,6 @@ func init() {
 		log.Fatal(err)
 	}
 
-
 	// sessions and cookies
 	secret := utils.GenerateRandomString(32)
 	sessionStore = sessions.NewCookieStore([]byte(secret))
@@ -64,7 +63,7 @@ func main() {
 	router.HandleFunc("/logout", handlers.Logout(sessionStore)).Methods("GET")
 	router.HandleFunc("/dashboard", handlers.Dashboard(db, tmpl, sessionStore)).Methods("GET")
 	router.HandleFunc("/medication", handlers.MedicationPageHandler(db, tmpl, sessionStore)).Methods("GET")
-	router.HandleFunc("/addmedication", handlers.AddMedicationHandler(db, tmpl, sessionStore)).Methods("GET", "POST")
+	// router.HandleFunc("/addmedication", handlers.AddMedicationHandler(db, tmpl, sessionStore)).Methods("GET", "POST")
 	router.HandleFunc("/updatemed/{id}", handlers.UpdateMedication(db, sessionStore)).Methods("PUT")
 	router.HandleFunc("/deletemed/{id}", handlers.DeleteMedication(db, sessionStore)).Methods("DELETE")
 	router.HandleFunc("/listmed", handlers.ListMedications(db, sessionStore)).Methods("GET")
@@ -72,17 +71,17 @@ func main() {
 	router.HandleFunc("/bloodsugar", handlers.BloodSugarHandler(tmpl)).Methods("GET")
 	router.HandleFunc("/education", handlers.EducationHandler(tmpl)).Methods("GET")
 	router.HandleFunc("/nutrition", handlers.DietAndNutritionHandler(tmpl)).Methods("GET")
+	router.HandleFunc("/addmedication", handlers.MedicationHandler(tmpl)).Methods("GET")
 	router.HandleFunc("/supportcommunity", handlers.CommuniyAndSupportHandler(tmpl)).Methods("GET")
 	router.HandleFunc("/glucose-tracker", handlers.GlucoseTrackerEndPointHandler).Methods("GET")
 	router.HandleFunc("/post/{id}", handlers.PostHandler(tmpl)).Methods("GET")
-	
+
 	router.HandleFunc("/support", handlers.Support(tmpl)).Methods("GET")
 	router.HandleFunc("/createroom", handlers.CreateRoom(db)).Methods("POST")
 	router.HandleFunc("/listrooms", handlers.ListRooms(db)).Methods("GET")
 	router.HandleFunc("/joinroom", handlers.JoinRoom(db))
 	router.HandleFunc("/sendmessage", handlers.SendMessage)
 	router.HandleFunc("/deleteroom", handlers.DeleteRoom(db))
-
 
 	// CORS configuration
 	corsHandler := cors.New(cors.Options{
