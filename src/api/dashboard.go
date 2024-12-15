@@ -3,6 +3,7 @@ package api
 import (
 	"fmt"
 	"html/template"
+	"log"
 	"net/http"
 
 	"github.com/gorilla/sessions"
@@ -14,7 +15,8 @@ func Dashboard(db *gorm.DB, tmpl *template.Template, sessionStore *sessions.Cook
 		// Get the session
 		session, err := sessionStore.Get(r, "session-name")
 		if err != nil {
-			http.Error(w, "Error retrieving session", http.StatusInternalServerError)
+			log.Printf("Error retrieving session: %v", err)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
 
@@ -23,7 +25,7 @@ func Dashboard(db *gorm.DB, tmpl *template.Template, sessionStore *sessions.Cook
 
 		// Check if user is authenticated
 		auth, ok := session.Values["authenticated"].(bool)
-		_, usernameOk := session.Values["username"].(string)
+		username, usernameOk := session.Values["username"].(string)
 
 		// Validate authentication
 		if !ok || !auth || !usernameOk {
@@ -32,10 +34,13 @@ func Dashboard(db *gorm.DB, tmpl *template.Template, sessionStore *sessions.Cook
 			return
 		}
 
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		w.WriteHeader(http.StatusOK)
+
 		// Serve dashboard page if authenticated
-		err = tmpl.ExecuteTemplate(w, "UserDashboard.html", nil)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+		if err := tmpl.ExecuteTemplate(w, "UserDashboard.html", username); err != nil {
+			log.Printf("Error executing template: %v", err)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		}
 	}
 }
