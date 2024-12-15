@@ -14,7 +14,7 @@ func CORS(next http.HandlerFunc) http.HandlerFunc {
 			w.WriteHeader(http.StatusOK)
 			return
 		}
-
+		// https://github.com/Siaka385/diabetics_management_app
 		next(w, r)
 	}
 }

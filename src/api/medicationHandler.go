@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"time"
 
-	"diawise/internal/services"
+	"diawise/src/services"
 
 	"github.com/gorilla/mux"
 	"gorm.io/gorm"

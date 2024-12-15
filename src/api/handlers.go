@@ -7,7 +7,7 @@ import (
 	"log"
 	"net/http"
 
-	"diawise/internal/services"
+	"diawise/src/services"
 
 	"github.com/gorilla/mux"
 

@@ -4,9 +4,8 @@ import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 
-	auth "diawise/internal/auth"
-	"diawise/internal/services"
-	medication "diawise/internal/services"
+	auth "diawise/src/auth"
+	medication "diawise/src/services"
 )
 
 func InitializeDatabase(dbPath string) *gorm.DB {
@@ -20,8 +19,8 @@ func InitializeDatabase(dbPath string) *gorm.DB {
 	// db.AutoMigrate(&api.NutrientInfo{})
 	// db.AutoMigrate(&api.MealItem{})
 	db.AutoMigrate(&medication.Medication{})
-	db.AutoMigrate(&services.MealLogEntry{})
-	db.AutoMigrate(&services.DailyMealLog{})
+	db.AutoMigrate(&medication.MealLogEntry{})
+	db.AutoMigrate(&medication.DailyMealLog{})
 
 	return db
 }

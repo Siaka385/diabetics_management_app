@@ -5,7 +5,7 @@ import (
 	"html/template"
 	"net/http"
 
-	auth "diawise/internal/auth"
+	auth "diawise/src/auth"
 
 	"github.com/gorilla/sessions"
 	"gorm.io/gorm"

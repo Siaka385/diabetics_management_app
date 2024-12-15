@@ -6,11 +6,10 @@ import (
 	"log"
 	"net/http"
 
-	"diawise/internal/api"
-	handlers "diawise/internal/api"
-	database "diawise/internal/database"
-	support "diawise/internal/services/support"
-	utils "diawise/pkg"
+	handlers "diawise/src/api"
+	database "diawise/src/database"
+	support "diawise/src/services/support"
+	utils "diawise/src/utils"
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
@@ -28,7 +27,7 @@ var (
 func init() {
 	db = database.InitializeDatabase("data/diawise.db")
 	// parse all html files in the frontend and its subdirectories beforehand // optimization
-	tmpl, err = template.ParseGlob("../../frontend/**/*.html")
+	tmpl, err = template.ParseGlob("templates/*.html")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -57,9 +56,9 @@ func main() {
 	router := mux.NewRouter()
 
 	router.HandleFunc("/", handlers.Index(db, tmpl)).Methods("GET")
-	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("../../frontend/src"))))
-	router.HandleFunc("/nutrition/meal/log", api.LogMealHandler(db)).Methods("POST")
-	router.HandleFunc("/nutrition/mealplan", api.GetMealPlan).Methods("POST")
+	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
+	router.HandleFunc("/nutrition/meal/log", handlers.LogMealHandler(db)).Methods("POST")
+	router.HandleFunc("/nutrition/mealplan", handlers.GetMealPlan).Methods("POST")
 	// router.HandleFunc("/nutrition/editplan", api.EditPlan).Methods("POST")
 	// router.HandleFunc("/nutrition/suggestions", api.GetMealSuggestions).Methods("POST")
 	router.HandleFunc("/signup", handlers.Signup(db, tmpl, sessionStore)).Methods("GET")
@@ -76,9 +75,9 @@ func main() {
 	router.HandleFunc("/listmed", handlers.ListMedications(db)).Methods("GET")
 	router.HandleFunc("/api/support/message", handlers.Message(db)).Methods("POST")
 	router.HandleFunc("/api/support/events", handlers.SSEvents(db)).Methods("GET")
-	router.HandleFunc("/blog", api.BlogHomeHandler(tmpl)).Methods("GET")
-	router.HandleFunc("/glucose-tracker", api.GlucoseTrackerEndPointHandler).Methods("GET")
-	router.HandleFunc("/post/{id}", api.PostHandler(tmpl)).Methods("GET")
+	router.HandleFunc("/blog", handlers.BlogHomeHandler(tmpl)).Methods("GET")
+	router.HandleFunc("/glucose-tracker", handlers.GlucoseTrackerEndPointHandler).Methods("GET")
+	router.HandleFunc("/post/{id}", handlers.PostHandler(tmpl)).Methods("GET")
 
 	// CORS configuration
 	corsHandler := cors.New(cors.Options{

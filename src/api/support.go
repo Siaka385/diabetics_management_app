@@ -5,7 +5,7 @@ import (
 	"html/template"
 	"net/http"
 
-	"diawise/internal/services/support"
+	"diawise/src/services/support"
 
 	"gorm.io/gorm"
 )
