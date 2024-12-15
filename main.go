@@ -69,7 +69,7 @@ func main() {
 	router.HandleFunc("/dashboard", handlers.Dashboard(db, tmpl, sessionStore)).Methods("GET")
 	router.HandleFunc("/support", handlers.Support(db, tmpl)).Methods("GET")
 	router.HandleFunc("/medication", handlers.MedicationPageHandler(db, tmpl, sessionStore)).Methods("GET")
-	router.HandleFunc("/addmedication", handlers.AddMedicationHandler(db, tmpl, sessionStore)).Methods("POST")
+	router.HandleFunc("/addmedication", handlers.AddMedicationHandler(db, tmpl, sessionStore)).Methods("GET", "POST")
 	router.HandleFunc("/updatemed/{id}", handlers.UpdateMedication(db, sessionStore)).Methods("PUT")
 	router.HandleFunc("/deletemed/{id}", handlers.DeleteMedication(db, sessionStore)).Methods("DELETE")
 	router.HandleFunc("/listmed", handlers.ListMedications(db, sessionStore)).Methods("GET")
