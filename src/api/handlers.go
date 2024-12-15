@@ -121,6 +121,24 @@ func BloodSugarHandler(tmpl *template.Template) http.HandlerFunc {
 	}
 }
 
+func EducationHandler(tmpl *template.Template) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if err := tmpl.ExecuteTemplate(w, "Education.html", Data); err != nil {
+			InternalServerErrorHandler(w)
+			return
+		}
+	}
+}
+
+func DietAndNutritionHandler(tmpl *template.Template) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if err := tmpl.ExecuteTemplate(w, "DietAndNutrition.html", Data); err != nil {
+			InternalServerErrorHandler(w)
+			return
+		}
+	}
+}
+
 func BadRequestHandler(w http.ResponseWriter) {
 	tmpl := LoadTemplate()
 

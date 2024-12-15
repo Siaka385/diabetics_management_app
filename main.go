@@ -78,6 +78,7 @@ func main() {
 	router.HandleFunc("/blog", handlers.BlogHomeHandler(tmpl)).Methods("GET")
 	router.HandleFunc("/bloodsugar", handlers.BloodSugarHandler(tmpl)).Methods("GET")
 	router.HandleFunc("/education", handlers.EducationHandler(tmpl)).Methods("GET")
+	router.HandleFunc("/nutrition", handlers.DietAndNutritionHandler(tmpl)).Methods("GET")
 	router.HandleFunc("/glucose-tracker", handlers.GlucoseTrackerEndPointHandler).Methods("GET")
 	router.HandleFunc("/post/{id}", handlers.PostHandler(tmpl)).Methods("GET")
 

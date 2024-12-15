@@ -282,22 +282,21 @@
             </div>
             <nav>
                 <ul class="sidebar-nav">
-                    <li><a href="#">Dashboard</a></li>
-                    <li><a href="#">Blood Sugar</a></li>
-                    <li><a href="#" class="active">Diet & Nutrition</a></li>
-                    <li><a href="#">Medications</a></li>
-                    <li><a href="#">Education</a></li>
-                    <li><a href="#">Support Group</a></li>
+                    <li><a href="/dashboard" >Dashboard</a></li>
+                    <li><a href="/bloodsugar">Blood Sugar</a></li>
+                    <li><a href="/nutrition" class="active">Diet & Nutrition</a></li>
+                    <li><a href="/addmedication">Medications</a></li>
+                    <li><a href="/education">Education</a></li>
+                    <li><a href="/support">Support Group</a></li>
                 </ul>
             </nav>
         </aside>
 
-        <main class="main-content">
+        <main class="main-content dietAndNutrion hide">
             <div class="header">
                 <h1>Advanced Nutrition Tracking</h1>
                 <div class="notifications">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
                         <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
                     </svg>
@@ -326,78 +325,91 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="calories">Weight (g)</label>
+                            <label for="weight">Weight</label>
                             <input type="number" id="weight" placeholder="Weight" required />
                         </div>
 
                         <div class="form-group">
-                            <label for="carbs">Proportion Of Plate</label>
+                            <label for="proportions">Proportion Of Plate</label>
                             <input type="float" id="proportion" placeholder="Proportion Of Plate (eg 0.5)" required />
                         </div>
 
-                        <button type="submit" id="logMealBtn" class="log-btn">
-                            Log Meal
-                        </button>
+                        <button type="submit"class="log-btn">Log Meal</button>
                     </form>
+
+                    <table class="meals-table" id="mealsTable">
+                        <thead>
+                            <tr>
+                                <th>Meal Type</th>
+                                <th>Food Item</th>
+                                <th>Calories</th>
+                                <th>Carbs (g)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mealList">
+                            <!-- Dynamically populated meal entries -->
+                        </tbody>
+                    </table>
                 </div>
 
-                <div class="nutrition-advice" id="nutritionAdvice">
-                    <div class="meal-plan-generator">
-                        <h2>Personalized Meal Plan Generator</h2>
-                        <form id="mealPlanPreferencesForm" class="preferences-form">
-                            <div class="form-group">
-                                <label>Meal Plan Duration</label>
-                                <div class="preference-tags" id="mealPlanDurationTags">
-                                    <span class="preference-tag" data-value="single-day">Single Day</span>
-                                    <span class="preference-tag" data-value="whole-week">Whole Week</span>
-                                </div>
+                <div class="meal-plan-generator">
+                    <h2>Personalized Meal Plan Generator</h2>
+                    <form id="mealPlanPreferencesForm" class="preferences-form">
+                        <div class="form-group">
+                            <label>Meal Plan Duration</label>
+                            <div class="preference-tags" id="mealPlanDurationTags">
+                                <span class="preference-tag" data-value="single-day">Single Day</span>
+                                <span class="preference-tag" data-value="whole-week">Whole Week</span>
                             </div>
+                        </div>
 
-                            <div class="form-group">
-                                <label>Meal Types</label>
-                                <div class="preference-tags" id="mealTypeTags">
-                                    <span class="preference-tag" data-value="breakfast">Breakfast</span>
-                                    <span class="preference-tag" data-value="lunch">Lunch</span>
-                                    <span class="preference-tag" data-value="dinner">Dinner</span>
-                                    <span class="preference-tag" data-value="all-meals">All Meals</span>
-                                </div>
+                        <div class="form-group">
+                            <label>Meal Types</label>
+                            <div class="preference-tags" id="mealTypeTags">
+                                <span class="preference-tag" data-value="breakfast">Breakfast</span>
+                                <span class="preference-tag" data-value="lunch">Lunch</span>
+                                <span class="preference-tag" data-value="dinner">Dinner</span>
+                                <span class="preference-tag" data-value="all-meals">All Meals</span>
                             </div>
+                        </div>
 
-                            <div class="form-group">
-                                <label>Dietary Preferences</label>
-                                <div class="preference-tags" id="dietPreferenceTags">
-                                    <span class="preference-tag" data-value="low-carb">Low Carb</span>
-                                    <span class="preference-tag" data-value="high-protein">High Protein</span>
-                                    <span class="preference-tag" data-value="vegetarian">Vegetarian</span>
-                                    <span class="preference-tag" data-value="gluten-free">Gluten-Free</span>
-                                </div>
+                        <div class="form-group">
+                            <label>Dietary Preferences</label>
+                            <div class="preference-tags" id="dietPreferenceTags">
+                                <span class="preference-tag" data-value="low-carb">Low Carb</span>
+                                <span class="preference-tag" data-value="high-protein">High Protein</span>
+                                <span class="preference-tag" data-value="vegetarian">Vegetarian</span>
+                                <span class="preference-tag" data-value="gluten-free">Gluten-Free</span>
                             </div>
+                        </div>
 
-                            <div class="form-group">
-                                <label for="preferredFoods">Preferred Foods (optional)</label>
-                                <input type="text" id="preferredFoods"
-                                    placeholder="Enter foods you like (comma-separated)" />
-                            </div>
+                        <div class="form-group">
+                            <label for="preferredFoods">Preferred Foods (optional)</label>
+                            <input type="text" id="preferredFoods" placeholder="Enter foods you like (comma-separated)">
+                        </div>
 
-                            <div class="form-group">
-                                <label for="avoidFoods">Foods to Avoid (optional)</label>
-                                <input type="text" id="avoidFoods"
-                                    placeholder="Enter foods you want to avoid (comma-separated)" />
-                            </div>
+                        <div class="form-group">
+                            <label for="avoidFoods">Foods to Avoid (optional)</label>
+                            <input type="text" id="avoidFoods" placeholder="Enter foods you want to avoid (comma-separated)">
+                        </div>
 
-                            <button type="submit" class="meal-plan-btn">
-                                Generate Personalized Meal Plan
-                            </button>
-                        </form>
-                    </div>
+                        <button type="submit" class="meal-plan-btn">Generate Personalized Meal Plan</button>
+                    </form>
+
+                    <table class="meals-table" id="generatedMealPlan">
+                        <thead>
+                            <tr>
+                                <th>Meal</th>
+                                <th>Recommended Dish</th>
+                                <th>Local Alternative</th>
+                                <th>Carbohydrates (g)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="mealPlanBody">
+                            <!-- Dynamically populated meal plan entries -->
+                        </tbody>
+                    </table>
                 </div>
-            </div>
-            <div class="meal-list" id="mealList">
-                <h3>Today's Meals</h3>
-                <!-- Dynamically populated meal entries -->
-            </div>
-            <div id="generatedMealPlan" class="generated-meal-plan">
-                <!-- Dynamically populated meal plan -->
             </div>
         </main>
     </div>
