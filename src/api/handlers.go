@@ -112,6 +112,15 @@ func BlogHomeHandler(tmpl *template.Template) http.HandlerFunc {
 	}
 }
 
+func BloodSugarHandler(tmpl *template.Template) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if err := tmpl.ExecuteTemplate(w, "bloodsugar.html", Data); err != nil {
+			InternalServerErrorHandler(w)
+			return
+		}
+	}
+}
+
 func BadRequestHandler(w http.ResponseWriter) {
 	tmpl := LoadTemplate()
 
