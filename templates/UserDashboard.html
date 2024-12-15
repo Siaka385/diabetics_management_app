@@ -21,7 +21,7 @@
     <div class="dashboard">
         <aside class="sidebar">
             <div class="profile">
-                <div class="profile-image">JD</div>
+                <div class="profile-image">{{.}}</div>
                 <h2>{{.}}</h2>
                 <div class="edit-profile">✎</div>
             </div>
@@ -30,7 +30,7 @@
                     <li><a href="/dashboard" class="active">Dashboard</a></li>
                     <li><a href="/bloodsugar">Blood Sugar</a></li>
                     <li><a href="/nutrition">Diet & Nutrition</a></li>
-                    <li><a href="/addmedication">Medications</a></li>
+                    <li><a href="/medication">Medications</a></li>
                     <li><a href="/education">Education</a></li>
                     <li><a href="/support">Support Groups</a></li>
                 </ul>
@@ -188,7 +188,7 @@
                 <div class="modal-content">
                     <span class="close-modal" id="closeModal">&times;</span>
                     <h2>Add New Medication</h2>
-                    <form id="addMedicationForm">
+                    <form id="addMedicationForm" action="/medication" method="POST">
                         <!-- Medication Data -->
                         <input type="text" class="modal-input" placeholder="Medication Name" name="medication_name" value="{{.Medication_name}}" required>
                         <input type="text" class="modal-input" placeholder="Dosage" name="dose" value="{{.Dose}}" required>
