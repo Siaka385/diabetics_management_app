@@ -650,27 +650,27 @@ input, select {
         });
 
         const mealPlans = {
-            'low-carb': [
-                { meal: 'Breakfast', dish: 'Spinach and Feta Egg White Omelet', localAlternative: 'Tofu Scramble', carbs: 8 },
-                { meal: 'Lunch', dish: 'Grilled Chicken Salad', localAlternative: 'Fish Tikka Salad', carbs: 10 },
-                { meal: 'Dinner', dish: 'Baked Salmon with Roasted Vegetables', localAlternative: 'Tandoori Fish with Cauliflower Rice', carbs: 12 }
-            ],
-            'high-protein': [
-                { meal: 'Breakfast', dish: 'Greek Yogurt Parfait', localAlternative: 'Paneer Bhurji', carbs: 15 },
-                { meal: 'Lunch', dish: 'Turkey and Quinoa Bowl', localAlternative: 'Chicken Kebab with Mint Chutney', carbs: 20 },
-                { meal: 'Dinner', dish: 'Lean Beef Stir Fry', localAlternative: 'Mutton Seekh Kebab with Raita', carbs: 18 }
-            ],
-            'vegetarian': [
-                { meal: 'Breakfast', dish: 'Tofu Scramble', localAlternative: 'Masala Dosa', carbs: 25 },
-                { meal: 'Lunch', dish: 'Lentil and Vegetable Curry', localAlternative: 'Dal Makhani with Cauliflower Rice', carbs: 30 },
-                { meal: 'Dinner', dish: 'Stuffed Bell Peppers', localAlternative: 'Vegetable Biryani with Raita', carbs: 35 }
-            ],
-            'gluten-free': [
-                { meal: 'Breakfast', dish: 'Chia Seed Pudding', localAlternative: 'Sabudana Khichdi', carbs: 20 },
-                { meal: 'Lunch', dish: 'Grilled Shrimp with Zucchini Noodles', localAlternative: 'Prawn Curry with Rice', carbs: 25 },
-                { meal: 'Dinner', dish: 'Roasted Vegetable Quinoa Bowl', localAlternative: 'Mixed Vegetable Curry', carbs: 22 }
-            ]
-        };
+    'low-carb': [
+        { meal: 'Breakfast', dish: 'Spinach and Feta Egg White Omelet', localAlternative: 'Sukumawiki na Mayai (Kales with Eggs)', carbs: 8 },
+        { meal: 'Lunch', dish: 'Grilled Chicken Salad', localAlternative: 'Samaki wa Kupaka na Kachumbari (Fish in Coconut Sauce with Fresh Salad)', carbs: 10 },
+        { meal: 'Dinner', dish: 'Baked Salmon with Roasted Vegetables', localAlternative: 'Samaki wa Kuchoma na Ndizi (Grilled Fish with Plantains)', carbs: 12 }
+    ],
+    'high-protein': [
+        { meal: 'Breakfast', dish: 'Greek Yogurt Parfait', localAlternative: 'Nazi na Nduma (Coconut Cream with Arrowroots)', carbs: 15 },
+        { meal: 'Lunch', dish: 'Turkey and Quinoa Bowl', localAlternative: 'Nyama Choma na Sukumawiki (Grilled Meat with Kales)', carbs: 20 },
+        { meal: 'Dinner', dish: 'Lean Beef Stir Fry', localAlternative: 'Kuku wa Kupaka na Ugali wa Mtama (Chicken in Coconut Sauce with Millet Ugali)', carbs: 18 }
+    ],
+    'vegetarian': [
+        { meal: 'Breakfast', dish: 'Tofu Scramble', localAlternative: 'Githeri ya Mahindi na Maharagwe (Maize and Bean Mix)', carbs: 25 },
+        { meal: 'Lunch', dish: 'Lentil and Vegetable Curry', localAlternative: 'Ndengu na Chapati (Green Gram Stew with Chapati)', carbs: 30 },
+        { meal: 'Dinner', dish: 'Stuffed Bell Peppers', localAlternative: 'Biriani ya Mboga na Kachumbari (Vegetable Biryani with Fresh Salad)', carbs: 35 }
+    ],
+    'gluten-free': [
+        { meal: 'Breakfast', dish: 'Chia Seed Pudding', localAlternative: 'Uji wa Mtama (Millet Porridge)', carbs: 20 },
+        { meal: 'Lunch', dish: 'Grilled Shrimp with Zucchini Noodles', localAlternative: 'Samaki na Ugali wa Muhogo (Fish with Cassava Ugali)', carbs: 25 },
+        { meal: 'Dinner', dish: 'Roasted Vegetable Quinoa Bowl', localAlternative: 'Mboga za Majani na Ugali wa Mihogo (Leafy Greens with Cassava Ugali)', carbs: 22 }
+    ]
+};
 
         // Determine meal plan based on selected preferences
         const selectedPlan = mealPlans[mp_diet_pref] || mealPlans['low-carb'];
