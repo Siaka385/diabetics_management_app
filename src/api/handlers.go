@@ -139,6 +139,15 @@ func DietAndNutritionHandler(tmpl *template.Template) http.HandlerFunc {
 	}
 }
 
+func CommuniyAndSupportHandler(tmpl *template.Template) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if err := tmpl.ExecuteTemplate(w, "CommunityAndSupport.html", Data); err != nil {
+			InternalServerErrorHandler(w)
+			return
+		}
+	}
+}
+
 func BadRequestHandler(w http.ResponseWriter) {
 	tmpl := LoadTemplate()
 
