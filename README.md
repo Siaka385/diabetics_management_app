@@ -1,4 +1,4 @@
-# DiaWise Project README
+\# DiaWise Project README
 
 ## Overview
 
@@ -19,15 +19,14 @@ DiaWise is an application designed to help diabetic patients manage their diet, 
 To run the DiaWise application, follow these steps:
 
 1. Clone the repository to your local machine.
+```
+https://github.com/Siaka385/diabetics_management_app.git
+```
 2. Navigate to the backend directory:
    ```bash
-   cd backend
+   cd diabeticd_managemrnt_app
    ```
- 3. Navigate to the cmd directory:
- ```bash  
-cd cmd
-```
-4. Run the application using Go:
+ 3. Run the application using Go:
 ```bash
 go run .
 ```
@@ -35,7 +34,7 @@ go run .
 1. Teddy Ogola Siaka
 2. Joel Amos
 3. Antony Odour
-4. John Pau;
+4. John Pau
 5. David Jesse
 
 
