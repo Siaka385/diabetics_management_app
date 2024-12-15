@@ -172,3 +172,127 @@ body {
     border: 2px solid white;
     color: white;
 }
+
+@media screen and (max-width: 768px) {
+    .main-nav {
+        position: relative; /* Ensures proper positioning for absolute elements */
+        padding: 1rem;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .logo {
+        z-index: 1001; /* Ensure logo stays above mobile menu */
+    }
+
+    .mobile-menu-toggle {
+        display: block;
+        z-index: 1002; /* Ensure menu toggle is above everything */
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+    }
+
+    .nav-menu {
+        display: none;
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background: var(--background);
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        padding: 2rem;
+    }
+
+    .nav-menu.active {
+        display: flex;
+    }
+
+    .nav-links {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        margin-bottom: 2rem;
+    }
+
+    .nav-links a {
+        margin: 1rem 0;
+        font-size: 1.2rem;
+        width: 100%;
+        text-align: center;
+        padding: 0.75rem;
+        transition: background-color 0.3s ease;
+    }
+
+    .nav-links a:hover {
+        background-color: rgba(30, 58, 138, 0.1); /* Soft primary color overlay */
+    }
+
+    .auth-buttons {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        gap: 1rem;
+    }
+
+    .btn-auth {
+        width: 100%;
+        padding: 0.75rem;
+        text-align: center;
+        font-size: 1rem;
+    }
+
+    .hero-content {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .hero-text {
+        margin-bottom: 2rem;
+    }
+
+    .hero-image {
+        max-width: 300px;
+        margin: 0 auto;
+    }
+
+    .hero h1 {
+        font-size: 2.25rem;
+    }
+
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .cta {
+        padding: 4rem 1rem;
+        text-align: center;
+    }
+}
+
+/* Smaller mobile devices */
+@media screen and (max-width: 480px) {
+    .hero h1 {
+        font-size: 1.75rem;
+    }
+
+    .hero-image {
+        max-width: 250px;
+    }
+
+    .nav-links a {
+        font-size: 1rem;
+    }
+
+    .feature-icon {
+        width: 48px;
+        height: 48px;
+    }
+}
