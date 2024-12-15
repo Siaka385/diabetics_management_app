@@ -30,6 +30,8 @@ body {
 /* Navigation */
 .main-nav {
     display: flex;
+    position: fixed;
+    width: 100%;
     justify-content: space-between;
     align-items: center;
     padding: 1rem 2rem;
@@ -172,3 +174,4 @@ body {
     border: 2px solid white;
     color: white;
 }
+
