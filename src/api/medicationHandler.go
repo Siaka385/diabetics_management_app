@@ -3,7 +3,6 @@ package api
 import (
 	"encoding/json"
 	"html/template"
-	"log"
 	"net/http"
 	"strconv"
 	"time"
@@ -11,53 +10,110 @@ import (
 	"diawise/src/services"
 
 	"github.com/gorilla/mux"
+	"github.com/gorilla/sessions"
 	"gorm.io/gorm"
 )
 
 type Medication struct {
-	Medication   services.Medication
+	Medications  services.Medication
 	ReminderTime time.Duration `json:"reminder_time"`
 }
 
-func MedicationPageHandler(db *gorm.DB, tmpl *template.Template) http.HandlerFunc {
+func MedicationPageHandler(db *gorm.DB, tmpl *template.Template, sessionStore *sessions.CookieStore) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// Implement logic to fetch medications and render the medication page
-		if err := tmpl.ExecuteTemplate(w, "medication.html", nil); err != nil {
-			log.Printf("Error executing template: %v", err)
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		// Get the session
+		session, err := sessionStore.Get(r, "session-name")
+		if err != nil {
+			http.Error(w, "Error retrieving session", http.StatusInternalServerError)
+			return
+		}
+
+		// Get the user_id from the session
+		userID, ok := session.Values["user_id"].(string)
+		if !ok {
+			http.Error(w, "User not authenticated", http.StatusUnauthorized)
+			return
+		}
+
+		medications, err := services.ListMedicationsByUserId(db, userID)
+		if err != nil {
+			http.Error(w, "Failed to fetch medications", http.StatusInternalServerError)
+			return
+		}
+
+		data := struct {
+			Medications []services.Medication
+		}{
+			Medications: medications,
+		}
+
+		if err := tmpl.ExecuteTemplate(w, "medication.html", data); err != nil {
+			http.Error(w, "Failed to render template", http.StatusInternalServerError)
 		}
 	}
 }
 
 // handler for adding a new medication
-func AddMedication(db *gorm.DB) http.HandlerFunc {
+func AddMedication(db *gorm.DB, sessionStore *sessions.CookieStore) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var med services.Medication
-
-		if err := json.NewDecoder(r.Body).Decode(&med); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-
-		newMed, err := services.AddMedication(db, med)
+		// Get the session
+		session, err := sessionStore.Get(r, "session-name")
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			http.Error(w, "Error retrieving session", http.StatusInternalServerError)
 			return
 		}
+
+		// Get the user_id from the session
+		userID, ok := session.Values["user_id"].(string)
+		if !ok {
+			http.Error(w, "User not authenticated", http.StatusUnauthorized)
+			return
+		}
+
+		var med services.Medication
+		if err := json.NewDecoder(r.Body).Decode(&med); err != nil {
+			http.Error(w, "Invalid request body", http.StatusBadRequest)
+			return
+		}
+
+		med.User_id = userID
+		result, err := services.AddMedication(db, med)
+		if err != nil {
+			http.Error(w, "Failed to add medication", http.StatusInternalServerError)
+			return
+		}
+
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(newMed)
+		json.NewEncoder(w).Encode(result)
 	}
 }
 
-// handler for deleting a medication
-func DeleteMedication(db *gorm.DB) http.HandlerFunc {
+func DeleteMedication(db *gorm.DB, sessionStore *sessions.CookieStore) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		// Get the session
+		session, err := sessionStore.Get(r, "session-name")
+		if err != nil {
+			http.Error(w, "Error retrieving session", http.StatusInternalServerError)
+			return
+		}
+
+		// Get the user_id from the session
+		userID, ok := session.Values["user_id"].(string)
+		if !ok {
+			http.Error(w, "User not authenticated", http.StatusUnauthorized)
+			return
+		}
+
 		vars := mux.Vars(r)
 		id := vars["id"]
 
-		med := services.Medication{Medication_id: id}
+		med := services.Medication{
+			Medication_id: id,
+			User_id:       userID,
+		}
+
 		if err := services.DeleteMedication(db, med); err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			http.Error(w, "Failed to delete medication", http.StatusInternalServerError)
 			return
 		}
 
@@ -65,39 +121,66 @@ func DeleteMedication(db *gorm.DB) http.HandlerFunc {
 	}
 }
 
-// handler for updating an existing medication
-func UpdateMedication(db *gorm.DB) http.HandlerFunc {
+func UpdateMedication(db *gorm.DB, sessionStore *sessions.CookieStore) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var med services.Medication
-
-		if err := json.NewDecoder(r.Body).Decode(&med); err != nil {
-			http.Error(w, err.Error(), http.StatusBadRequest)
-			return
-		}
-
-		updatedMed, err := services.UpdateMedication(db, med)
+		// Get the session
+		session, err := sessionStore.Get(r, "session-name")
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			http.Error(w, "Error retrieving session", http.StatusInternalServerError)
 			return
 		}
-		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(updatedMed)
+
+		// Get the user_id from the session
+		userID, ok := session.Values["user_id"].(string)
+		if !ok {
+			http.Error(w, "User not authenticated", http.StatusUnauthorized)
+			return
+		}
+
+		vars := mux.Vars(r)
+		id := vars["id"]
+
+		var med services.Medication
+		if err := json.NewDecoder(r.Body).Decode(&med); err != nil {
+			http.Error(w, "Invalid request body", http.StatusBadRequest)
+			return
+		}
+
+		med.Medication_id = id
+		med.User_id = userID
+		result, err := services.UpdateMedication(db, med)
+		if err != nil {
+			http.Error(w, "Failed to update medication", http.StatusInternalServerError)
+			return
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(result)
 	}
 }
 
-// handler for listing all medications
-func ListMedications(db *gorm.DB) http.HandlerFunc {
+func ListMedications(db *gorm.DB, sessionStore *sessions.CookieStore) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		userID := r.URL.Query().Get("user_id")
-		if userID == "" {
-			http.Error(w, "user_id is required", http.StatusBadRequest)
+		// Get the session
+		session, err := sessionStore.Get(r, "session-name")
+		if err != nil {
+			http.Error(w, "Error retrieving session", http.StatusInternalServerError)
 			return
 		}
+
+		// Get the user_id from the session
+		userID, ok := session.Values["user_id"].(string)
+		if !ok {
+			http.Error(w, "User not authenticated", http.StatusUnauthorized)
+			return
+		}
+
 		medications, err := services.ListMedicationsByUserId(db, userID)
 		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			http.Error(w, "Failed to fetch medications", http.StatusInternalServerError)
 			return
 		}
+
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(medications)
 	}
@@ -126,14 +209,28 @@ func MedicationReminder(db *gorm.DB) http.HandlerFunc {
 	}
 }
 
-func AddMedicationHandler(db *gorm.DB, tmpl *template.Template) http.HandlerFunc {
+func AddMedicationHandler(db *gorm.DB, tmpl *template.Template, sessionStore *sessions.CookieStore) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
 			http.Error(w, "Invalid method", http.StatusMethodNotAllowed)
 			return
 		}
 
-		err := r.ParseForm()
+		// Get the session
+		session, err := sessionStore.Get(r, "session-name")
+		if err != nil {
+			http.Error(w, "Error retrieving session", http.StatusInternalServerError)
+			return
+		}
+
+		// Get the user_id from the session
+		userID, ok := session.Values["user_id"].(string)
+		if !ok {
+			http.Error(w, "User not authenticated", http.StatusUnauthorized)
+			return
+		}
+
+		err = r.ParseForm()
 		if err != nil {
 			http.Error(w, "Error parsing form", http.StatusBadRequest)
 			return
@@ -156,10 +253,9 @@ func AddMedicationHandler(db *gorm.DB, tmpl *template.Template) http.HandlerFunc
 			Dose:             dose,
 			Dosage_frequency: frequency,
 			Dosage_time:      dosageTime,
-			// Set User_id and Medication_id as needed
-			User_id:       "user123", // Replace with actual user ID from session
-			Medication_id: "med_" + time.Now().Format("20060102150405"),
-			Notes:         r.FormValue("notes"), // Add notes if available in the form
+			User_id:          userID,
+			Medication_id:    "med_" + time.Now().Format("20060102150405"),
+			Notes:            r.FormValue("notes"),
 		}
 
 		// Call the AddMedication function from the services package
