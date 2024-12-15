@@ -1,11 +1,11 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Diawise Community</title>
 
-    <!-- Google Fonts for Gothic Style -->
+    <Google Fonts for Gothic Style 
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/support.css">
 
@@ -181,13 +181,13 @@
 <body>
 
 <div class="chat-container">
-    <!-- Room List -->
+    <!-- Room List 
     <div class="room-list-container">
         <h3>Rooms:</h3>
         <ul id="roomList"></ul>
     </div>
 
-    <!-- Chat Details -->
+    <!-- Chat Details 
     <div class="chat-details-container">
         <div class="button-container">
             <button onclick="createRoom()">Create Room</button>
@@ -196,19 +196,19 @@
 
         <h2>Diawise Community</h2>
         
-        <!-- Room Name -->
+        <!-- Room Name 
         <div id="roomName" style="display:none;"></div>
 
-        <!-- User Info -->
+        <!-- User Info 
         <div id="userInfo" style="display:none;">
             <p><strong>User:</strong> <span id="userName"></span> (<span id="userId"></span>)</p>
         </div>
 
-        <!-- Username input -->
+        <!-- Username input 
         <label for="username">Username:</label>
         <input type="text" id="username" placeholder="Enter your username" required>
 
-        <!-- Message Area -->
+        <!-- Message Area 
         <div id="roomDetails" style="display:none;">
             <h3>Messages:</h3>
             <div id="messages"></div>
@@ -315,5 +315,453 @@
     }
 </script>
 
+</body>
+</html> -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diawise - Community Chat</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1e3a8a;
+            --secondary: #2563eb;
+            --accent: #3b82f6;
+            --background: #f0f9ff;
+            --text: #0f172a;
+            --warning: #e11d48;
+            --white: #ffffff;
+            --green: #10b981;
+            --yellow: #f59e0b;
+            --light-gray: #f4f7fa;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--background);
+        }
+
+        .dashboard {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background: white;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.05);
+            padding: 2rem 1rem;
+            position: relative;
+        }
+
+        .profile {
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .profile-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .edit-profile {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        .sidebar-nav {
+            list-style: none;
+        }
+
+        .sidebar-nav li {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-nav a {
+            text-decoration: none;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-nav a:hover, .sidebar-nav a.active {
+            background-color: var(--background);
+            color: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .main-content {
+            background: var(--background);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-container {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            width: 100%;
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .room-list-container {
+            background-color: var(--light-gray);
+            padding: 1.5rem;
+            border-right: 1px solid #e6e6e6;
+        }
+
+        .room-list-container h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .room-list-container ul {
+            list-style: none;
+        }
+
+        .room-list-container button {
+            width: 100%;
+            background-color: var(--white);
+            color: var(--text);
+            border: 1px solid var(--accent);
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .room-list-container button:hover {
+            background-color: var(--background);
+            transform: translateX(5px);
+        }
+
+        .chat-details-container {
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .button-container button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .button-container button:hover {
+            background-color: var(--secondary);
+        }
+
+        #username {
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--light-gray);
+            border-radius: 0.5rem;
+        }
+
+        #messages {
+            height: 400px;
+            overflow-y: auto;
+            background-color: var(--light-gray);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #messageInput {
+            width: 100%;
+            padding: 0.75rem;
+            margin-bottom: 1rem;
+            border: 1px solid var(--light-gray);
+            border-radius: 0.5rem;
+            resize: none;
+        }
+
+        .system-message {
+            color: var(--warning);
+            font-style: italic;
+            margin-bottom: 0.5rem;
+        }
+
+        .user-message {
+            background-color: var(--white);
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .join-message {
+            color: var(--green);
+            font-style: italic;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+
+        #roomName {
+            color: var(--primary);
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        #userInfo {
+            margin-bottom: 1rem;
+            color: var(--text);
+            opacity: 0.7;
+        }
+
+        #roomDetails button {
+            width: 100%;
+            background-color: var(--green);
+            color: white;
+            border: none;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        #roomDetails button:hover {
+            background-color: var(--primary);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .notifications {
+            position: relative;
+        }
+
+        .notification-icon {
+            background: var(--warning);
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            font-size: 0.7rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <aside class="sidebar">
+            <div class="profile">
+                <div class="profile-image">JD</div>
+                <h2>John Doe</h2>
+                <div class="edit-profile">✎</div>
+            </div>
+            <nav>
+                <ul class="sidebar-nav">
+                    <li><a href="/dashboard">Dashboard</a></li>
+                    <li><a href="/track">Blood Sugar</a></li>
+                    <li><a href="/nutrition">Diet & Nutrition</a></li>
+                    <li><a href="/addmedication">Medications</a></li>
+                    <li><a href="/education">Education</a></li>
+                    <li><a href="/support" class="active">Support Group</a></li>
+                </ul>
+            </nav>
+        </aside>
+        
+        <main class="main-content">
+            <div class="header">
+                <h1>Community Chat</h1>
+                <div class="notifications">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+                    </svg>
+                    <div class="notification-icon">3</div>
+                </div>
+            </div>
+
+            <div class="chat-container">
+                <!-- Room List -->
+                <div class="room-list-container">
+                    <h3>Chat Rooms</h3>
+                    <ul id="roomList"></ul>
+                </div>
+
+                <!-- Chat Details -->
+                <div class="chat-details-container">
+                    <div class="button-container">
+                        <button onclick="createRoom()">Create Room</button>
+                        <button onclick="listRooms()">Refresh Rooms</button>
+                    </div>
+                    
+                    <!-- Username input -->
+                    <input type="text" id="username" placeholder="Enter your username" required>
+
+                    <!-- Room Name -->
+                    <div id="roomName" style="display:none;"></div>
+
+                    <!-- User Info -->
+                    <div id="userInfo" style="display:none;">
+                        <p>User: <span id="userName"></span> (<span id="userId"></span>)</p>
+                    </div>
+
+                    <!-- Message Area -->
+                    <div id="roomDetails" style="display:none;">
+                        <div id="messages"></div>
+                        <textarea id="messageInput" placeholder="Enter your message..."></textarea>
+                        <button onclick="sendMessage()">Send Message</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Previous script remains unchanged
+        let currentRoomId = null;
+        let currentUserId = null;
+        let currentUserName = null;
+
+        function createRoom() {
+            const roomName = prompt("Enter Room Name:");
+            fetch('/createroom', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({name: roomName})
+            }).then(response => response.json())
+              .then(data => {
+                  if (data.error) {
+                      alert("Error: " + data.error);
+                  } else {
+                      alert("Room created with ID: " + data.roomId);
+                      listRooms();
+                  }
+              }).catch(error => {
+                  console.error("Error:", error);
+                  alert("An error occurred while creating the room.");
+              });
+        }
+
+        function listRooms() {
+            fetch('/listrooms')
+                .then(response => response.json())
+                .then(rooms => {
+                    const roomList = document.getElementById("roomList");
+                    roomList.innerHTML = '';
+                    rooms.forEach(room => {
+                        const li = document.createElement("li");
+                        li.innerHTML = `<button onclick="joinRoom('${room.roomId}')">${room.name}</button>`;
+                        roomList.appendChild(li);
+                    });
+                });
+        }
+
+        function joinRoom(roomId) {
+            currentRoomId = roomId;
+            currentUserId = prompt("Enter your user ID:");
+            currentUserName = document.getElementById("username").value;
+
+            const roomNameElem = document.getElementById("roomName");
+            roomNameElem.textContent = `Room: ${roomId}`;
+            roomNameElem.style.display = "block";
+
+            document.getElementById("userName").textContent = currentUserName;
+            document.getElementById("userId").textContent = currentUserId;
+            document.getElementById("userInfo").style.display = "block";
+
+            fetch(`/joinroom?roomId=${roomId}&userId=${currentUserId}`)
+                .then(response => {
+                    document.getElementById("roomDetails").style.display = "block";
+                    startListeningForMessages();
+                });
+        }
+
+        function startListeningForMessages() {
+            const source = new EventSource(`/joinroom?roomId=${currentRoomId}&userId=${currentUserId}`);
+            source.onmessage = function(event) {
+                const message = JSON.parse(event.data);
+                const messagesDiv = document.getElementById("messages");
+
+                if (message.sender === "System") {
+                    messagesDiv.innerHTML += `<p class="join-message">${message.content}</p>`;
+                } else {
+                    messagesDiv.innerHTML += `<div class="user-message"><strong>${message.sender}</strong>: ${message.content}</div>`;
+                }
+
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+            };
+        }
+
+        function sendMessage() {
+            const messageContent = document.getElementById("messageInput").value;
+            fetch('/sendmessage', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    roomId: currentRoomId,
+                    userId: currentUserId,
+                    message: messageContent
+                })
+            }).then(() => {
+                document.getElementById("messageInput").value = '';
+            });
+        }
+    </script>
 </body>
 </html>
