@@ -22,6 +22,8 @@ func Dashboard(db *gorm.DB, tmpl *template.Template) http.HandlerFunc {
 		// with the ID, you can use the context object of golang to pass around any user details you need in any function
 		// READ ABOUT using context with go
 
+		// FINALLY: remove all "session" stuff, it has been removed from the login process hence inaccessible
+
 		// Retrieve the JWT token from cookies
 		cookie, err := r.Cookie("authToken")
 		if err != nil || cookie == nil {
