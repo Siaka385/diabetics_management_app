@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	handlers "diawise/src/api"
+	// "diawise/src/auth"
 	database "diawise/src/database"
 	utils "diawise/src/utils"
 
@@ -60,10 +61,10 @@ func main() {
 	router.HandleFunc("/signup", handlers.Signup(db, tmpl, sessionStore)).Methods("GET")
 	router.HandleFunc("/auth/signup", handlers.SignupUser(db, sessionStore)).Methods("POST")
 	router.HandleFunc("/auth/login", handlers.LoginUser(db, sessionStore)).Methods("POST")
+	router.HandleFunc("/auth/loginok", handlers.LoginUserSuccess(tmpl)).Methods("GET")
 	router.HandleFunc("/login", handlers.Login(db, tmpl, sessionStore)).Methods("GET")
-	router.HandleFunc("/logout", handlers.Logout(sessionStore)).Methods("GET")
-	router.HandleFunc("/dashboard", handlers.Dashboard(db, tmpl, sessionStore)).Methods("GET")
-	router.HandleFunc("/medication", handlers.MedicationPageHandler(db, tmpl, sessionStore)).Methods("GET")
+	router.HandleFunc("/logout", handlers.Logout).Methods("GET")
+	router.HandleFunc("/medication", handlers.MedicationPageHandler(db, tmpl, sessionStore)).Methods("GET", "POST")
 	router.HandleFunc("/addmedication", handlers.AddMedicationHandler(db, tmpl, sessionStore)).Methods("GET", "POST")
 	router.HandleFunc("/updatemed/{id}", handlers.UpdateMedication(db, sessionStore)).Methods("PUT")
 	router.HandleFunc("/deletemed/{id}", handlers.DeleteMedication(db, sessionStore)).Methods("DELETE")
@@ -83,6 +84,7 @@ func main() {
 	router.HandleFunc("/sendmessage", handlers.SendMessage)
 	router.HandleFunc("/deleteroom", handlers.DeleteRoom(db))
 
+	router.HandleFunc("/dashboard", handlers.Dashboard(db, tmpl)).Methods("GET")
 
 	// CORS configuration
 	corsHandler := cors.New(cors.Options{

@@ -4,39 +4,29 @@ import (
 	"encoding/json"
 	"html/template"
 	"net/http"
+	"time"
 
 	auth "diawise/src/auth"
 
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gorilla/sessions"
 	"gorm.io/gorm"
 )
 
-// func RegisterUser(db *gorm.DB) http.HandlerFunc {
-// 	return func(w http.ResponseWriter, r *http.Request) {
-// 		w.Header().Set("Content-Type", "application/json")
+var mySigningKey = []byte("secret")
 
-// 		var response map[string]string
+func generateJWT(user auth.User) (string, error) {
+	// Generate the JWT with claims
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
+		"id":    user.ID,
+		"name":  user.Username,
+		"email": user.Email,
+		"exp":   time.Now().Add(time.Hour * 24).Unix(), // Expiration time (24 hours)
+	})
 
-// 		var user auth.User
-// 		// Decode the incoming JSON to a Piece struct
-// 		if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
-// 			http.Error(w, "Invalid JSON", http.StatusBadRequest)
-// 			return
-// 		}
-
-// 		err := auth.RegisterUser(db, user.Username, user.Email, user.Password)
-// 		if !err {
-// 			response = map[string]string{"status": "error", "message": "unable to register user"}
-// 			w.WriteHeader(http.StatusInternalServerError)
-// 		} else {
-// 			response = map[string]string{"status": "success", "message": "User registered successfully"}
-// 		}
-
-// 		// Return a 201 Created status
-// 		w.WriteHeader(http.StatusCreated)
-// 		json.NewEncoder(w).Encode(response)
-// 	}
-// }
+	// Sign the token with the secret key
+	return token.SignedString(mySigningKey)
+}
 
 func Signup(db *gorm.DB, tmpl *template.Template, sessionStore *sessions.CookieStore) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -101,9 +91,20 @@ func Login(db *gorm.DB, tmpl *template.Template, sessionStore *sessions.CookieSt
 	}
 }
 
+func LoginUserSuccess(tmpl *template.Template) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		err := tmpl.ExecuteTemplate(w, "login-success.html", nil)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+	}
+}
+
 func LoginUser(db *gorm.DB, sessionStore *sessions.CookieStore) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
+
+		// Define response map
 		var response map[string]string
 
 		// Decode the incoming JSON body
@@ -126,56 +127,50 @@ func LoginUser(db *gorm.DB, sessionStore *sessions.CookieStore) http.HandlerFunc
 			return
 		}
 
-		// Get the session
-		session, err := sessionStore.Get(r, "session-name")
+		// Generate a JWT token
+		token, err := generateJWT(*user)
 		if err != nil {
-			http.Error(w, "Error retrieving session", http.StatusInternalServerError)
+			http.Error(w, "Could not generate token", http.StatusInternalServerError)
 			return
 		}
 
-		// Set session values
-		session.Values["authenticated"] = true
-		session.Values["username"] = user.Username
-		session.Values["user_id"] = user.ID
+		// Set the token in a secure HttpOnly cookie
+		http.SetCookie(w, &http.Cookie{
+			Name:     "authToken",
+			Value:    token,
+			Path:     "/",
+			HttpOnly: true,                    // Prevents access to the cookie via JavaScript
+			Secure:   true,                    // Ensures the cookie is only sent over HTTPS
+			SameSite: http.SameSiteStrictMode, // Restricts cross-site usage
+		})
 
-		// Save the session
-		if err := session.Save(r, w); err != nil {
-			http.Error(w, "Error saving session", http.StatusInternalServerError)
-			return
-		}
-
-		// Send JSON response with the redirect URL
+		// Send response with the token
 		response = map[string]string{
 			"status":   "success",
 			"message":  "Login successful",
+			"token":    token,
 			"redirect": "/dashboard",
 		}
+
+		// Send the response
 		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(response)
 	}
 }
 
 // Logout function to clear session
-func Logout(sessionStore *sessions.CookieStore) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		session, err := sessionStore.Get(r, "session-name")
-		if err != nil {
-			http.Error(w, "Error retrieving session", http.StatusInternalServerError)
-			return
-		}
+func Logout(w http.ResponseWriter, r *http.Request) {
+	// Delete the JWT cookie
+	http.SetCookie(w, &http.Cookie{
+		Name:     "authToken",
+		Value:    "",
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   true,
+		SameSite: http.SameSiteStrictMode,
+		MaxAge:   -1, // Expire the cookie
+	})
 
-		// Clear session values
-		session.Values["authenticated"] = false
-		session.Values["username"] = ""
-		session.Values["user_id"] = nil
-
-		// Save the session to clear it
-		if err := session.Save(r, w); err != nil {
-			http.Error(w, "Error clearing session", http.StatusInternalServerError)
-			return
-		}
-
-		// Redirect to login page
-		http.Redirect(w, r, "/login", http.StatusSeeOther)
-	}
+	// Redirect to the login page
+	http.Redirect(w, r, "/login", http.StatusSeeOther)
 }

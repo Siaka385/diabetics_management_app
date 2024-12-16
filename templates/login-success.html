@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Success - Diawise</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <div class="logo">Diawise</div>
+        <h2>Login Successful!</h2>
+        <p>Welcome back, you're now logged in and can access your dashboard.</p>
+        
+        <button id="goToDashboard" class="btn-dashboard">Go to Dashboard</button>
+    </div>
+
+    <script>
+        // Event listener for the 'Go to Dashboard' button
+        document.getElementById('goToDashboard').addEventListener('click', function() {
+            // Retrieve the JWT token from localStorage
+            const token = localStorage.getItem('authToken');
+
+            if (!token) {
+                console.error('No token found. Please log in first.');
+                return;
+            }
+
+            // Fetch the dashboard page, attaching the token in the Authorization header
+            fetch('/dashboard', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`  // Send the JWT token in the Authorization header
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.text();  // Get the HTML content from the response
+                }
+                throw new Error('Failed to fetch the dashboard');
+            })
+            .then(html => {
+                // Directly insert the HTML into the current page
+                document.open();
+                document.write(html);
+                document.close();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // Optionally show an error message or redirect to login
+            });
+        });
+    </script>
+</body>
+</html>
