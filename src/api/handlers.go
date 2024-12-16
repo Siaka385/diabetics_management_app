@@ -6,10 +6,12 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"time"
 
 	"diawise/src/services"
 
 	"github.com/gorilla/mux"
+	"github.com/gorilla/sessions"
 
 	"gorm.io/gorm"
 )
@@ -18,32 +20,93 @@ func GetMealSuggestions(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Getting meal suggestions...")
 }
 
-func LogMealHandler(db *gorm.DB) http.HandlerFunc {
+func LogMealHandler(db *gorm.DB, tmpl *template.Template, ss *sessions.CookieStore) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("Starting meal logging...")
+		// Get user id to use as foreignkey
+		vars := mux.Vars(r)
+		userID := vars["id"]
+		// session, err := ss.Get(r, "session-name")
+        // if err!= nil {
+		// 	log.Printf("Error retrieving session: %+v\n", err)
+        //     http.Error(w, "Error retrieving session", http.StatusInternalServerError)
+        //     return
+        // }
+        // userID, ok := session.Values["user_id"].(string)
+		// fmt.Println(userID)
+        // if !ok {
+		// 	log.Printf("User not authenticated: %+v\n", err)
+        //     http.Error(w, "User not authenticated", http.StatusUnauthorized)
+        //     return
+        // }
 		var mealEntry services.MealLogEntry
-		fmt.Println("Here")
+		mealEntry.UserID = userID
 		// Decode the request body into the new struct
 		err := json.NewDecoder(r.Body).Decode(&mealEntry)
 		if err != nil {
+			log.Printf("Invalid input: %+v\n", err)
 			http.Error(w, "Invalid input", http.StatusBadRequest)
 			return
 		}
-		err = services.SaveMealLog(db, mealEntry)
-		if err != nil {
-			http.Error(w, "Failed to save meal log", http.StatusInternalServerError)
-			return
-		}
-		fmt.Println("here", mealEntry)
+		// debug meal entry
+		log.Printf("Created meal entry: %+v\n", mealEntry)
 
-		// Prepare response
-		response := NutritionResponse{
-			Message:      "Meal logged successfully!",
-			MealInsights: "Looks good",
-		}
+		// Find or create daily meal log for the current day
+		now := time.Now()
+		today := time.Date(now.Year(), now.Month(), now.Day(), 0,0,0,0, time.UTC)
+
+		var dailyMealLog services.DailyMealLog
+		result := db.Where("user_id = ? AND date = ?", userID, today).FirstOrCreate(&dailyMealLog, services.DailyMealLog{UserID: userID, Date: today})
+		if result.Error!= nil {
+			log.Printf("Failed to create/find daily meal log: %+v\n", err)
+            http.Error(w, "Failed to create/find daily meal log", http.StatusInternalServerError)
+            return
+        }
+
+		log.Printf("Logged daily meal log: %+v\n", dailyMealLog)
+
+		// Add meal entry to daily meal log
+		analyser, err := NewAIHealthAnalyser()
+		if err!= nil {
+            log.Printf("Failed to create AI health analyser: %v", err)
+            http.Error(w, "Failed to create AI health analyser", http.StatusInternalServerError)
+            return
+        }
+		dietProfile, err := analyser.DietProfile(&mealEntry)
+		if err!= nil {
+            log.Printf("Failed to generate diet profile: %v", err)
+            http.Error(w, "Failed to generate diet profile", http.StatusInternalServerError)
+            return
+        }
+		defer analyser.Close()
+
+		log.Printf("Got diet profile from genai client: %+v\n", dietProfile)
+
+		dietProfile.UserID = userID
+		err = services.SaveDietLog(db, *dietProfile)
+		if err!= nil {
+            log.Printf("Failed to save diet profile: %v", err)
+            http.Error(w, "Failed to save diet profile", http.StatusInternalServerError)
+            return
+        }
+
+		log.Printf("Saved diet profile log: %+v\n", dietProfile)
+		mealEntry.DailyMealLogID = dailyMealLog.ID
+		mealEntry.DietProfileID = dietProfile.ID
+		err = services.SaveMealLog(db, mealEntry)
+		if err!= nil {
+            http.Error(w, "Failed to save meal log", http.StatusInternalServerError)
+            return
+        }
+		dailyMealLog.Entries = append(dailyMealLog.Entries, mealEntry)
+		db.Save(&dailyMealLog)
 
 		// Send JSON response
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(response)
+		json.NewEncoder(w).Encode(struct{Message string; MealInsights string}{
+			Message:      "Meal logged successfully!",
+			MealInsights: "Looks good",
+		})
 	}
 }
 
