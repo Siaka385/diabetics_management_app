@@ -1,93 +1,76 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const mealLogForm = document.getElementById('mealLogForm');
-    
-    mealLogForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        // Collect form data
-        const mealLogData = {
-            mealType: document.getElementById('mealType').value,
-            foodItem: document.getElementById('foodItem').value,
-            weight: parseFloat(document.getElementById('weight').value),
-            proportion: parseFloat(document.getElementById('proportion').value)
+    document.getElementById('mealLogForm').addEventListener('submit', async function (event) {
+        event.preventDefault();
+
+        // Get form values
+        const mealType = document.getElementById('mealType').value;
+        const foodItem = document.getElementById('foodItem').value;
+        const weight = parseFloat(document.getElementById('weight').value);
+        const proportion = parseFloat(document.getElementById('proportion').value);
+
+        // Create the JSON data to send
+        const mealData = {
+            MealType: mealType,
+            FoodItem: foodItem,
+            Weight: weight,
+            Proportion: proportion,
         };
-        
-        try {
-            // Send data to backend
-            const response = await fetch('/nutrition/meal/log', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(mealLogData)
+
+        // Send AJAX POST request to the server
+        await fetch('/nutrition/logmeal', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(mealData),
+        })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Received JSON from server:', data);
+                // Update the table with the new meal information
+                if (data && data.DietProfile) {
+                    addMealToTable(data.DietProfile);
+                } else {
+                    console.log('Did not find diet profile in server response')
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to log meal. Check the console for errors.'); // Notify user of error
             });
-            
-            if (!response.ok) {
-                throw new Error('Failed to log meal');
-            }
-            
-            const result = await response.json();
-            
-            console.log("here",JSON.stringify(result));
-            // Handle successful response
-            displayMealLogSuccess(result);
-            updateMealTable(mealLogData);
-            
-            // Reset form
-            mealLogForm.reset();
-        } catch (error) {
-            console.error('Error logging meal:', error);
-            displayErrorMessage('Failed to log meal. Please try again.');
-        }
     });
 
-    function updateMealTable(mealData) {
+    function addMealToTable(dietProfile) {
         const mealList = document.getElementById('mealList');
-        const newRow = mealList.insertRow();
-        
-        newRow.innerHTML = `
-            <td>${mealData.mealType}</td>
-            <td>${mealData.foodItem}</td>
-            <td>${calculateCalories(mealData)}</td>
-            <td>${calculateCarbs(mealData)}</td>
-        `;
-    }
-    
-    // Placeholder functions for calorie and carb calculations
-    function calculateCalories(mealData) {
-        // Implement your calorie calculation logic
-        return Math.round(mealData.weight * 0.5); // Example calculation
-    }
-    
-    function calculateCarbs(mealData) {
-        // Implement your carb calculation logic
-        return Math.round(mealData.weight * 0.2); // Example calculation
-    }
-    
-    function displayMealLogSuccess(result) {
-        const alertMessage = document.getElementById('alertMessage');
-        alertMessage.textContent = result.message;
-        alertMessage.classList.add('success');
-        
-        // Remove success message after 3 seconds
-        setTimeout(() => {
-            alertMessage.textContent = '';
-            alertMessage.classList.remove('success');
-        }, 3000);
-    }
-    
-    function displayErrorMessage(message) {
-        const alertMessage = document.getElementById('alertMessage');
-        alertMessage.textContent = message;
-        alertMessage.classList.add('error');
-        
-        // Remove error message after 3 seconds
-        setTimeout(() => {
-            alertMessage.textContent = '';
-            alertMessage.classList.remove('error');
-        }, 3000);
-    }
 
+        // Create a new table row
+        const newRow = document.createElement('tr');
+
+        // Add data cells for Meal Type, Food Item, Calories, and Carbs
+        const mealTypeCell = document.createElement('td');
+        mealTypeCell.textContent = dietProfile.MealType;
+        newRow.appendChild(mealTypeCell);
+
+        const foodItemCell = document.createElement('td');
+        foodItemCell.textContent = dietProfile.FoodName;
+        newRow.appendChild(foodItemCell);
+
+        const caloriesCell = document.createElement('td');
+        caloriesCell.textContent = dietProfile.CaloriesIntake;
+        newRow.appendChild(caloriesCell);
+
+        const carbsCell = document.createElement('td');
+        carbsCell.textContent = dietProfile.CarbIntake;
+        newRow.appendChild(carbsCell);
+
+        // Add new row to the table
+        mealList.appendChild(newRow);
+    };
 
     function setupPreferenceTags() {
         const tagSections = ['mealPlanDurationTags', 'mealTypeTags', 'dietPreferenceTags'];
@@ -107,47 +90,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
-
-    // function logMeal(e) {
-    //     e.preventDefault();
-
-    //     const mealType = document.getElementById("mealType").value;
-    //     const food_item = document.getElementById("foodItem").value;
-    //     const weight = document.getElementById("weight").value;
-    //     const proportion = document.getElementById("proportion").value;
-
-    //     const mealData = {
-    //         mealType,
-    //         food_item,
-    //         weight,
-    //         proportion,
-    //     };
-
-    //     newRow.innerHTML = `
-    //         <td>${mealType}</td>
-    //         <td>${food_item}</td>
-    //         <td>${calories}</td>
-    //         <td>${carbs}</td>
-    //     `;
-
-    //     fetch("/nutrition/meal/log", {
-    //         method: "POST",
-    //         headers: {
-    //             "Content-Type": "application/json",
-    //         },
-    //         body: JSON.stringify(mealData),
-    //     })
-    //         .then((response) => response.json())
-    //         .then((data) => {
-    //             console.log("Success:", data);
-    //             alert("Meal logged successfully!");
-    //             document.getElementById("mealLogForm").reset();
-    //         })
-    //         .catch((error) => {
-    //             console.error("Error:", error);
-    //             alert("Error logging meal. Please try again.");
-    //         });
-    // }
 
     // Meal Plan Generation Logic
     function generateMealPlan(e) {
@@ -224,11 +166,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize Event Listeners
     function initializeEventListeners() {
         setupPreferenceTags();
-
-        // const mealLogForm = document.getElementById('mealLogForm');
-        // if (mealLogForm) {
-        //     mealLogForm.addEventListener('submit', logMeal);
-        // }
 
         const mealPlanForm = document.getElementById('mealPlanPreferencesForm');
         if (mealPlanForm) {

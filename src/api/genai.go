@@ -34,6 +34,7 @@ func (a *AIHealthAnalyser) Close() {
 }
 
 func (a *AIHealthAnalyser) DietProfile(mealEntry *services.MealLogEntry) (*services.DietProfile, error) {
+	fmt.Println("Calling gen ai client...")
 	ctx := context.Background()
 	model := a.client.GenerativeModel("gemini-2.0-flash-exp")
 
@@ -43,6 +44,7 @@ func (a *AIHealthAnalyser) DietProfile(mealEntry *services.MealLogEntry) (*servi
 	- Proportion of plate: %.2f
 
 	Provide the response in the format:
+	CaloriesIntake     float64
 	CarbIntake         float64
 	ProteinIntake      float64
 	FatIntake          float64
@@ -59,14 +61,11 @@ func (a *AIHealthAnalyser) DietProfile(mealEntry *services.MealLogEntry) (*servi
 	}
 	var dietProfile services.DietProfile
 	dietProfile.UserID = mealEntry.UserID
-	fmt.Println(respStr)
+	dietProfile.FoodName = mealEntry.FoodItem
+	dietProfile.MealType = mealEntry.MealType
 	err = dietProfile.ParseDietProfileString(respStr)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse diet profile analysis: %v", err)
 	}
-	// err = json.Unmarshal([]byte(respStr), &dietProfile)
-	// if err != nil {
-	// 	return nil, fmt.Errorf("failed to parse diet profile analysis: %v", err)
-	// }
 	return &dietProfile, nil
 }

@@ -14,7 +14,7 @@ type MealType string
 
 type MealLogEntry struct {
 	gorm.Model
-	UserID         uint      `json:"user_id" validate:"required"`
+	UserID         uint        `json:"user_id" validate:"required"`
 	DailyMealLogID uint        `json:"daily_meal_log_id"`
 	MealType       MealType    `json:"mealType" validate:"required,oneof=Breakfast Lunch Dinner Snack"`
 	FoodItem       string      `json:"foodItem" validate:"required"`
@@ -26,7 +26,7 @@ type MealLogEntry struct {
 
 type DailyMealLog struct {
 	gorm.Model
-	UserID        uint         `json:"user_id"`
+	UserID        uint           `json:"user_id"`
 	Entries       []MealLogEntry `json:"entries"`
 	Date          time.Time      `json:"date"`
 	TotalCalories float64        `json:"totalCalories,omitempty"`
@@ -36,13 +36,15 @@ type DailyMealLog struct {
 type DietProfile struct {
 	gorm.Model
 	UserID             uint `json:"user_id"`
+	MealType           MealType
 	FoodName           string
-	CarbIntake         float64 // percentage of daily calories from carbs
-	ProteinIntake      float64 // percentage of daily calories from protein
-	FatIntake          float64 // percentage of daily calories from fat
-	SugarConsumption   float64 // grams of added sugar per day
-	WaterIntake        float64 // liters per day
-	ProcessedFoodRatio float64 // percentage of diet from processed foods
+	CaloriesIntake     float64
+	CarbIntake         float64
+	ProteinIntake      float64
+	FatIntake          float64
+	SugarConsumption   float64
+	WaterIntake        float64
+	ProcessedFoodRatio float64
 }
 
 func (profile *DietProfile) ParseDietProfileString(data string) error {
@@ -75,6 +77,8 @@ func (profile *DietProfile) ParseDietProfileString(data string) error {
 		}
 
 		switch key {
+		case "CaloriesIntake":
+			profile.CaloriesIntake = value
 		case "CarbIntake":
 			profile.CarbIntake = value
 		case "ProteinIntake":
