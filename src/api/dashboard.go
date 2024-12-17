@@ -5,11 +5,12 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/gorilla/sessions"
+	auth "diawise/src/auth"
+
 	"gorm.io/gorm"
 )
 
-func Dashboard(db *gorm.DB, tmpl *template.Template, sessionStore *sessions.CookieStore) http.HandlerFunc {
+func Dashboard(db *gorm.DB, tmpl *template.Template) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Retrieve user from context
 		user, ok := auth.GetUserFromContext(r)
