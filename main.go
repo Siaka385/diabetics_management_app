@@ -61,7 +61,7 @@ func main() {
 	router.HandleFunc("/auth/login", handlers.LoginUser(db, sessionStore)).Methods("POST")
 	router.HandleFunc("/auth/loginok", handlers.LoginUserSuccess(tmpl)).Methods("GET")
 	router.HandleFunc("/login", handlers.Login(db, tmpl, sessionStore)).Methods("GET")
-	router.HandleFunc("/nutrition/meal/log", handlers.LogMealHandler(db, tmpl, sessionStore)).Methods("POST")
+	router.HandleFunc("/nutrition/logmeal", handlers.LogMealHandler(db, tmpl, sessionStore)).Methods("POST")
 	router.HandleFunc("/medication", handlers.MedicationPageHandler(db, tmpl, sessionStore)).Methods("GET")
 	router.HandleFunc("/logout", handlers.Logout).Methods("GET")
 	router.HandleFunc("/medication", handlers.MedicationPageHandler(db, tmpl, sessionStore)).Methods("GET", "POST")
