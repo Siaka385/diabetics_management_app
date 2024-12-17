@@ -32,7 +32,6 @@ func init() {
 		log.Fatal(err)
 	}
 
-
 	// sessions and cookies
 	secret := utils.GenerateRandomString(32)
 	sessionStore = sessions.NewCookieStore([]byte(secret))

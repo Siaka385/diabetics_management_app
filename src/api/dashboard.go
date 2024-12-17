@@ -5,12 +5,11 @@ import (
 	"log"
 	"net/http"
 
-	"diawise/src/auth"
-
+	"github.com/gorilla/sessions"
 	"gorm.io/gorm"
 )
 
-func Dashboard(db *gorm.DB, tmpl *template.Template) http.HandlerFunc {
+func Dashboard(db *gorm.DB, tmpl *template.Template, sessionStore *sessions.CookieStore) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Retrieve user from context
 		user, ok := auth.GetUserFromContext(r)
@@ -23,7 +22,6 @@ func Dashboard(db *gorm.DB, tmpl *template.Template) http.HandlerFunc {
 		// fmt.Printf("Authenticated user: %+v\n", user.Name)
 		// fmt.Printf("Authenticated user ID: %+v\n", user.ID)
 
-		// Set the content type for the response
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.WriteHeader(http.StatusOK)
 
@@ -31,7 +29,6 @@ func Dashboard(db *gorm.DB, tmpl *template.Template) http.HandlerFunc {
 		if err := tmpl.ExecuteTemplate(w, "dashboard.html", user.Name); err != nil {
 			log.Printf("Error executing template: %v", err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-			return
 		}
 	}
 }

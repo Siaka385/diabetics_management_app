@@ -121,28 +121,8 @@
 
         .medications-container {
             display: grid;
+            grid-template-columns: 1fr 350px;
             gap: 2rem;
-        }
-
-        .profile {
-            text-align: center;
-            padding: .5em;
-            border-radius: 15px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            max-width: 250px;
-            size-adjust: 10px;
-        }
-
-        .profile-image {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .profile-image img {
-            width: 100%;
-            height: 80%;
-            object-fit: cover;
         }
 
         .medications-list {
@@ -303,24 +283,22 @@
     <div class="dashboard">
         <aside class="sidebar">
             <div class="profile">
-                <div class="profile-image">
-                    <img src="../profile-user.png" alt="user-profile-image">
-                </div>
-                <h2>{{.Username}}</h2>
+                <div class="profile-image">JD</div>
+                <h2>John Doe</h2>
+                <p>Type 2 Diabetes</p>
                 <div class="edit-profile">✎</div>
             </div>
             <nav>
                 <ul class="sidebar-nav">
-                    <li><a href="/dashboard">Dashboard</a></li>
-                    <li><a href="/track">Blood Sugar</a></li>
+                    <li><a href="/dashboard" class="active">Dashboard</a></li>
+                    <li><a href="/bloodsugar">Blood Sugar</a></li>
                     <li><a href="/nutrition">Diet & Nutrition</a></li>
-                    <li><a href="/addmedication" class="active">Medications</a></li>
+                    <li><a href="/addmedication">Medications</a></li>
                     <li><a href="/education">Education</a></li>
-                    <li><a href="/support">Support Group</a></li>
+                    <li><a href="/support">Support Groups</a></li>
                 </ul>
             </nav>
         </aside>
-    </div>
         <main class="main-content">
             <div class="header">
                 <h1>Medication Management</h1>
@@ -328,40 +306,52 @@
 
             <div class="medications-container">
                 <div class="medications-list">
-                    {{range .Medications}}
                     <div class="medication-item">
                         <div class="medication-details">
-                            <div class="medication-name">{{.Medication_name}}</div>
-                            <div class="medication-info">{{.Dose}} - {{.Dosage_frequency}}</div>
+                            <div class="medication-name">Metformin</div>
+                            <div class="medication-info">500mg - 2x daily</div>
                         </div>
                         <div class="medication-actions">
                             <button class="btn btn-taken">Taken</button>
                             <button class="btn btn-skip">Skip</button>
                         </div>
                     </div>
-                    {{end}}
+                    <div class="medication-item">
+                        <div class="medication-details">
+                            <div class="medication-name">Insulin Glargine</div>
+                            <div class="medication-info">10 units - Once daily</div>
+                        </div>
+                        <div class="medication-actions">
+                            <button class="btn btn-taken">Taken</button>
+                            <button class="btn btn-skip">Skip</button>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- sidebar section -->
                 <div class="sidebar-section">
                     <button id="addMedicationBtn" class="add-medication-btn">Add Medication</button>
 
                     <div class="upcoming-reminders">
                         <h3>Upcoming Reminders</h3>
-                        {{range .Reminders}}
                         <div class="reminder-item">
                             <div class="reminder-icon">💊</div>
                             <div>
-                                <div class="medication-name">{{.Medication_name}}</div>
-                                <div class="medication-info">{{.ReminderTime}}</div>
+                                <div class="medication-name">Metformin</div>
+                                <div class="medication-info">Next dose at 6:00 PM</div>
                             </div>
                         </div>
-                        {{end}}
+                        <div class="reminder-item">
+                            <div class="reminder-icon">💉</div>
+                            <div>
+                                <div class="medication-name">Insulin Glargine</div>
+                                <div class="medication-info">Next dose at 9:00 PM</div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </main>
-    
+    </div>
 
     <!-- Add Medication Modal -->
     <div id="addMedicationModal" class="modal">
@@ -369,22 +359,66 @@
             <span class="close-modal" id="closeModal">&times;</span>
             <h2>Add New Medication</h2>
             <form id="addMedicationForm">
-                <!-- Medication Data -->
-                <input type="text" class="modal-input" placeholder="Medication Name" name="medication_name" value="{{.Medication_name}}" required>
-                <input type="text" class="modal-input" placeholder="Dosage" name="dose" value="{{.Dose}}" required>
-                <select class="modal-select" name="frequency" required>
+                <input type="text" class="modal-input" placeholder="Medication Name" required>
+                <input type="text" class="modal-input" placeholder="Dosage" required>
+                <select class="modal-select" required>
                     <option value="">Select Frequency</option>
-                    <option value="daily" {{if eq .Dosage_frequency "daily"}}selected{{end}}>Once Daily</option>
-                    <option value="twice-daily" {{if eq .Dosage_frequency "twice-daily"}}selected{{end}}>Twice Daily</option>
-                    <option value="three-times-daily" {{if eq .Dosage_frequency "three-times-daily"}}selected{{end}}>Three Times Daily</option>
-                    <option value="as-needed" {{if eq .Dosage_frequency "as-needed"}}selected{{end}}>As Needed</option>
+                    <option value="daily">Once Daily</option>
+                    <option value="twice-daily">Twice Daily</option>
+                    <option value="three-times-daily">Three Times Daily</option>
+                    <option value="as-needed">As Needed</option>
                 </select>
-                <input type="time" class="modal-input" name="reminder_time" value="{{.ReminderTime}}" required>
+                <input type="time" class="modal-input" placeholder="Reminder Time" required>
                 <button type="submit" class="submit-btn">Add Medication</button>
             </form>
         </div>
     </div>
 
-   
+    <script>
+        // Modal functionality for adding medication
+        const addMedicationBtn = document.getElementById('addMedicationBtn');
+        const addMedicationModal = document.getElementById('addMedicationModal');
+        const closeModal = document.getElementById('closeModal');
+        const addMedicationForm = document.getElementById('addMedicationForm');
+
+        addMedicationBtn.addEventListener('click', () => {
+            addMedicationModal.style.display = 'block';
+        });
+
+        closeModal.addEventListener('click', () => {
+            addMedicationModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target === addMedicationModal) {
+                addMedicationModal.style.display = 'none';
+            }
+        });
+
+        addMedicationForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            // In a real application, you would send this data to a backend
+            alert('Medication added successfully!');
+            addMedicationModal.style.display = 'none';
+            addMedicationForm.reset();
+        });
+
+        // Medication tracking buttons
+        const medicationItems = document.querySelectorAll('.medication-item');
+        medicationItems.forEach(item => {
+            const takenBtn = item.querySelector('.btn-taken');
+            const skipBtn = item.querySelector('.btn-skip');
+
+            takenBtn.addEventListener('click', () => {
+                alert('Medication marked as taken!');
+                // In a real app, this would update the medication history
+            });
+
+            skipBtn.addEventListener('click', () => {
+                alert('Medication skipped. Please consult your doctor if you regularly miss doses.');
+                // In a real app, this would log the skipped medication
+            });
+        });
+    </script>
 </body>
 </html>

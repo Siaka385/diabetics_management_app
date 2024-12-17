@@ -1,13 +1,12 @@
 package api
 
 import (
+	"diawise/src/services"
 	"encoding/json"
 	"fmt"
 	"html/template"
 	"log"
 	"net/http"
-
-	"diawise/src/services"
 
 	"github.com/gorilla/mux"
 
@@ -115,6 +114,15 @@ func BlogHomeHandler(tmpl *template.Template) http.HandlerFunc {
 func BloodSugarHandler(tmpl *template.Template) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if err := tmpl.ExecuteTemplate(w, "bloodsugar.html", Data); err != nil {
+			InternalServerErrorHandler(w)
+			return
+		}
+	}
+}
+
+func MedicationHandler(tmpl *template.Template) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if err := tmpl.ExecuteTemplate(w, "medication.html", Data); err != nil {
 			InternalServerErrorHandler(w)
 			return
 		}
