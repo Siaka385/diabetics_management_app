@@ -10,6 +10,8 @@ import (
 	"net/http"
 	"sync"
 
+	auth "diawise/src/auth"
+
 	"gorm.io/gorm"
 )
 
@@ -36,6 +38,17 @@ var (
 
 func Support(tmpl *template.Template) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		// user, ok := auth.GetUserFromContext(r)
+		_, ok := auth.GetUserFromContext(r)
+		if !ok {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+		// Log user details (optional)
+		// fmt.Printf("Authenticated user: %+v\n", user.Name)
+		// fmt.Printf("Authenticated user ID: %+v\n", user.ID)
+
+
 		if err := tmpl.ExecuteTemplate(w, "support.html", Data); err != nil {
 			InternalServerErrorHandler(w)
 			return
@@ -44,29 +57,29 @@ func Support(tmpl *template.Template) http.HandlerFunc {
 }
 
 func CreateRoom(db *gorm.DB) http.HandlerFunc {
-    return func(w http.ResponseWriter, r *http.Request) {
-        var roomData struct {
-            Name string `json:"name"`
-        }
+	return func(w http.ResponseWriter, r *http.Request) {
+		var roomData struct {
+			Name string `json:"name"`
+		}
 
-        err := json.NewDecoder(r.Body).Decode(&roomData)
-        if err != nil {
-            http.Error(w, `{"error": "Invalid request"}`, http.StatusBadRequest)
-            return
-        }
+		err := json.NewDecoder(r.Body).Decode(&roomData)
+		if err != nil {
+			http.Error(w, `{"error": "Invalid request"}`, http.StatusBadRequest)
+			return
+		}
 
-        room := createRoom(db, roomData.Name)
-        if room == nil {
-            http.Error(w, `{"error": "Failed to create room"}`, http.StatusInternalServerError)
-            return
-        }
+		room := createRoom(db, roomData.Name)
+		if room == nil {
+			http.Error(w, `{"error": "Failed to create room"}`, http.StatusInternalServerError)
+			return
+		}
 
-        // Return a successful response as JSON
-        json.NewEncoder(w).Encode(map[string]string{
-            "roomId": room.RoomID,
-            "name":   room.Name,
-        })
-    }
+		// Return a successful response as JSON
+		json.NewEncoder(w).Encode(map[string]string{
+			"roomId": room.RoomID,
+			"name":   room.Name,
+		})
+	}
 }
 
 // In the listRoomsHandler function, update the response to include a delete button:
