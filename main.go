@@ -61,7 +61,6 @@ func main() {
 	router.HandleFunc("/auth/login", handlers.LoginUser(db, sessionStore)).Methods("POST")
 	router.HandleFunc("/auth/loginok", handlers.LoginUserSuccess(tmpl)).Methods("GET")
 	router.HandleFunc("/login", handlers.Login(db, tmpl, sessionStore)).Methods("GET")
-	router.HandleFunc("/dashboard", handlers.Dashboard(db, tmpl, sessionStore)).Methods("GET")
 	router.HandleFunc("/nutrition/meal/log", handlers.LogMealHandler(db, tmpl, sessionStore)).Methods("POST")
 	router.HandleFunc("/medication", handlers.MedicationPageHandler(db, tmpl, sessionStore)).Methods("GET")
 	router.HandleFunc("/logout", handlers.Logout).Methods("GET")
@@ -82,8 +81,8 @@ func main() {
 	router.HandleFunc("/sendmessage", handlers.SendMessage)
 	router.HandleFunc("/deleteroom", handlers.DeleteRoom(db))
 	
-	// router.HandleFunc("/dashboard", handlers.Dashboard(db, tmpl)).Methods("GET")
-	router.Handle("/dashboard", http.HandlerFunc(auth.AuthMiddleware(handlers.Dashboard(db, tmpl, sessionStore)))).Methods("GET")
+	// Restricted routes
+	router.Handle("/dashboard", http.HandlerFunc(auth.AuthMiddleware(handlers.Dashboard(db, tmpl)))).Methods("GET")
 	router.Handle("/support", http.HandlerFunc(auth.AuthMiddleware(handlers.Support(tmpl)))).Methods("GET")
 	router.Handle("/nutrition", http.HandlerFunc(auth.AuthMiddleware(handlers.DietAndNutritionHandler(tmpl)))).Methods("GET")
 
