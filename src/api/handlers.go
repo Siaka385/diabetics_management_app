@@ -10,7 +10,6 @@ import (
 	"time"
 
 	auth "diawise/src/auth"
-	"diawise/src/services"
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
