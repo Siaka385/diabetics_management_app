@@ -99,11 +99,9 @@ func LogMealHandler(db *gorm.DB, tmpl *template.Template, ss *sessions.CookieSto
 		// Send JSON response
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(struct {
-			Message      string
-			MealInsights string
+			DietProfile services.DietProfile
 		}{
-			Message:      "Meal logged successfully!",
-			MealInsights: "Looks good",
+			DietProfile: *dietProfile,
 		})
 	}
 }
