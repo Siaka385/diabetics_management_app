@@ -43,6 +43,7 @@
             Don't have an account? <a href="/signup">Sign Up</a>
         </div>
     </div>
+
     <script>
         document.getElementById('login-form').addEventListener('submit', function(event) {
             event.preventDefault();
@@ -67,9 +68,16 @@
             .then(data => {
                 console.log('Success:', data);  // handle success response
 
-                // If the backend sends a "redirect" field in the response, handle the redirection
-                if (data.redirect) {
-                    window.location.href = data.redirect;  // Redirect to the URL specified in the "redirect" field
+                // Check if the backend sends a "token" field in the response
+                if (data.token) {
+                    // Set the JWT token in the cookie (HttpOnly, Secure, SameSite)
+                    document.cookie = `authToken=${data.token}; path=/; HttpOnly; Secure; SameSite=Strict`;
+
+                    // If the backend sends a "redirect" field in the response, handle the redirection
+                    if (data.redirect) {
+                        console.log("REDIESTING: ", data.redirect)
+                        window.location.href = data.redirect;  // Redirect to the URL specified in the "redirect" field
+                    }
                 }
             })
             .catch((error) => {

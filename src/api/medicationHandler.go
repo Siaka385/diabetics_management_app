@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"html/template"
 	"net/http"
 	"strconv"
@@ -30,6 +31,7 @@ func MedicationPageHandler(db *gorm.DB, tmpl *template.Template, sessionStore *s
 
 		// Get the user_id from the session
 		userID, ok := session.Values["user_id"].(string)
+		fmt.Println("IDENTIFIER: ", userID)
 		if !ok {
 			session.AddFlash("Please log in to access the medication page.")
 			session.Save(r, w)
@@ -265,10 +267,18 @@ func AddMedicationHandler(db *gorm.DB, tmpl *template.Template, sessionStore *se
 			return
 		}
 
-		// Get the user_id from the session
-		userID, ok := session.Values["user_id"].(string)
+		// Check if user is authenticated
+		auth, ok := session.Values["authenticated"].(bool)
 		if !ok {
-			http.Error(w, "User not authenticated", http.StatusUnauthorized)
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
+			return
+		}
+		userID, userIDOk := session.Values["user_id"].(string)
+
+		// Validate authentication
+		if !ok || !auth || !userIDOk {
+			fmt.Println("Redirecting to login: Not authenticated")
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
 			return
 		}
 
