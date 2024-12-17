@@ -26,7 +26,7 @@
   // Add click event listener to each navigation link
   navLinks.forEach(link => {
       link.addEventListener('click', (e) => {
-          e.preventDefault();
+       //   e.preventDefault();
           
           // Remove active state from all links
           removeActiveLinks();
