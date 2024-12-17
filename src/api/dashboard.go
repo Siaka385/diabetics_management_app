@@ -1,6 +1,7 @@
 package api
 
 import (
+	auth "diawise/src/auth"
 	"html/template"
 	"log"
 	"net/http"

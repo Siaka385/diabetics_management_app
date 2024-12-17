@@ -53,8 +53,7 @@ func main() {
 
 	router.HandleFunc("/", handlers.Index(db, tmpl)).Methods("GET")
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
-	router.HandleFunc("/nutrition/meal/log", handlers.LogMealHandler(db)).Methods("POST")
-	router.HandleFunc("/nutrition/mealplan", handlers.GetMealPlan).Methods("POST")
+	// router.HandleFunc("/nutrition/mealplan", handlers.GetMealPlan).Methods("POST")
 	// router.HandleFunc("/nutrition/editplan", api.EditPlan).Methods("POST")
 	// router.HandleFunc("/nutrition/suggestions", api.GetMealSuggestions).Methods("POST")
 	router.HandleFunc("/signup", handlers.Signup(db, tmpl, sessionStore)).Methods("GET")
@@ -62,6 +61,9 @@ func main() {
 	router.HandleFunc("/auth/login", handlers.LoginUser(db, sessionStore)).Methods("POST")
 	router.HandleFunc("/auth/loginok", handlers.LoginUserSuccess(tmpl)).Methods("GET")
 	router.HandleFunc("/login", handlers.Login(db, tmpl, sessionStore)).Methods("GET")
+	router.HandleFunc("/dashboard", handlers.Dashboard(db, tmpl, sessionStore)).Methods("GET")
+	router.HandleFunc("/nutrition/meal/log", handlers.LogMealHandler(db, tmpl, sessionStore)).Methods("POST")
+	router.HandleFunc("/medication", handlers.MedicationPageHandler(db, tmpl, sessionStore)).Methods("GET")
 	router.HandleFunc("/logout", handlers.Logout).Methods("GET")
 	router.HandleFunc("/medication", handlers.MedicationPageHandler(db, tmpl, sessionStore)).Methods("GET", "POST")
 	router.HandleFunc("/addmedication", handlers.AddMedicationHandler(db, tmpl, sessionStore)).Methods("GET", "POST")
@@ -81,7 +83,7 @@ func main() {
 	router.HandleFunc("/deleteroom", handlers.DeleteRoom(db))
 	
 	// router.HandleFunc("/dashboard", handlers.Dashboard(db, tmpl)).Methods("GET")
-	router.Handle("/dashboard", http.HandlerFunc(auth.AuthMiddleware(handlers.Dashboard(db, tmpl)))).Methods("GET")
+	router.Handle("/dashboard", http.HandlerFunc(auth.AuthMiddleware(handlers.Dashboard(db, tmpl, sessionStore)))).Methods("GET")
 	router.Handle("/support", http.HandlerFunc(auth.AuthMiddleware(handlers.Support(tmpl)))).Methods("GET")
 	router.Handle("/nutrition", http.HandlerFunc(auth.AuthMiddleware(handlers.DietAndNutritionHandler(tmpl)))).Methods("GET")
 
