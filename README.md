@@ -1,6 +1,6 @@
 # DiaWise Project README
 
-## Overview
+## Project Overview
 
 DiaWise is an application designed to help diabetic patients manage their diet, get educated about diabetes, and connect with other patients. The app provides tools and resources to track dietary choices, understand diabetes better, and build a supportive community for individuals living with diabetes.
 
