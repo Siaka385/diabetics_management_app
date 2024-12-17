@@ -1,23 +1,71 @@
 package auth
 
 import (
+	"context"
+	"fmt"
 	"net/http"
-    "context"
-    "fmt"
-    "strings"
-    "github.com/dgrijalva/jwt-go"
+	"strings"
+
+	"github.com/dgrijalva/jwt-go"
 )
 
+// UserContextKey is a key type for storing user in context
+type UserContextKey string
 type key string
 const userKey key = "user"
-
-
 var mySigningKey = []byte("secret")
 
-// Function to parse and validate the JWT
-func ParseToken(tokenString string) (User, error) {
-	// fmt.Println("========================================")
-	// fmt.Println("ONE")
+// AuthMiddleware handles authentication and adds user to request context
+func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
+    return func(w http.ResponseWriter, r *http.Request) {
+        // Retrieve the JWT token from cookies
+        cookie, err := r.Cookie("authToken")
+        if err != nil || cookie == nil {
+            http.Redirect(w, r, "/login", http.StatusSeeOther)
+            return
+        }
+
+        // Parse and validate the JWT token
+        tokenString := cookie.Value
+        user, err := ParseToken(tokenString)
+        if err != nil {
+            fmt.Printf("Token parsing error: %v\n", err)
+            http.Redirect(w, r, "/login", http.StatusSeeOther)
+            return
+        }
+
+        // Debug print
+        // fmt.Printf("Middleware User: %+v\n", user)
+
+        // Create a new context with the user information
+        ctx := context.WithValue(r.Context(), userKey, user)
+        
+        // Create a new request with the updated context
+        r = r.WithContext(ctx)
+
+        // Call the next handler with the new request
+        next.ServeHTTP(w, r)
+    }
+}
+
+func GetUserFromContext(r *http.Request) (*User, bool) {
+    // Retrieve the user from the context
+    userValue := r.Context().Value(userKey)
+    
+    // Debug print
+    // fmt.Printf("Context Value: %+v\n", userValue)
+
+    // Type assert to *User
+    user, ok := userValue.(*User)
+    if !ok {
+        fmt.Println("User not found in context or wrong type")
+        return nil, false
+    }
+
+    return user, true
+}
+
+func ParseToken(tokenString string) (*User, error) {
     token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
         // Ensure token signing method is expected
         if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -25,78 +73,56 @@ func ParseToken(tokenString string) (User, error) {
         }
         return mySigningKey, nil
     })
-	// fmt.Println("TWO: ", token)
-
 
     if err != nil {
-        return User{}, err
+        return nil, err
     }
-	// fmt.Println("THREE: ", token)
-
 
     claims, ok := token.Claims.(jwt.MapClaims)
     if !ok || !token.Valid {
-        return User{}, fmt.Errorf("invalid token")
+        return nil, fmt.Errorf("invalid token")
     }
-	// fmt.Println("FOUR: ", token)
-
 
     // Safely parse the claims
     userID, ok := claims["id"].(float64)
     if !ok {
-        return User{}, fmt.Errorf("missing or invalid user ID")
+        return nil, fmt.Errorf("missing or invalid user ID")
     }
-	// fmt.Println("FIVE id => : ", userID)
 
-
-    user := User{
-        ID:   uint(userID), // Convert float64 to uint
-        Name: claims["name"].(string),
+    user := &User{
+        ID:    uint(userID), // Convert float64 to uint
+        Name:  claims["name"].(string),
         Email: claims["email"].(string),
     }
-	// fmt.Println("SIX: ", claims)
 
-	// fmt.Println("========================================")
     return user, nil
 }
 
-
 // Middleware to check JWT token and add user info to context
 func AuthenticateJWT(next http.Handler) http.Handler {
-    return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-        tokenString := r.Header.Get("Authorization")
-        if tokenString == "" {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		tokenString := r.Header.Get("Authorization")
+		if tokenString == "" {
 			// Redirect to login if no token is provided
 			http.Redirect(w, r, "/login", http.StatusFound)
-            return
-        }
+			return
+		}
 
-        // Remove 'Bearer ' prefix if it's there
-        tokenString = strings.TrimPrefix(tokenString, "Bearer ")
+		// Remove 'Bearer ' prefix if it's there
+		tokenString = strings.TrimPrefix(tokenString, "Bearer ")
 
-        // Parse and validate the token
-        user, err := ParseToken(tokenString)
-        if err != nil {
+		// Parse and validate the token
+		user, err := ParseToken(tokenString)
+		if err != nil {
 			// Redirect to login if token is invalid
 			http.Redirect(w, r, "/login", http.StatusFound)
-            return
-        }
+			return
+		}
 
-        // Store user information in the request context
-        ctx := context.WithValue(r.Context(), userKey, user)
-        next.ServeHTTP(w, r.WithContext(ctx))
-    })
-}
-
-
-func helloHandler(w http.ResponseWriter, r *http.Request) {
-    user, ok := r.Context().Value(userKey).(User)
-    if !ok {
-        http.Error(w, "User not found", http.StatusUnauthorized)
-        return
-    }
-
-    fmt.Fprintf(w, "Hello, %s!", user.Name)
+		// Store user information in the request context
+		ctx := context.WithValue(r.Context(), userKey, user)
+		next.ServeHTTP(w, r.WithContext(ctx))
+	})
 }
 
 func CORS(next http.HandlerFunc) http.HandlerFunc {

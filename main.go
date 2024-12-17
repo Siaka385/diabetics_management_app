@@ -7,7 +7,7 @@ import (
 	"net/http"
 
 	handlers "diawise/src/api"
-	// "diawise/src/auth"
+	auth "diawise/src/auth"
 	database "diawise/src/database"
 	utils "diawise/src/utils"
 
@@ -72,19 +72,20 @@ func main() {
 	router.HandleFunc("/blog", handlers.BlogHomeHandler(tmpl)).Methods("GET")
 	router.HandleFunc("/bloodsugar", handlers.BloodSugarHandler(tmpl)).Methods("GET")
 	router.HandleFunc("/education", handlers.EducationHandler(tmpl)).Methods("GET")
-	router.HandleFunc("/nutrition", handlers.DietAndNutritionHandler(tmpl)).Methods("GET")
-	router.HandleFunc("/supportcommunity", handlers.CommuniyAndSupportHandler(tmpl)).Methods("GET")
 	router.HandleFunc("/glucose-tracker", handlers.GlucoseTrackerEndPointHandler).Methods("GET")
 	router.HandleFunc("/post/{id}", handlers.PostHandler(tmpl)).Methods("GET")
 	
-	router.HandleFunc("/support", handlers.Support(tmpl)).Methods("GET")
 	router.HandleFunc("/createroom", handlers.CreateRoom(db)).Methods("POST")
 	router.HandleFunc("/listrooms", handlers.ListRooms(db)).Methods("GET")
 	router.HandleFunc("/joinroom", handlers.JoinRoom(db))
 	router.HandleFunc("/sendmessage", handlers.SendMessage)
 	router.HandleFunc("/deleteroom", handlers.DeleteRoom(db))
+	
+	// router.HandleFunc("/dashboard", handlers.Dashboard(db, tmpl)).Methods("GET")
+	router.Handle("/dashboard", http.HandlerFunc(auth.AuthMiddleware(handlers.Dashboard(db, tmpl)))).Methods("GET")
+	router.Handle("/support", http.HandlerFunc(auth.AuthMiddleware(handlers.Support(tmpl)))).Methods("GET")
+	router.Handle("/nutrition", http.HandlerFunc(auth.AuthMiddleware(handlers.DietAndNutritionHandler(tmpl)))).Methods("GET")
 
-	router.HandleFunc("/dashboard", handlers.Dashboard(db, tmpl)).Methods("GET")
 
 	// CORS configuration
 	corsHandler := cors.New(cors.Options{
