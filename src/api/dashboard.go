@@ -6,8 +6,6 @@ import (
 	"log"
 	"net/http"
 
-	auth "diawise/src/auth"
-
 	"gorm.io/gorm"
 )
 

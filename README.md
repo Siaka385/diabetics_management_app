@@ -1,4 +1,4 @@
-\# DiaWise Project README
+# DiaWise Project README
 
 ## Project Overview
 
@@ -34,7 +34,7 @@ go run .
 1. Teddy Ogola Siaka
 2. Joel Amos
 3. Antony Odour
-4. John Pau
+4. John Paul
 5. David Jesse
 
 
