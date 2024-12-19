@@ -31,17 +31,6 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	// sessions and cookies
-	secret := utils.GenerateRandomString(32)
-	sessionStore = sessions.NewCookieStore([]byte(secret))
-
-	sessionStore.Options = &sessions.Options{
-		Path:     "/dashboard",
-		MaxAge:   3600,  // expiration time in seconds
-		HttpOnly: true,  // the cookie should be only accessible by HTTP(S)
-		Secure:   false, // set to true in production to use with HTTPS
-	}
 }
 
 func main() {
@@ -56,19 +45,19 @@ func main() {
 	// router.HandleFunc("/nutrition/mealplan", handlers.GetMealPlan).Methods("POST")
 	// router.HandleFunc("/nutrition/editplan", api.EditPlan).Methods("POST")
 	// router.HandleFunc("/nutrition/suggestions", api.GetMealSuggestions).Methods("POST")
-	router.HandleFunc("/signup", handlers.Signup(db, tmpl, sessionStore)).Methods("GET")
-	router.HandleFunc("/auth/signup", handlers.SignupUser(db, sessionStore)).Methods("POST")
+	router.HandleFunc("/signup", handlers.Signup(db, tmpl)).Methods("GET")
+	router.HandleFunc("/auth/signup", handlers.SignupUser(db)).Methods("POST")
 	router.HandleFunc("/auth/login", handlers.LoginUser(db, sessionStore)).Methods("POST")
 	router.HandleFunc("/auth/loginok", handlers.LoginUserSuccess(tmpl)).Methods("GET")
-	router.HandleFunc("/login", handlers.Login(db, tmpl, sessionStore)).Methods("GET")
-	router.HandleFunc("/nutrition/logmeal", handlers.LogMealHandler(db, tmpl, sessionStore)).Methods("POST")
-	router.HandleFunc("/medication", handlers.MedicationPageHandler(db, tmpl, sessionStore)).Methods("GET")
+	router.HandleFunc("/login", handlers.Login(db, tmpl)).Methods("GET")
+	router.HandleFunc("/nutrition/logmeal", handlers.LogMealHandler(db, tmpl)).Methods("POST")
+	router.HandleFunc("/medication", handlers.MedicationPageHandler(db, tmpl)).Methods("GET")
 	router.HandleFunc("/logout", handlers.Logout).Methods("GET")
-	router.HandleFunc("/medication", handlers.MedicationPageHandler(db, tmpl, sessionStore)).Methods("GET", "POST")
-	router.HandleFunc("/addmedication", handlers.AddMedicationHandler(db, tmpl, sessionStore)).Methods("GET", "POST")
-	router.HandleFunc("/updatemed/{id}", handlers.UpdateMedication(db, sessionStore)).Methods("PUT")
-	router.HandleFunc("/deletemed/{id}", handlers.DeleteMedication(db, sessionStore)).Methods("DELETE")
-	router.HandleFunc("/listmed", handlers.ListMedications(db, sessionStore)).Methods("GET")
+	router.HandleFunc("/medication", handlers.MedicationPageHandler(db, tmpl)).Methods("GET", "POST")
+	router.HandleFunc("/addmedication", handlers.AddMedicationHandler(db, tmpl)).Methods("GET", "POST")
+	router.HandleFunc("/updatemed/{id}", handlers.UpdateMedication(db)).Methods("PUT")
+	router.HandleFunc("/deletemed/{id}", handlers.DeleteMedication(db)).Methods("DELETE")
+	router.HandleFunc("/listmed", handlers.ListMedications(db)).Methods("GET")
 	router.HandleFunc("/blog", handlers.BlogHomeHandler(tmpl)).Methods("GET")
 	router.HandleFunc("/bloodsugar", handlers.BloodSugarHandler(tmpl)).Methods("GET")
 	router.HandleFunc("/education", handlers.EducationHandler(tmpl)).Methods("GET")

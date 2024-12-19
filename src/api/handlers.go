@@ -1,7 +1,6 @@
 package api
 
 import (
-	"diawise/src/services"
 	"encoding/json"
 	"fmt"
 	"html/template"
@@ -9,10 +8,11 @@ import (
 	"net/http"
 	"time"
 
+	"diawise/src/services"
+
 	auth "diawise/src/auth"
 
 	"github.com/gorilla/mux"
-	"github.com/gorilla/sessions"
 
 	"gorm.io/gorm"
 )
@@ -21,7 +21,7 @@ func GetMealSuggestions(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Getting meal suggestions...")
 }
 
-func LogMealHandler(db *gorm.DB, tmpl *template.Template, ss *sessions.CookieStore) http.HandlerFunc {
+func LogMealHandler(db *gorm.DB, tmpl *template.Template) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Starting meal logging...")
 		// Get user id to use as foreignkey

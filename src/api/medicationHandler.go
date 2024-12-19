@@ -2,7 +2,6 @@ package api
 
 import (
 	"encoding/json"
-	"fmt"
 	"html/template"
 	"net/http"
 	"strconv"
@@ -20,25 +19,9 @@ type Medication struct {
 	ReminderTime time.Duration `json:"reminder_time"`
 }
 
-func MedicationPageHandler(db *gorm.DB, tmpl *template.Template, sessionStore *sessions.CookieStore) http.HandlerFunc {
+func MedicationPageHandler(db *gorm.DB, tmpl *template.Template) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// Get the session
-		session, err := sessionStore.Get(r, "session-name")
-		if err != nil {
-			http.Error(w, "Error retrieving session", http.StatusInternalServerError)
-			return
-		}
-
-		// Get the user_id from the session
-		userID, ok := session.Values["user_id"].(string)
-		fmt.Println("IDENTIFIER: ", userID)
-		if !ok {
-			session.AddFlash("Please log in to access the medication page.")
-			session.Save(r, w)
-			http.Redirect(w, r, "/login", http.StatusSeeOther)
-			return
-		}
-
+		userID := "1"
 		if r.Method == http.MethodPost {
 			// Handle adding new medication
 			err := r.ParseForm()
@@ -82,21 +65,15 @@ func MedicationPageHandler(db *gorm.DB, tmpl *template.Template, sessionStore *s
 		}
 
 		// Fetch medications for display (GET request)
-		medications, err := services.ListMedicationsByUserId(db, userID)
+		_, err := services.ListMedicationsByUserId(db, userID)
 		if err != nil {
 			http.Error(w, "Failed to fetch medications", http.StatusInternalServerError)
 			return
 		}
 
-		data := struct {
-			Medications []services.Medication
-			Username    string
-		}{
-			Medications: medications,
-			Username:    session.Values["username"].(string),
-		}
+		
 
-		if err := tmpl.ExecuteTemplate(w, "medication.html", data); err != nil {
+		if err := tmpl.ExecuteTemplate(w, "medication.html", nil); err != nil {
 			http.Error(w, "Failed to render template", http.StatusInternalServerError)
 		}
 	}
@@ -137,21 +114,9 @@ func AddMedication(db *gorm.DB, sessionStore *sessions.CookieStore) http.Handler
 	}
 }
 
-func DeleteMedication(db *gorm.DB, sessionStore *sessions.CookieStore) http.HandlerFunc {
+func DeleteMedication(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// Get the session
-		session, err := sessionStore.Get(r, "session-name")
-		if err != nil {
-			http.Error(w, "Error retrieving session", http.StatusInternalServerError)
-			return
-		}
-
-		// Get the user_id from the session
-		userID, ok := session.Values["user_id"].(string)
-		if !ok {
-			http.Error(w, "User not authenticated", http.StatusUnauthorized)
-			return
-		}
+		userID := "1"
 
 		vars := mux.Vars(r)
 		id := vars["id"]
@@ -170,21 +135,9 @@ func DeleteMedication(db *gorm.DB, sessionStore *sessions.CookieStore) http.Hand
 	}
 }
 
-func UpdateMedication(db *gorm.DB, sessionStore *sessions.CookieStore) http.HandlerFunc {
+func UpdateMedication(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// Get the session
-		session, err := sessionStore.Get(r, "session-name")
-		if err != nil {
-			http.Error(w, "Error retrieving session", http.StatusInternalServerError)
-			return
-		}
-
-		// Get the user_id from the session
-		userID, ok := session.Values["user_id"].(string)
-		if !ok {
-			http.Error(w, "User not authenticated", http.StatusUnauthorized)
-			return
-		}
+		userID := "1"
 
 		vars := mux.Vars(r)
 		id := vars["id"]
@@ -208,21 +161,9 @@ func UpdateMedication(db *gorm.DB, sessionStore *sessions.CookieStore) http.Hand
 	}
 }
 
-func ListMedications(db *gorm.DB, sessionStore *sessions.CookieStore) http.HandlerFunc {
+func ListMedications(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// Get the session
-		session, err := sessionStore.Get(r, "session-name")
-		if err != nil {
-			http.Error(w, "Error retrieving session", http.StatusInternalServerError)
-			return
-		}
-
-		// Get the user_id from the session
-		userID, ok := session.Values["user_id"].(string)
-		if !ok {
-			http.Error(w, "User not authenticated", http.StatusUnauthorized)
-			return
-		}
+		userID := "1"
 
 		medications, err := services.ListMedicationsByUserId(db, userID)
 		if err != nil {
@@ -258,29 +199,10 @@ func MedicationReminder(db *gorm.DB) http.HandlerFunc {
 	}
 }
 
-func AddMedicationHandler(db *gorm.DB, tmpl *template.Template, sessionStore *sessions.CookieStore) http.HandlerFunc {
+func AddMedicationHandler(db *gorm.DB, tmpl *template.Template) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// Get the session
-		session, err := sessionStore.Get(r, "session-name")
-		if err != nil {
-			http.Error(w, "Error retrieving session", http.StatusInternalServerError)
-			return
-		}
-
-		// Check if user is authenticated
-		auth, ok := session.Values["authenticated"].(bool)
-		if !ok {
-			http.Redirect(w, r, "/login", http.StatusSeeOther)
-			return
-		}
-		userID, userIDOk := session.Values["user_id"].(string)
-
-		// Validate authentication
-		if !ok || !auth || !userIDOk {
-			fmt.Println("Redirecting to login: Not authenticated")
-			http.Redirect(w, r, "/login", http.StatusSeeOther)
-			return
-		}
+		userID := "1"
+		username := "toni"
 
 		if r.Method == http.MethodGet {
 			// Fetch existing medications for the user
@@ -288,12 +210,6 @@ func AddMedicationHandler(db *gorm.DB, tmpl *template.Template, sessionStore *se
 			if err != nil {
 				http.Error(w, "Failed to fetch medications", http.StatusInternalServerError)
 				return
-			}
-
-			// Get the username from the session
-			username, ok := session.Values["username"].(string)
-			if !ok {
-				username = "Unknown User" // Default in case username isn't found
 			}
 
 			// Prepare data for the template

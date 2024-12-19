@@ -28,7 +28,7 @@ func generateJWT(user auth.User) (string, error) {
 	return token.SignedString(mySigningKey)
 }
 
-func Signup(db *gorm.DB, tmpl *template.Template, sessionStore *sessions.CookieStore) http.HandlerFunc {
+func Signup(db *gorm.DB, tmpl *template.Template) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		err := tmpl.ExecuteTemplate(w, "signup.html", nil)
 		if err != nil {
@@ -37,7 +37,7 @@ func Signup(db *gorm.DB, tmpl *template.Template, sessionStore *sessions.CookieS
 	}
 }
 
-func SignupUser(db *gorm.DB, sessionStore *sessions.CookieStore) http.HandlerFunc {
+func SignupUser(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		var response map[string]string
@@ -69,22 +69,9 @@ func SignupUser(db *gorm.DB, sessionStore *sessions.CookieStore) http.HandlerFun
 	}
 }
 
-func Login(db *gorm.DB, tmpl *template.Template, sessionStore *sessions.CookieStore) http.HandlerFunc {
+func Login(db *gorm.DB, tmpl *template.Template) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// Get the session
-		session, err := sessionStore.Get(r, "session-name")
-		if err != nil {
-			http.Error(w, "Error retrieving session", http.StatusInternalServerError)
-			return
-		}
-
-		// Check if user is already authenticated
-		if auth, ok := session.Values["authenticated"].(bool); ok && auth {
-			http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
-			return
-		}
-
-		err = tmpl.ExecuteTemplate(w, "login.html", nil)
+		err := tmpl.ExecuteTemplate(w, "login.html", nil)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
