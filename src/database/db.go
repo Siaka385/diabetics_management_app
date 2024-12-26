@@ -4,8 +4,8 @@ import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 
-	auth "diawise/src/auth"
 	api "diawise/src/api"
+	auth "diawise/src/auth"
 	table "diawise/src/services"
 )
 

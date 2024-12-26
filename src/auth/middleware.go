@@ -12,90 +12,92 @@ import (
 // UserContextKey is a key type for storing user in context
 type UserContextKey string
 type key string
+
 const userKey key = "user"
+
 var mySigningKey = []byte("secret")
 
 // AuthMiddleware handles authentication and adds user to request context
 func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
-    return func(w http.ResponseWriter, r *http.Request) {
-        // Retrieve the JWT token from cookies
-        cookie, err := r.Cookie("authToken")
-        if err != nil || cookie == nil {
-            http.Redirect(w, r, "/login", http.StatusSeeOther)
-            return
-        }
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Retrieve the JWT token from cookies
+		cookie, err := r.Cookie("authToken")
+		if err != nil || cookie == nil {
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
+			return
+		}
 
-        // Parse and validate the JWT token
-        tokenString := cookie.Value
-        user, err := ParseToken(tokenString)
-        if err != nil {
-            fmt.Printf("Token parsing error: %v\n", err)
-            http.Redirect(w, r, "/login", http.StatusSeeOther)
-            return
-        }
+		// Parse and validate the JWT token
+		tokenString := cookie.Value
+		user, err := ParseToken(tokenString)
+		if err != nil {
+			fmt.Printf("Token parsing error: %v\n", err)
+			http.Redirect(w, r, "/login", http.StatusSeeOther)
+			return
+		}
 
-        // Debug print
-        // fmt.Printf("Middleware User: %+v\n", user)
+		// Debug print
+		// fmt.Printf("Middleware User: %+v\n", user)
 
-        // Create a new context with the user information
-        ctx := context.WithValue(r.Context(), userKey, user)
-        
-        // Create a new request with the updated context
-        r = r.WithContext(ctx)
+		// Create a new context with the user information
+		ctx := context.WithValue(r.Context(), userKey, user)
 
-        // Call the next handler with the new request
-        next.ServeHTTP(w, r)
-    }
+		// Create a new request with the updated context
+		r = r.WithContext(ctx)
+
+		// Call the next handler with the new request
+		next.ServeHTTP(w, r)
+	}
 }
 
 func GetUserFromContext(r *http.Request) (*User, bool) {
-    // Retrieve the user from the context
-    userValue := r.Context().Value(userKey)
-    
-    // Debug print
-    // fmt.Printf("Context Value: %+v\n", userValue)
+	// Retrieve the user from the context
+	userValue := r.Context().Value(userKey)
 
-    // Type assert to *User
-    user, ok := userValue.(*User)
-    if !ok {
-        fmt.Println("User not found in context or wrong type")
-        return nil, false
-    }
+	// Debug print
+	// fmt.Printf("Context Value: %+v\n", userValue)
 
-    return user, true
+	// Type assert to *User
+	user, ok := userValue.(*User)
+	if !ok {
+		fmt.Println("User not found in context or wrong type")
+		return nil, false
+	}
+
+	return user, true
 }
 
 func ParseToken(tokenString string) (*User, error) {
-    token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-        // Ensure token signing method is expected
-        if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-            return nil, fmt.Errorf("unexpected signing method")
-        }
-        return mySigningKey, nil
-    })
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		// Ensure token signing method is expected
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method")
+		}
+		return mySigningKey, nil
+	})
 
-    if err != nil {
-        return nil, err
-    }
+	if err != nil {
+		return nil, err
+	}
 
-    claims, ok := token.Claims.(jwt.MapClaims)
-    if !ok || !token.Valid {
-        return nil, fmt.Errorf("invalid token")
-    }
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok || !token.Valid {
+		return nil, fmt.Errorf("invalid token")
+	}
 
-    // Safely parse the claims
-    userID, ok := claims["id"].(float64)
-    if !ok {
-        return nil, fmt.Errorf("missing or invalid user ID")
-    }
+	// Safely parse the claims
+	userID, ok := claims["id"].(float64)
+	if !ok {
+		return nil, fmt.Errorf("missing or invalid user ID")
+	}
 
-    user := &User{
-        ID:    uint(userID), // Convert float64 to uint
-        Name:  claims["name"].(string),
-        Email: claims["email"].(string),
-    }
+	user := &User{
+		ID:    uint(userID), // Convert float64 to uint
+		Name:  claims["name"].(string),
+		Email: claims["email"].(string),
+	}
 
-    return user, nil
+	return user, nil
 }
 
 // Middleware to check JWT token and add user info to context

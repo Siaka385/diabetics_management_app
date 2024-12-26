@@ -48,7 +48,6 @@ func Support(tmpl *template.Template) http.HandlerFunc {
 		// fmt.Printf("Authenticated user: %+v\n", user.Name)
 		// fmt.Printf("Authenticated user ID: %+v\n", user.ID)
 
-
 		if err := tmpl.ExecuteTemplate(w, "support.html", Data); err != nil {
 			InternalServerErrorHandler(w)
 			return
