@@ -60,7 +60,9 @@ body {
 
 .auth-buttons {
     display: flex;
-    gap: 1rem;
+    gap: 3rem;
+    font-size: 6rem; /* Increase font size for larger buttons */
+    padding: 3rem 8rem; /* Add padding for larger clickable area */
 }
 
 .btn-auth {
@@ -72,7 +74,7 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    font-size: 0.875rem;
+    font-size: 1.3rem;
     border: 2px solid transparent;
 }
 
@@ -93,7 +95,7 @@ body {
     min-height: 80vh;
     display: flex;
     align-items: center;
-    background: linear-gradient(135deg, var(--background) 0%, #dbeafe 100%);
+    background: linear-gradient(135deg, var(--background) 0%, var(--accent) 100%);
 }
 
 .hero-content {
@@ -102,6 +104,29 @@ body {
     gap: 4rem;
     align-items: center;
 }
+
+.hero-image {
+    width: 175%;
+    position: relative; /* Enable child element positioning */
+    bottom: -5%;
+}
+
+.hero-image img {
+    width: 100%;
+    height: auto;
+}
+
+.hero-image::before {
+    content: ""; /* Empty content for pseudo-element */
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 15%; /* Adjust the width to control how far the translucence extends */
+    background: linear-gradient(to right, rgba(152,191,251, 0.5), rgba(255, 255, 255, 0));
+    pointer-events: none; /* Ensure it doesn't interfere with user interactions */
+}
+
 
 .hero h1 {
     font-size: 2.75rem;
