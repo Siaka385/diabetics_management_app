@@ -8,12 +8,14 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/css/index.css">
-    <!-- <link rel="stylesheet"  href="../static/css/index.css"> -->
 </head>
 <body>
     <header>
         <nav class="main-nav">
             <div class="logo">DiaWise</div>
+            <div class="hamburger" aria-label="Toggle menu">
+                ☰
+            </div>
             <div class="nav-links">
                 <a href="#features">Features</a>
                 <a href="#community">Community</a>
@@ -30,7 +32,6 @@
                     <h1>Take Control of Your Diabetes Journey, One Step at a Time</h1>
                     <p>Join thousands of people who've found their path to better diabetes management through personalized support, expert guidance, and a caring community.</p>
                     <div class="auth-buttons">
-                        <!-- <a href="/support" class="btn-auth btn-primary">Support</a> -->
                         <a href="/login" class="btn-auth btn-login">Log In</a>
                         <a href="/signup" class="btn-auth btn-signup">Sign Up</a>
                     </div>
@@ -83,16 +84,24 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-    const navbar = document.querySelector('.main-nav');
-    
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 10) {
-            navbar.classList.add('scrolled');
-        } else {
-            navbar.classList.remove('scrolled');
-        }
-    });
-});
+            const navbar = document.querySelector('.main-nav');
+            const hamburger = document.querySelector('.hamburger');
+            const navLinks = document.querySelector('.nav-links');
+
+            // Toggle navbar background on scroll
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 10) {
+                    navbar.classList.add('scrolled');
+                } else {
+                    navbar.classList.remove('scrolled');
+                }
+            });
+
+            // Toggle nav menu on hamburger click
+            hamburger.addEventListener('click', () => {
+                navLinks.classList.toggle('show');
+            });
+        });
     </script>
 </body>
 </html>
