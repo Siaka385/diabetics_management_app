@@ -69,7 +69,7 @@ func main() {
 	router.HandleFunc("/joinroom", handlers.JoinRoom(db))
 	router.HandleFunc("/sendmessage", handlers.SendMessage)
 	router.HandleFunc("/deleteroom", handlers.DeleteRoom(db))
-	
+
 	// Restricted routes
 	router.Handle("/dashboard", http.HandlerFunc(auth.AuthMiddleware(handlers.Dashboard(db, tmpl)))).Methods("GET")
 	router.Handle("/support", http.HandlerFunc(auth.AuthMiddleware(handlers.Support(tmpl)))).Methods("GET")

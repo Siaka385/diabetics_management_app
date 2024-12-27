@@ -71,8 +71,6 @@ func MedicationPageHandler(db *gorm.DB, tmpl *template.Template) http.HandlerFun
 			return
 		}
 
-		
-
 		if err := tmpl.ExecuteTemplate(w, "medication.html", nil); err != nil {
 			http.Error(w, "Failed to render template", http.StatusInternalServerError)
 		}
