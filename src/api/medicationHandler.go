@@ -2,16 +2,18 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"html/template"
 	"net/http"
 	"strconv"
 	"time"
 
-	"diawise/src/services"
-
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"gorm.io/gorm"
+
+	auth "diawise/src/auth"
+	"diawise/src/services"
 )
 
 type Medication struct {
@@ -21,6 +23,13 @@ type Medication struct {
 
 func MedicationPageHandler(db *gorm.DB, tmpl *template.Template) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		// Retrieve user from context
+		user, ok := auth.GetUserFromContext(r)
+		if !ok {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
 		userID := "1"
 		if r.Method == http.MethodPost {
 			// Handle adding new medication
@@ -70,8 +79,8 @@ func MedicationPageHandler(db *gorm.DB, tmpl *template.Template) http.HandlerFun
 			http.Error(w, "Failed to fetch medications", http.StatusInternalServerError)
 			return
 		}
-
-		if err := tmpl.ExecuteTemplate(w, "medication.html", nil); err != nil {
+		fmt.Println(user.Name)
+		if err := tmpl.ExecuteTemplate(w, "medication.html", user.Name); err != nil {
 			http.Error(w, "Failed to render template", http.StatusInternalServerError)
 		}
 	}
@@ -199,8 +208,15 @@ func MedicationReminder(db *gorm.DB) http.HandlerFunc {
 
 func AddMedicationHandler(db *gorm.DB, tmpl *template.Template) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		userID := "1"
-		username := "toni"
+		// Retrieve user from context
+		user, ok := auth.GetUserFromContext(r)
+		if !ok {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		userID := fmt.Sprint(user.ID)
+		username := user.Name
 
 		if r.Method == http.MethodGet {
 			// Fetch existing medications for the user
@@ -219,8 +235,13 @@ func AddMedicationHandler(db *gorm.DB, tmpl *template.Template) http.HandlerFunc
 				Username:    username,
 			}
 
+			UserProfileDetails := UserProfile{
+				Name:   data.Username,
+				Abbrev: GenerateShortName(data.Username),
+			}
+
 			// Render the template
-			if err := tmpl.ExecuteTemplate(w, "medication.html", data); err != nil {
+			if err := tmpl.ExecuteTemplate(w, "medication.html", UserProfileDetails); err != nil {
 				http.Error(w, "Failed to render template", http.StatusInternalServerError)
 			}
 			return

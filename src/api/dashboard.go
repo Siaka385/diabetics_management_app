@@ -4,11 +4,17 @@ import (
 	"html/template"
 	"log"
 	"net/http"
-
-	auth "diawise/src/auth"
+	"strings"
 
 	"gorm.io/gorm"
+
+	auth "diawise/src/auth"
 )
+
+type UserProfile struct {
+	Abbrev string
+	Name   string
+}
 
 func Dashboard(db *gorm.DB, tmpl *template.Template) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -26,10 +32,29 @@ func Dashboard(db *gorm.DB, tmpl *template.Template) http.HandlerFunc {
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.WriteHeader(http.StatusOK)
 
+		UserProfileDetails := UserProfile{
+			Abbrev: GenerateShortName(user.Name),
+			Name:   user.Name,
+		}
+
 		// Serve the dashboard page
-		if err := tmpl.ExecuteTemplate(w, "dashboard.html", user.Name); err != nil {
+		if err := tmpl.ExecuteTemplate(w, "dashboard.html", UserProfileDetails); err != nil {
 			log.Printf("Error executing template: %v", err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		}
 	}
+}
+
+func GenerateShortName(fullName string) string {
+	name := strings.TrimSpace(fullName)
+	words := strings.Split(name, " ")
+	if len(words) == 1 {
+
+		return strings.Split(words[0], "")[0]
+	}
+	shortName := ""
+	for i := 0; i < len(words); i++ {
+		shortName += string(words[i][0])
+	}
+	return shortName
 }

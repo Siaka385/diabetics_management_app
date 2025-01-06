@@ -340,19 +340,18 @@
         <div class="dashboard">
             <aside class="sidebar">
                 <div class="profile">
-                    <div class="profile-image">JD</div>
-                    <h2>John Doe</h2>
-                    <p>Type II Diabetes</p>
+                    <div class="profile-image">{{.Profile.Abbrev}}</div>
+                    <h2>{{.Profile.Name}}</h2>
                     <div class="edit-profile">✎</div>
                 </div>
                 <nav>
                     <ul class="sidebar-nav">
                         <li><a href="/dashboard">Dashboard</a></li>
-                        <li><a href="/track">Blood Sugar</a></li>
+                        <li><a href="/bloodsugar">Blood Sugar</a></li>
                         <li><a href="/nutrition">Diet & Nutrition</a></li>
                         <li><a href="/addmedication">Medications</a></li>
-                        <li><a href="/education">Education</a></li>
-                        <li><a href="/blog" class="active">Blog</a></li>
+                        <li><a href="/blog" class="active">Education</a></li>
+                        <li><a href="/support">Support Groups</a></li>
                     </ul>
                 </nav>
             </aside>
@@ -447,6 +446,7 @@
             const closeModal = document.getElementById('closeModal');
             const createTopicForm = document.getElementById('createTopicForm');
     
+        
             createTopicBtn.addEventListener('click', () => {
                 createTopicModal.style.display = 'block';
             });

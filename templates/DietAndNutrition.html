@@ -339,8 +339,9 @@
     <div class="dashboard">
         <aside class="sidebar">
             <div class="profile">
-                <div class="profile-image">JD</div>
-                <h2>John Doe</h2>
+                <div class="profile-image">{{.Abbrev}}</div>
+                <h2>{{.Name}}</h2>
+                <div class="edit-profile">✎</div>
             </div>
             <nav>
                 <ul class="sidebar-nav">
@@ -348,7 +349,7 @@
                     <li><a href="/bloodsugar">Blood Sugar</a></li>
                     <li><a href="/nutrition" class="active">Diet & Nutrition</a></li>
                     <li><a href="/addmedication">Medications</a></li>
-                    <li><a href="/education">Education</a></li>
+                    <li><a href="/blog">Education</a></li>
                     <li><a href="/support">Support Group</a></li>
                 </ul>
             </nav>

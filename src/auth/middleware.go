@@ -53,7 +53,7 @@ func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 func GetUserFromContext(r *http.Request) (*User, bool) {
 	// Retrieve the user from the context
 	userValue := r.Context().Value(userKey)
-
+	
 	// Debug print
 	// fmt.Printf("Context Value: %+v\n", userValue)
 

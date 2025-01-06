@@ -8,13 +8,11 @@ import (
 	"net/http"
 	"time"
 
-	"diawise/src/services"
+	"github.com/gorilla/mux"
+	"gorm.io/gorm"
 
 	auth "diawise/src/auth"
-
-	"github.com/gorilla/mux"
-
-	"gorm.io/gorm"
+	"diawise/src/services"
 )
 
 func GetMealSuggestions(w http.ResponseWriter, r *http.Request) {
@@ -164,6 +162,17 @@ func PostHandler(tmpl *template.Template) http.HandlerFunc {
 
 func BlogHomeHandler(tmpl *template.Template) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		// Retrieve user from context
+		user, ok := auth.GetUserFromContext(r)
+		if !ok {
+			return
+		}
+
+		UserProfileDetails := UserProfile{
+			Name:   user.Name,
+			Abbrev: GenerateShortName(user.Name),
+		}
+		Data.Profile = UserProfileDetails
 		if err := tmpl.ExecuteTemplate(w, "blog_home.html", Data); err != nil {
 			InternalServerErrorHandler(w)
 			return
@@ -173,7 +182,19 @@ func BlogHomeHandler(tmpl *template.Template) http.HandlerFunc {
 
 func BloodSugarHandler(tmpl *template.Template) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if err := tmpl.ExecuteTemplate(w, "bloodsugar.html", Data); err != nil {
+		// Retrieve user from context
+		user, ok := auth.GetUserFromContext(r)
+		if !ok {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		UserProfileDetails := UserProfile{
+			Name:   user.Name,
+			Abbrev: GenerateShortName(user.Name),
+		}
+
+		if err := tmpl.ExecuteTemplate(w, "bloodsugar.html", UserProfileDetails); err != nil {
 			InternalServerErrorHandler(w)
 			return
 		}
@@ -200,7 +221,18 @@ func EducationHandler(tmpl *template.Template) http.HandlerFunc {
 
 func DietAndNutritionHandler(tmpl *template.Template) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if err := tmpl.ExecuteTemplate(w, "DietAndNutrition.html", Data); err != nil {
+		// Retrieve user from context
+		user, ok := auth.GetUserFromContext(r)
+		if !ok {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		UserProfileDetails := UserProfile{
+			Name:   user.Name,
+			Abbrev: GenerateShortName(user.Name),
+		}
+		if err := tmpl.ExecuteTemplate(w, "DietAndNutrition.html", UserProfileDetails); err != nil {
 			InternalServerErrorHandler(w)
 			return
 		}
@@ -209,7 +241,19 @@ func DietAndNutritionHandler(tmpl *template.Template) http.HandlerFunc {
 
 func CommuniyAndSupportHandler(tmpl *template.Template) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if err := tmpl.ExecuteTemplate(w, "CommunityAndSupport.html", Data); err != nil {
+		// Retrieve user from context
+		user, ok := auth.GetUserFromContext(r)
+		if !ok {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		UserProfileDetails := UserProfile{
+			Name:   user.Name,
+			Abbrev: GenerateShortName(user.Username),
+		}
+
+		if err := tmpl.ExecuteTemplate(w, "CommunityAndSupport.html", UserProfileDetails); err != nil {
 			InternalServerErrorHandler(w)
 			return
 		}

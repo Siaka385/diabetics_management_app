@@ -6,15 +6,15 @@ import (
 	"log"
 	"net/http"
 
-	handlers "diawise/src/api"
-	auth "diawise/src/auth"
-	database "diawise/src/database"
-	utils "diawise/src/utils"
-
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"github.com/rs/cors"
 	"gorm.io/gorm"
+
+	handlers "diawise/src/api"
+	auth "diawise/src/auth"
+	database "diawise/src/database"
+	utils "diawise/src/utils"
 )
 
 var (
@@ -51,15 +51,12 @@ func main() {
 	router.HandleFunc("/auth/loginok", handlers.LoginUserSuccess(tmpl)).Methods("GET")
 	router.HandleFunc("/login", handlers.Login(db, tmpl)).Methods("GET")
 	router.HandleFunc("/nutrition/logmeal", handlers.LogMealHandler(db, tmpl)).Methods("POST")
-	router.HandleFunc("/medication", handlers.MedicationPageHandler(db, tmpl)).Methods("GET")
+	//router.HandleFunc("/medication", handlers.MedicationPageHandler(db, tmpl)).Methods("GET")
+	router.Handle("/medication", http.HandlerFunc(auth.AuthMiddleware(handlers.MedicationPageHandler(db, tmpl)))).Methods("GET")
 	router.HandleFunc("/logout", handlers.Logout).Methods("GET")
-	router.HandleFunc("/medication", handlers.MedicationPageHandler(db, tmpl)).Methods("GET", "POST")
-	router.HandleFunc("/addmedication", handlers.AddMedicationHandler(db, tmpl)).Methods("GET", "POST")
 	router.HandleFunc("/updatemed/{id}", handlers.UpdateMedication(db)).Methods("PUT")
 	router.HandleFunc("/deletemed/{id}", handlers.DeleteMedication(db)).Methods("DELETE")
 	router.HandleFunc("/listmed", handlers.ListMedications(db)).Methods("GET")
-	router.HandleFunc("/blog", handlers.BlogHomeHandler(tmpl)).Methods("GET")
-	router.HandleFunc("/bloodsugar", handlers.BloodSugarHandler(tmpl)).Methods("GET")
 	router.HandleFunc("/education", handlers.EducationHandler(tmpl)).Methods("GET")
 	router.HandleFunc("/glucose-tracker", handlers.GlucoseTrackerEndPointHandler).Methods("GET")
 	router.HandleFunc("/post/{id}", handlers.PostHandler(tmpl)).Methods("GET")
@@ -74,6 +71,9 @@ func main() {
 	router.Handle("/dashboard", http.HandlerFunc(auth.AuthMiddleware(handlers.Dashboard(db, tmpl)))).Methods("GET")
 	router.Handle("/support", http.HandlerFunc(auth.AuthMiddleware(handlers.Support(tmpl)))).Methods("GET")
 	router.Handle("/nutrition", http.HandlerFunc(auth.AuthMiddleware(handlers.DietAndNutritionHandler(tmpl)))).Methods("GET")
+	router.Handle("/bloodsugar", http.HandlerFunc(auth.AuthMiddleware(handlers.BloodSugarHandler(tmpl)))).Methods("GET")
+	router.Handle("/blog", http.HandlerFunc(auth.AuthMiddleware(handlers.BlogHomeHandler(tmpl)))).Methods("GET")
+	router.Handle("/addmedication", http.HandlerFunc(auth.AuthMiddleware(handlers.AddMedicationHandler(db, tmpl)))).Methods("GET", "POST")
 
 	// CORS configuration
 	corsHandler := cors.New(cors.Options{

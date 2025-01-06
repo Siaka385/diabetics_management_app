@@ -36,6 +36,7 @@ var LoadTemplate = func() *template.Template {
 }
 
 var Data = struct {
+	Profile UserProfile  
 	Title string
 	Posts []Post
 }{

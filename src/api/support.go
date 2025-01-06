@@ -10,9 +10,9 @@ import (
 	"net/http"
 	"sync"
 
-	auth "diawise/src/auth"
-
 	"gorm.io/gorm"
+
+	auth "diawise/src/auth"
 )
 
 // Room model for database persistence
@@ -39,7 +39,7 @@ var (
 func Support(tmpl *template.Template) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// user, ok := auth.GetUserFromContext(r)
-		_, ok := auth.GetUserFromContext(r)
+		user, ok := auth.GetUserFromContext(r)
 		if !ok {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
@@ -47,8 +47,11 @@ func Support(tmpl *template.Template) http.HandlerFunc {
 		// Log user details (optional)
 		// fmt.Printf("Authenticated user: %+v\n", user.Name)
 		// fmt.Printf("Authenticated user ID: %+v\n", user.ID)
-
-		if err := tmpl.ExecuteTemplate(w, "support.html", Data); err != nil {
+		UserProfileDetails := UserProfile{
+			Abbrev: GenerateShortName(user.Name),
+			Name:   user.Name,
+		}
+		if err := tmpl.ExecuteTemplate(w, "support.html", UserProfileDetails); err != nil {
 			InternalServerErrorHandler(w)
 			return
 		}
