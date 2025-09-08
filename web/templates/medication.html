@@ -289,13 +289,16 @@
             </div>
             <nav>
                 <ul class="sidebar-nav">
-                    <li><a href="/dashboard">Dashboard</a></li>
-                    <li><a href="/bloodsugar">Blood Sugar</a></li>
-                    <li><a href="/nutrition">Diet & Nutrition</a></li>
-                    <li><a href="/addmedication" class="active">Medications</a></li>
-                    <li><a href="/blog">Education</a></li>
-                    <li><a href="/support">Support Groups</a></li>
+                    <li><a href="/dashboard"><span class="nav-icon">🏠</span><span class="nav-text">Dashboard</span></a></li>
+                    <li><a href="/bloodsugar"><span class="nav-icon">📊</span><span class="nav-text">Blood Sugar</span></a></li>
+                    <li><a href="/nutrition"><span class="nav-icon">🥗</span><span class="nav-text">Diet & Nutrition</span></a></li>
+                    <li><a href="/medication" class="active"><span class="nav-icon">💊</span><span class="nav-text">Medications</span></a></li>
+                    <li><a href="/blog"><span class="nav-icon">👥</span><span class="nav-text">Education</span></a></li>
+                    <li><a href="/support"><span class="nav-icon">🆘</span><span class="nav-text">Support Groups</span></a></li>
                 </ul>
+                <div class="sidebar-logout">
+                    <button onclick="Auth.logout()" class="logout-btn"><span class="nav-icon">🚪</span><span class="nav-text">Logout</span></button>
+                </div>
             </nav>
         </aside>
         <main class="main-content">

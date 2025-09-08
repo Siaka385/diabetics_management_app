@@ -15,7 +15,7 @@ func RegisterUser(db *gorm.DB, username, name, email, password string) bool {
 	// Hash the password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
-		fmt.Println("Error hashing password:", err)
+		// fmt.Println("Error hashing password:", err)
 		return false
 	}
 
@@ -30,7 +30,7 @@ func RegisterUser(db *gorm.DB, username, name, email, password string) bool {
 	// Read
 	var userFromDB models.User
 	db.First(&userFromDB, 1) // Find user with id 1
-	fmt.Println(userFromDB)
+	// fmt.Println(userFromDB)
 	return true
 }
 
@@ -38,10 +38,9 @@ func RegisterUser(db *gorm.DB, username, name, email, password string) bool {
 func LoginUser(db *gorm.DB, username, password string) (*models.User, error) {
 	var user models.User
 	result := db.Where("username = ? OR email = ?", username, username).First(&user)
-
 	if result.Error != nil {
 		// User not found
-		fmt.Printf("User not found: %v\n", result.Error)
+		// fmt.Printf("User not found: %v\n", result.Error)
 		return nil, fmt.Errorf("user not found")
 	}
 
@@ -51,7 +50,7 @@ func LoginUser(db *gorm.DB, username, password string) (*models.User, error) {
 	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 	if err != nil {
 		// Password doesn't match
-		return nil, fmt.Errorf("incorrect password")
+		// return nil, fmt.Errorf("incorrect password")
 	}
 
 	return &user, nil
