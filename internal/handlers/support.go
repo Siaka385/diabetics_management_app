@@ -316,3 +316,24 @@ func listRooms(db *gorm.DB) ([]Room, error) {
 	result := db.Find(&rooms)
 	return rooms, result.Error
 }
+
+func CommuniyAndSupportHandler(tmpl *template.Template) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Retrieve user from context
+		user, ok := auth.GetUserFromContext(r)
+		if !ok {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		UserProfileDetails := models.UserProfile{
+			Name:   user.Name,
+			Abbrev: shared.GenerateShortName(user.Name),
+		}
+
+		if err := tmpl.ExecuteTemplate(w, "CommunityAndSupport.html", UserProfileDetails); err != nil {
+			InternalServerErrorHandler(w)
+			return
+		}
+	}
+}
