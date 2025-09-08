@@ -56,6 +56,7 @@ func main() {
 	router.HandleFunc("/signup", handlers.Signup(db, tmpl)).Methods("GET")
 	router.HandleFunc("/auth/signup", handlers.SignupUser(db)).Methods("POST")
 	router.HandleFunc("/auth/login", handlers.LoginUser(db, sessionStore)).Methods("POST")
+	router.HandleFunc("/auth/status", handlers.AuthStatusHandler()).Methods("GET")
 	router.HandleFunc("/auth/loginok", handlers.LoginUserSuccess(tmpl)).Methods("GET")
 	router.HandleFunc("/login", handlers.Login(db, tmpl)).Methods("GET")
 	router.HandleFunc("/nutrition/logmeal", handlers.LogMealHandler(db, tmpl)).Methods("POST")

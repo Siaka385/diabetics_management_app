@@ -5,27 +5,34 @@ window.onload=()=>{
             const closeModal = document.getElementById('closeModal');
             const addMedicationForm = document.getElementById('addMedicationForm');
     
-            addMedicationBtn.addEventListener('click', () => {
-                addMedicationModal.style.display = 'block';
-            });
+            if (addMedicationBtn && addMedicationModal) {
+                addMedicationBtn.addEventListener('click', () => {
+                    addMedicationModal.style.display = 'block';
+                });
+            }
     
-            closeModal.addEventListener('click', () => {
-                addMedicationModal.style.display = 'none';
-            });
-    
-            window.addEventListener('click', (event) => {
-                if (event.target === addMedicationModal) {
+            if (closeModal && addMedicationModal) {
+                closeModal.addEventListener('click', () => {
                     addMedicationModal.style.display = 'none';
-                }
-            });
+                });
+            }
     
-            addMedicationForm.addEventListener('submit', (event) => {
-                event.preventDefault();
-                // In a real application, you would send this data to a backend
-                alert('Medication added successfully!');
-                addMedicationModal.style.display = 'none';
-                addMedicationForm.reset();
-            });
+            if (addMedicationModal) {
+                window.addEventListener('click', (event) => {
+                    if (event.target === addMedicationModal) {
+                        addMedicationModal.style.display = 'none';
+                    }
+                });
+            }
+    
+            if (addMedicationForm) {
+                addMedicationForm.addEventListener('submit', (event) => {
+                    event.preventDefault();
+                    alert('Medication added successfully!');
+                    if (addMedicationModal) addMedicationModal.style.display = 'none';
+                    addMedicationForm.reset();
+                });
+            }
     
             // Medication tracking buttons
             const medicationItems = document.querySelectorAll('.medication-item');

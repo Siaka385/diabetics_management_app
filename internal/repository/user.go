@@ -37,13 +37,15 @@ func RegisterUser(db *gorm.DB, username, name, email, password string) bool {
 // LoginUser checks if a user exists and verifies the password
 func LoginUser(db *gorm.DB, username, password string) (*models.User, error) {
 	var user models.User
-	result := db.Where("email = ?", username).First(&user)
+	result := db.Where("username = ? OR email = ?", username, username).First(&user)
 
 	if result.Error != nil {
 		// User not found
 		fmt.Printf("User not found: %v\n", result.Error)
 		return nil, fmt.Errorf("user not found")
 	}
+
+	fmt.Printf("User found: ID=%d, Name='%s', Username='%s', Email='%s'\n", user.ID, user.Name, user.Username, user.Email)
 
 	// Compare the provided password with the stored hashed password
 	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))

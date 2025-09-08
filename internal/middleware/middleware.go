@@ -33,13 +33,9 @@ func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 		tokenString := cookie.Value
 		user, err := ParseToken(tokenString)
 		if err != nil {
-			fmt.Printf("Token parsing error: %v\n", err)
 			http.Redirect(w, r, "/login", http.StatusSeeOther)
 			return
 		}
-
-		// Debug print
-		// fmt.Printf("Middleware User: %+v\n", user)
 
 		// Create a new context with the user information
 		ctx := context.WithValue(r.Context(), userKey, user)
@@ -78,10 +74,18 @@ func CreateToken(user *models.User) (string, error) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	return token.SignedString(mySigningKey)
+	tokenString, err := token.SignedString(mySigningKey)
+	if err != nil {
+		fmt.Printf("Token creation error: %v\n", err)
+		return "", err
+	}
+	fmt.Printf("Token created successfully for user %s\n", user.Name)
+	return tokenString, nil
 }
 
 func ParseToken(tokenString string) (*models.User, error) {
+	fmt.Printf("Parsing token: %s\n", tokenString[:20]+"...") // Log first 20 chars
+	
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		// Ensure token signing method is expected
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -91,17 +95,28 @@ func ParseToken(tokenString string) (*models.User, error) {
 	})
 
 	if err != nil {
+		fmt.Printf("Token parse error: %v\n", err)
 		return nil, err
 	}
 
 	claims, ok := token.Claims.(jwt.MapClaims)
 	if !ok || !token.Valid {
+		fmt.Printf("Invalid token or claims\n")
 		return nil, fmt.Errorf("invalid token")
+	}
+
+	// Check expiration
+	if exp, ok := claims["exp"].(float64); ok {
+		if time.Now().Unix() > int64(exp) {
+			fmt.Printf("Token expired\n")
+			return nil, fmt.Errorf("token expired")
+		}
 	}
 
 	// Safely parse the claims
 	userID, ok := claims["id"].(float64)
 	if !ok {
+		fmt.Printf("Missing or invalid user ID in claims\n")
 		return nil, fmt.Errorf("missing or invalid user ID")
 	}
 
@@ -111,6 +126,7 @@ func ParseToken(tokenString string) (*models.User, error) {
 		Email: claims["email"].(string),
 	}
 
+	fmt.Printf("Token parsed successfully for user: %s\n", user.Name)
 	return user, nil
 }
 

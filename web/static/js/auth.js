@@ -24,23 +24,39 @@ class Auth {
     }
     
     static async logout() {
-        window.location.href = '/logout';
+        try {
+            await fetch('/logout', { method: 'GET' });
+            window.location.href = '/login';
+        } catch (error) {
+            window.location.href = '/login';
+        }
     }
     
-    static checkAuth() {
-        // Check if user is on a protected route without auth
-        const protectedRoutes = ['/dashboard', '/nutrition', '/bloodsugar', '/blog', '/support', '/medication'];
-        const currentPath = window.location.pathname;
-        
-        if (protectedRoutes.includes(currentPath)) {
-            // The server will handle redirect if not authenticated
+    static async isAuthenticated() {
+        try {
+            const response = await fetch('/auth/status');
+            const data = await response.json();
+            return data.authenticated;
+        } catch (error) {
+            return false;
+        }
+    }
+    
+    static async requireAuth() {
+        const isAuth = await this.isAuthenticated();
+        if (!isAuth) {
+            window.location.href = '/login';
+            return false;
+        }
+        return true;
+    }
+    
+    static async redirectIfAuthenticated() {
+        const isAuth = await this.isAuthenticated();
+        if (isAuth) {
+            window.location.href = '/dashboard';
             return true;
         }
         return false;
     }
 }
-
-// Auto-check auth on page load
-document.addEventListener('DOMContentLoaded', function() {
-    Auth.checkAuth();
-});

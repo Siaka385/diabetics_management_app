@@ -44,8 +44,14 @@
         </div>
     </div>
 
+    <script src="/static/js/router.js"></script>
     <script src="/static/js/auth.js"></script>
     <script>
+        // Redirect if already authenticated
+        document.addEventListener('DOMContentLoaded', function() {
+            Auth.redirectIfAuthenticated();
+        });
+        
         document.getElementById('login-form').addEventListener('submit', async function(event) {
             event.preventDefault();
             
