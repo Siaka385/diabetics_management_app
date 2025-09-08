@@ -1,13 +1,5 @@
 {{define "sidebar"}}
-<!-- Sidebar Toggle Button -->
-<button class="sidebar-toggle" id="sidebarToggle">
-    <span class="toggle-icon">☰</span>
-</button>
-
-<!-- Overlay for mobile -->
-<div class="overlay" id="overlay"></div>
-
-<aside class="sidebar" id="sidebar">
+<aside class="sidebar">
     <div class="profile">
         <div class="profile-image">{{.Abbrev}}</div>
         <h2>{{.Name}}</h2>
@@ -28,27 +20,5 @@
     </nav>
 </aside>
 
-<script>
-// Sidebar toggle functionality
-document.addEventListener('DOMContentLoaded', function() {
-    const sidebarToggle = document.getElementById('sidebarToggle');
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('overlay');
-    
-    if (sidebarToggle && sidebar) {
-        sidebarToggle.addEventListener('click', function() {
-            sidebar.classList.toggle('collapsed');
-            document.body.classList.toggle('sidebar-collapsed');
-        });
-    }
-    
-    // Mobile overlay click
-    if (overlay) {
-        overlay.addEventListener('click', function() {
-            sidebar.classList.remove('open');
-            overlay.classList.remove('active');
-        });
-    }
-});
-</script>
+
 {{end}}
