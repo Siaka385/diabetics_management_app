@@ -1,19 +1,18 @@
 package handlers
 
 import (
-	"html/template"
 	"net/http"
-
-	"gorm.io/gorm"
+	"os"
 )
 
-func Index(db *gorm.DB, tmpl *template.Template) http.HandlerFunc {
+func Index() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		templateName := "index.html"
-
-		err := tmpl.ExecuteTemplate(w, templateName, nil)
+		content, err := os.ReadFile("web/templates/index.html")
 		if err != nil {
-			InternalServerErrorHandler(w)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
 		}
+		w.Header().Set("Content-Type", "text/html")
+		w.Write(content)
 	}
 }

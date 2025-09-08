@@ -2,8 +2,6 @@ package main
 
 import (
 	"fmt"
-	"html/template"
-	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -19,22 +17,12 @@ import (
 
 var (
 	db           *gorm.DB
-	tmpl         *template.Template
 	err          error
 	sessionStore *sessions.CookieStore
 )
 
 func init() {
 	db = repository.InitializeDatabase("data/diawise.db")
-	tmpl, err = template.ParseGlob("web/templates/*.html")
-	if err != nil {
-		log.Fatal(err)
-	}
-	// Parse partials
-	tmpl, err = tmpl.ParseGlob("web/templates/partials/*.html")
-	if err != nil {
-		log.Fatal(err)
-	}
 	sessionStore = sessions.NewCookieStore([]byte("your-secret-key"))
 }
 
@@ -45,7 +33,7 @@ func main() {
 
 	router := mux.NewRouter()
 
-	router.HandleFunc("/", handlers.Index(db, tmpl)).Methods("GET")
+	router.HandleFunc("/", handlers.Index()).Methods("GET")
 	// Custom static file handler with proper MIME types
 	staticHandler := http.StripPrefix("/static/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		path := r.URL.Path
