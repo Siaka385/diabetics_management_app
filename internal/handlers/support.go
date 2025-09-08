@@ -57,9 +57,8 @@ func Support(tmpl *template.Template) http.HandlerFunc {
 			CurrentPage: "/support",
 		}
 		
-		if err := tmpl.ExecuteTemplate(w, "support.html", UserProfileDetails); err != nil {
-			InternalServerErrorHandler(w)
-		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(UserProfileDetails)
 	}
 }
 

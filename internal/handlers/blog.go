@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"encoding/json"
 	"html/template"
 	"log"
 	"net/http"
@@ -39,6 +40,7 @@ func BlogHomeHandler(tmpl *template.Template) http.HandlerFunc {
 		// Retrieve user from context
 		user, ok := auth.GetUserFromContext(r)
 		if !ok {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
 
@@ -54,10 +56,9 @@ func BlogHomeHandler(tmpl *template.Template) http.HandlerFunc {
 			CurrentPage: "/blog",
 			Posts:       Data.Posts,
 		}
-		if err := tmpl.ExecuteTemplate(w, "blog_home.html", UserProfileDetails); err != nil {
-			InternalServerErrorHandler(w)
-			return
-		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(UserProfileDetails)
 	}
 }
 

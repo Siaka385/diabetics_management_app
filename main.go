@@ -64,7 +64,7 @@ func main() {
 	router.HandleFunc("/auth/status", handlers.AuthStatus).Methods("GET")
 
 	router.HandleFunc("/nutrition/logmeal", handlers.LogMealHandler(db, tmpl)).Methods("POST")
-	router.Handle("/medication", http.HandlerFunc(middleware.AuthMiddleware(handlers.MedicationPageHandler(db, tmpl)))).Methods("GET")
+	router.Handle("/medication", http.HandlerFunc(middleware.AuthMiddleware(handlers.MedicationHandler(tmpl)))).Methods("GET")
 	router.HandleFunc("/updatemed/{id}", handlers.UpdateMedication(db)).Methods("PUT")
 	router.HandleFunc("/deletemed/{id}", handlers.DeleteMedication(db)).Methods("DELETE")
 	router.HandleFunc("/listmed", handlers.ListMedications(db)).Methods("GET")

@@ -56,10 +56,8 @@ func BloodSugarHandler(tmpl *template.Template) http.HandlerFunc {
 			CurrentPage: "/bloodsugar",
 		}
 
-		if err := tmpl.ExecuteTemplate(w, "bloodsugar.html", UserProfileDetails); err != nil {
-			InternalServerErrorHandler(w)
-			return
-		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(UserProfileDetails)
 	}
 }
 
@@ -82,9 +80,8 @@ func DietAndNutritionHandler(tmpl *template.Template) http.HandlerFunc {
 			},
 			CurrentPage: "/nutrition",
 		}
-		if err := tmpl.ExecuteTemplate(w, "DietAndNutrition.html", UserProfileDetails); err != nil {
-			InternalServerErrorHandler(w)
-			return
-		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(UserProfileDetails)
 	}
 }

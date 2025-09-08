@@ -59,13 +59,23 @@ class Router {
             case '/dashboard':
                 await this.renderDashboard();
                 break;
+            case '/bloodsugar':
+                await this.renderBloodsugar();
+                break;
+            case '/nutrition':
+                await this.renderNutrition();
+                break;
+            case '/blog':
+                await this.renderBlog();
+                break;
+            case '/support':
+                await this.renderSupport();
+                break;
+            case '/medication':
+                await this.renderMedication();
+                break;
             default:
-                // For other protected routes, redirect to server
-                if (this.protectedRoutes.has(path)) {
-                    window.location.href = path;
-                } else {
-                    this.render404();
-                }
+                this.render404();
         }
     }
 
@@ -87,6 +97,31 @@ class Router {
     async renderSignupPage() {
         const { renderSignup } = await import('./auth/signup.js');
         renderSignup();
+    }
+
+    async renderBloodsugar() {
+        const { renderBloodsugar } = await import('./pages/bloodsugar.js');
+        await renderBloodsugar();
+    }
+
+    async renderNutrition() {
+        const { renderNutrition } = await import('./pages/nutrition.js');
+        await renderNutrition();
+    }
+
+    async renderBlog() {
+        const { renderBlog } = await import('./pages/blog.js');
+        await renderBlog();
+    }
+
+    async renderSupport() {
+        const { renderSupport } = await import('./pages/support.js');
+        await renderSupport();
+    }
+
+    async renderMedication() {
+        const { renderMedication } = await import('./pages/medication.js');
+        await renderMedication();
     }
 
     render404() {
