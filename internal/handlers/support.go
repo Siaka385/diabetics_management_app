@@ -38,25 +38,27 @@ var (
 	roomsMu sync.RWMutex
 )
 
-func Support(tmpl *template.Template) http.HandlerFunc {
+func Support() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		// user, ok := auth.GetUserFromContext(r)
 		user, ok := auth.GetUserFromContext(r)
 		if !ok {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
-		// Log user details (optional)
-		// fmt.Printf("Authenticated user: %+v\n", user.Name)
-		// fmt.Printf("Authenticated user ID: %+v\n", user.ID)
-		UserProfileDetails := models.UserProfile{
-			Abbrev: shared.GenerateShortName(user.Name),
-			Name:   user.Name,
+		
+		UserProfileDetails := struct {
+			models.UserProfile
+			CurrentPage string
+		}{
+			UserProfile: models.UserProfile{
+				Name:   user.Name,
+				Abbrev: shared.GenerateShortName(user.Name),
+			},
+			CurrentPage: "/support",
 		}
-		if err := tmpl.ExecuteTemplate(w, "support.html", UserProfileDetails); err != nil {
-			InternalServerErrorHandler(w)
-			return
-		}
+		
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(UserProfileDetails)
 	}
 }
 
@@ -312,4 +314,25 @@ func listRooms(db *gorm.DB) ([]Room, error) {
 	var rooms []Room
 	result := db.Find(&rooms)
 	return rooms, result.Error
+}
+
+func CommuniyAndSupportHandler(tmpl *template.Template) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Retrieve user from context
+		user, ok := auth.GetUserFromContext(r)
+		if !ok {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		UserProfileDetails := models.UserProfile{
+			Name:   user.Name,
+			Abbrev: shared.GenerateShortName(user.Name),
+		}
+
+		if err := tmpl.ExecuteTemplate(w, "CommunityAndSupport.html", UserProfileDetails); err != nil {
+			InternalServerErrorHandler(w)
+			return
+		}
+	}
 }

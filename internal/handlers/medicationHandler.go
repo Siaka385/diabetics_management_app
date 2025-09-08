@@ -81,9 +81,15 @@ func MedicationPageHandler(db *gorm.DB, tmpl *template.Template) http.HandlerFun
 			http.Error(w, "Failed to fetch medications", http.StatusInternalServerError)
 			return
 		}
-		UserProfileDetails := models.UserProfile{
-			Name:   user.Name,
-			Abbrev: shared.GenerateShortName(user.Name),
+		UserProfileDetails := struct {
+			models.UserProfile
+			CurrentPage string
+		}{
+			UserProfile: models.UserProfile{
+				Name:   user.Name,
+				Abbrev: shared.GenerateShortName(user.Name),
+			},
+			CurrentPage: "/medication",
 		}
 		if err := tmpl.ExecuteTemplate(w, "medication.html", UserProfileDetails); err != nil {
 			http.Error(w, "Failed to render template", http.StatusInternalServerError)

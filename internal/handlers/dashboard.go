@@ -1,8 +1,7 @@
 package handlers
 
 import (
-	"html/template"
-	"log"
+	"encoding/json"
 	"net/http"
 
 	"gorm.io/gorm"
@@ -12,7 +11,7 @@ import (
 	"diawise/internal/shared"
 )
 
-func Dashboard(db *gorm.DB, tmpl *template.Template) http.HandlerFunc {
+func Dashboard(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Retrieve user from context
 		user, ok := middleware.GetUserFromContext(r)
@@ -21,17 +20,22 @@ func Dashboard(db *gorm.DB, tmpl *template.Template) http.HandlerFunc {
 			return
 		}
 
-		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
 
-		UserProfileDetails := models.UserProfile{
-			Abbrev: shared.GenerateShortName(user.Name),
-			Name:   user.Name,
+		UserProfileDetails := struct {
+			models.UserProfile
+			CurrentPage string
+		}{
+			UserProfile: models.UserProfile{
+				Abbrev: shared.GenerateShortName(user.Name),
+				Name:   user.Name,
+			},
+			CurrentPage: "/dashboard",
 		}
 
-		// Serve the dashboard page
-		if err := tmpl.ExecuteTemplate(w, "dashboard.html", UserProfileDetails); err != nil {
-			log.Printf("Error executing template: %v", err)
+		// Return JSON response
+		if err := json.NewEncoder(w).Encode(UserProfileDetails); err != nil {
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		}
 	}

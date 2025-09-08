@@ -1,104 +1,171 @@
-// Frontend Router with Authentication
+import { checkAuthStatus } from './auth.js';
+
 class Router {
     constructor() {
         this.routes = new Map();
-        this.protectedRoutes = new Set();
+        this.protectedRoutes = new Set(['/dashboard', '/nutrition', '/bloodsugar', '/blog', '/support', '/medication', '/education', '/glucose-tracker']);
         this.currentRoute = null;
-        this.init();
     }
 
-    // Define routes and their protection status
-    addRoute(path, handler, isProtected = false) {
-        this.routes.set(path, handler);
-        if (isProtected) {
-            this.protectedRoutes.add(path);
+    async start() {
+        // Handle initial page load
+        await this.handleRoute(window.location.pathname);
+
+        // Handle browser back/forward
+        window.addEventListener('popstate', () => {
+            this.handleRoute(window.location.pathname);
+        });
+
+        // Handle link clicks
+        document.addEventListener('click', (e) => {
+            if (e.target.matches('a[href^="/"]')) {
+                e.preventDefault();
+                this.navigate(e.target.getAttribute('href'));
+            }
+        });
+    }
+
+    async navigate(path) {
+        history.pushState(null, null, path);
+        await this.handleRoute(path);
+    }
+
+    async handleRoute(path) {
+        const authStatus = await checkAuthStatus();
+        const isProtected = this.protectedRoutes.has(path);
+
+        // Redirect logic
+        if (isProtected && !authStatus.authenticated) {
+            history.replaceState(null, null, '/login');
+            path = '/login';
+        } else if ((path === '/login' || path === '/signup') && authStatus.authenticated) {
+            history.replaceState(null, null, '/dashboard');
+            path = '/dashboard';
+        }
+
+        this.currentRoute = path;
+
+        // Route to appropriate page
+        switch (path) {
+            case '/':
+                this.renderHomePage();
+                break;
+            case '/login':
+                await this.renderLoginPage();
+                break;
+            case '/signup':
+                await this.renderSignupPage();
+                break;
+            case '/dashboard':
+                await this.renderDashboard();
+                break;
+            case '/bloodsugar':
+                await this.renderBloodsugar();
+                break;
+            case '/nutrition':
+                await this.renderNutrition();
+                break;
+            case '/blog':
+                await this.renderBlog();
+                break;
+            case '/support':
+                await this.renderSupport();
+                break;
+            case '/medication':
+                await this.renderMedication();
+                break;
+            case '/education':
+                await this.renderEducation();
+                break;
+            case '/glucose-tracker':
+                await this.renderGlucoseTracker();
+                break;
+            default:
+                if (path.startsWith('/post/')) {
+                    const postId = path.split('/')[2];
+                    await this.renderPost(postId);
+                } else {
+                    this.render404();
+                }
         }
     }
 
-    // Check if user is authenticated by calling auth status endpoint
-    async isAuthenticated() {
-        try {
-            const response = await fetch('/auth/status');
-            const data = await response.json();
-            return data.authenticated;
-        } catch (error) {
-            console.log('Auth check failed:', error);
-            return false;
-        }
+    async renderHomePage() {
+        const Home = (await import('./pages/home.js')).default;
+        Home();
     }
 
-    // Navigate to a route
-    navigate(path) {
-        // Check if route is protected and user is not authenticated
-        if (this.protectedRoutes.has(path) && !this.isAuthenticated()) {
-            window.location.href = '/login';
-            return;
-        }
-
-        // If trying to access login/signup while authenticated, redirect to dashboard
-        if ((path === '/login' || path === '/signup') && this.isAuthenticated()) {
-            window.location.href = '/dashboard';
-            return;
-        }
-
-        // Navigate to the route
-        window.location.href = path;
+    async renderDashboard() {
+        const Dashboard = (await import('./pages/dashboard.js')).default;
+        Dashboard();
     }
 
-    // Initialize router
-    init() {
-        // Define all routes
-        this.addRoute('/', () => {}, false);
-        this.addRoute('/login', () => {}, false);
-        this.addRoute('/signup', () => {}, false);
-        this.addRoute('/dashboard', () => {}, true);
-        this.addRoute('/nutrition', () => {}, true);
-        this.addRoute('/bloodsugar', () => {}, true);
-        this.addRoute('/blog', () => {}, true);
-        this.addRoute('/support', () => {}, true);
-        this.addRoute('/medication', () => {}, true);
-        this.addRoute('/addmedication', () => {}, true);
-        this.addRoute('/education', () => {}, false);
-
-        // Check current route on page load
-        this.checkCurrentRoute();
+    async renderLoginPage() {
+        const { renderLogin } = await import('./auth/signin.js');
+        renderLogin();
     }
 
-    // Check if current route is valid and user has access
-    async checkCurrentRoute() {
-        const currentPath = window.location.pathname;
-        this.currentRoute = currentPath;
-        const isAuth = await this.isAuthenticated();
-        const isProtected = this.protectedRoutes.has(currentPath);
-        
-        console.log('Router check - path:', currentPath, 'isAuth:', isAuth, 'isProtected:', isProtected);
-
-        // If on protected route without auth, redirect to login
-        if (isProtected && !isAuth) {
-            console.log('Redirecting to login - protected route without auth');
-            window.location.href = '/login';
-            return;
-        }
-
-        // If on login/signup while authenticated, redirect to dashboard
-        if ((currentPath === '/login' || currentPath === '/signup') && isAuth) {
-            console.log('Redirecting to dashboard - already authenticated');
-            window.location.href = '/dashboard';
-            return;
-        }
-        
-        console.log('Router check complete - no redirect needed');
+    async renderSignupPage() {
+        const { renderSignup } = await import('./auth/signup.js');
+        renderSignup();
     }
 
-    // Get current authentication status
-    getAuthStatus() {
-        return {
-            isAuthenticated: this.isAuthenticated(),
-            currentRoute: this.currentRoute,
-            isProtectedRoute: this.protectedRoutes.has(this.currentRoute)
-        };
+    async renderBloodsugar() {
+        const { renderBloodsugar } = await import('./pages/bloodsugar.js');
+        await renderBloodsugar();
+    }
+
+    async renderNutrition() {
+        const { renderNutrition } = await import('./pages/nutrition.js');
+        await renderNutrition();
+    }
+
+    async renderBlog() {
+        const { renderBlog } = await import('./pages/blog.js');
+        await renderBlog();
+    }
+
+    async renderSupport() {
+        const { renderSupport } = await import('./pages/support.js');
+        await renderSupport();
+    }
+
+    async renderMedication() {
+        const { renderMedication } = await import('./pages/medication.js');
+        await renderMedication();
+    }
+
+    async renderEducation() {
+        const { renderEducation } = await import('./pages/education.js');
+        await renderEducation();
+    }
+
+    async renderGlucoseTracker() {
+        const { renderGlucoseTracker } = await import('./pages/glucose-tracker.js');
+        await renderGlucoseTracker();
+    }
+
+    async renderPost(postId) {
+        const { renderPost } = await import('./pages/post.js');
+        await renderPost(postId);
+    }
+
+    render404() {
+        const app = document.getElementById('app');
+        if (!app) return;
+
+        app.innerHTML = `
+            <div class="min-h-screen flex items-center justify-center bg-gray-50">
+                <div class="text-center">
+                    <h1 class="text-6xl font-bold text-gray-900">404</h1>
+                    <p class="text-xl text-gray-600 mt-4">Page not found</p>
+                    <a href="/" class="mt-6 inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700">
+                        Go Home
+                    </a>
+                </div>
+            </div>
+        `;
     }
 }
 
-// Create global router instance
-window.AppRouter = new Router();
+export default Router;
