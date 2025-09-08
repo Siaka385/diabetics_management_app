@@ -30,6 +30,11 @@ func init() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	// Parse partials
+	tmpl, err = tmpl.ParseGlob("../../web/templates/partials/*.html")
+	if err != nil {
+		log.Fatal(err)
+	}
 	sessionStore = sessions.NewCookieStore([]byte("your-secret-key"))
 }
 

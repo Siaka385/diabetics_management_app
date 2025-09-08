@@ -338,26 +338,7 @@
     }
     </style></head><body>
         <div class="dashboard">
-            <aside class="sidebar">
-                <div class="profile">
-                    <div class="profile-image">{{.Profile.Abbrev}}</div>
-                    <h2>{{.Profile.Name}}</h2>
-                    <div class="edit-profile">✎</div>
-                </div>
-                <nav>
-                    <ul class="sidebar-nav">
-                        <li><a href="/dashboard"><span class="nav-icon">🏠</span><span class="nav-text">Dashboard</span></a></li>
-                        <li><a href="/bloodsugar"><span class="nav-icon">📊</span><span class="nav-text">Blood Sugar</span></a></li>
-                        <li><a href="/nutrition"><span class="nav-icon">🥗</span><span class="nav-text">Diet & Nutrition</span></a></li>
-                        <li><a href="/medication"><span class="nav-icon">💊</span><span class="nav-text">Medications</span></a></li>
-                        <li><a href="/blog" class="active"><span class="nav-icon">👥</span><span class="nav-text">Education</span></a></li>
-                        <li><a href="/support"><span class="nav-icon">🆘</span><span class="nav-text">Support Groups</span></a></li>
-                    </ul>
-                    <div class="sidebar-logout">
-                        <button onclick="Auth.logout()" class="logout-btn"><span class="nav-icon">🚪</span><span class="nav-text">Logout</span></button>
-                    </div>
-                </nav>
-            </aside>
+            {{template "sidebar" .}}
             <main class="main-content">
                 <div class="header">
                     <h1>DiaWise Blog</h1>

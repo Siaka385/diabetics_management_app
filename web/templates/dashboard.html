@@ -10,36 +10,8 @@
     <link rel="stylesheet" href="/static/css/dashboard.css">
 </head>
 <body>
-    <!-- Sidebar Toggle Button -->
-    <button class="sidebar-toggle" id="sidebarToggle">
-        <span class="toggle-icon">☰</span>
-    </button>
-
-    <!-- Overlay for mobile menu -->
-    <div class="overlay" id="overlay"></div>
-
     <div class="dashboard">
-        <aside class="sidebar">
-            <div class="profile">
-                <div class="profile-image">{{.Abbrev}}</div>
-                <h2>{{.Name}}</h2>
-                <div class="edit-profile">✎</div>
-            </div>
-            <nav>
-                <ul class="sidebar-nav">
-                    <li><a href="/dashboard" class="active"><span class="nav-icon">🏠</span>Dashboard</a></li>
-                    <li><a href="/bloodsugar"><span class="nav-icon">📊</span>Blood Sugar</a></li>
-                    <li><a href="/nutrition"><span class="nav-icon">🥗</span>Diet & Nutrition</a></li>
-                    <li><a href="/medication"><span class="nav-icon">💊</span>Medications</a></li>
-                    <li><a href="/blog"><span class="nav-icon">👥</span>Education</a></li>
-                    <li><a href="/support"><span class="nav-icon">🆘</span>Support Groups</a></li>
-                </ul>
-                <div class="sidebar-logout">
-                    <button onclick="Auth.logout()" class="logout-btn"><span class="nav-icon">🚪</span>Logout</button>
-                </div>
-            </nav>
-          
-        </aside>
+        {{template "sidebar" .}}
 
 
         <!--Welcome page-->
@@ -215,30 +187,7 @@
     <script src="/static/js/auth.js"></script>
     <script src="/static/js/navigation.js"></script>
     <script src="/static/js/protected-page.js"></script>
-    
-    <script>
-        // Sidebar toggle functionality
-        document.addEventListener('DOMContentLoaded', function() {
-            const sidebarToggle = document.getElementById('sidebarToggle');
-            const sidebar = document.querySelector('.sidebar');
-            const overlay = document.getElementById('overlay');
-            
-            if (sidebarToggle && sidebar) {
-                sidebarToggle.addEventListener('click', function() {
-                    sidebar.classList.toggle('collapsed');
-                    document.body.classList.toggle('sidebar-collapsed');
-                });
-            }
-            
-            // Mobile overlay click
-            if (overlay) {
-                overlay.addEventListener('click', function() {
-                    sidebar.classList.remove('open');
-                    overlay.classList.remove('active');
-                });
-            }
-        });
-    </script>
+
     
     <!-- Page Scripts -->
     <script src="/static/js/BloodSugar.js"></script>
@@ -279,6 +228,5 @@ window.onload=()=>{
 
 
     </script> -->
-
 </body>
 </html>

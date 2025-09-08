@@ -287,26 +287,7 @@
 </head>
 <body>
     <div class="dashboard">
-        <aside class="sidebar">
-            <div class="profile">
-                <div class="profile-image">{{.Abbrev}}</div>
-                <h2>{{.Name}}</h2>
-                <div class="edit-profile">✎</div>
-            </div>
-            <nav>
-                <ul class="sidebar-nav">
-                    <li><a href="/dashboard"><span class="nav-icon">🏠</span><span class="nav-text">Dashboard</span></a></li>
-                    <li><a href="/bloodsugar"><span class="nav-icon">📊</span><span class="nav-text">Blood Sugar</span></a></li>
-                    <li><a href="/nutrition"><span class="nav-icon">🥗</span><span class="nav-text">Diet & Nutrition</span></a></li>
-                    <li><a href="/medication"><span class="nav-icon">💊</span><span class="nav-text">Medications</span></a></li>
-                    <li><a href="/blog"><span class="nav-icon">👥</span><span class="nav-text">Education</span></a></li>
-                    <li><a href="/support" class="active"><span class="nav-icon">🆘</span><span class="nav-text">Support Groups</span></a></li>
-                </ul>
-                <div class="sidebar-logout">
-                    <button onclick="Auth.logout()" class="logout-btn"><span class="nav-icon">🚪</span><span class="nav-text">Logout</span></button>
-                </div>
-            </nav>
-        </aside>
+        {{template "sidebar" .}}
         
         <main class="main-content">
             <div class="header">
@@ -454,5 +435,11 @@
             });
         }
     </script>
+    
+    <!-- Auth Scripts -->
+    <script src="/static/js/auth.js"></script>
+    <script src="/static/js/router.js"></script>
+    <script src="/static/js/navigation.js"></script>
+    <script src="/static/js/protected-page.js"></script>
 </body>
 </html>

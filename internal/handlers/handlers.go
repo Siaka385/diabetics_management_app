@@ -200,12 +200,19 @@ func BlogHomeHandler(tmpl *template.Template) http.HandlerFunc {
 			return
 		}
 
-		UserProfileDetails := models.UserProfile{
-			Name:   user.Name,
-			Abbrev: shared.GenerateShortName(user.Name),
+		UserProfileDetails := struct {
+			models.UserProfile
+			CurrentPage string
+			Posts []models.Post
+		}{
+			UserProfile: models.UserProfile{
+				Name:   user.Name,
+				Abbrev: shared.GenerateShortName(user.Name),
+			},
+			CurrentPage: "/blog",
+			Posts: Data.Posts,
 		}
-		Data.Profile = UserProfileDetails
-		if err := tmpl.ExecuteTemplate(w, "blog_home.html", Data); err != nil {
+		if err := tmpl.ExecuteTemplate(w, "blog_home.html", UserProfileDetails); err != nil {
 			InternalServerErrorHandler(w)
 			return
 		}
@@ -221,9 +228,15 @@ func BloodSugarHandler(tmpl *template.Template) http.HandlerFunc {
 			return
 		}
 
-		UserProfileDetails := models.UserProfile{
-			Name:   user.Name,
-			Abbrev: shared.GenerateShortName(user.Name),
+		UserProfileDetails := struct {
+			models.UserProfile
+			CurrentPage string
+		}{
+			UserProfile: models.UserProfile{
+				Name:   user.Name,
+				Abbrev: shared.GenerateShortName(user.Name),
+			},
+			CurrentPage: "/bloodsugar",
 		}
 
 		if err := tmpl.ExecuteTemplate(w, "bloodsugar.html", UserProfileDetails); err != nil {
@@ -260,9 +273,15 @@ func DietAndNutritionHandler(tmpl *template.Template) http.HandlerFunc {
 			return
 		}
 
-		UserProfileDetails := models.UserProfile{
-			Name:   user.Name,
-			Abbrev: shared.GenerateShortName(user.Name),
+		UserProfileDetails := struct {
+			models.UserProfile
+			CurrentPage string
+		}{
+			UserProfile: models.UserProfile{
+				Name:   user.Name,
+				Abbrev: shared.GenerateShortName(user.Name),
+			},
+			CurrentPage: "/nutrition",
 		}
 		if err := tmpl.ExecuteTemplate(w, "DietAndNutrition.html", UserProfileDetails); err != nil {
 			InternalServerErrorHandler(w)
@@ -293,51 +312,16 @@ func CommuniyAndSupportHandler(tmpl *template.Template) http.HandlerFunc {
 }
 
 func BadRequestHandler(w http.ResponseWriter) {
-	tmpl := LoadTemplate()
-
-	Hitch.StatusCode = http.StatusBadRequest
-	Hitch.Problem = "Bad Request!"
-
-	err := tmpl.Execute(w, Hitch)
-	if err != nil {
-		http.Error(w, "Could not execute error template, error page unavailable", http.StatusInternalServerError)
-		log.Println("Error executing template: ", err)
-	}
+	http.Error(w, "Bad Request", http.StatusBadRequest)
 }
 
 func InternalServerErrorHandler(w http.ResponseWriter) {
-	// Check if headers have already been written
-	if w.Header().Get("Content-Type") != "" {
-		log.Println("Headers already written. Cannot send error page.")
-		return
-	}
-
-	tmpl := LoadTemplate()
-
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.WriteHeader(http.StatusInternalServerError)
-
-	Hitch.StatusCode = http.StatusInternalServerError
-	Hitch.Problem = "Internal Server Error!"
-
-	err := tmpl.Execute(w, Hitch)
-	if err != nil {
-		http.Error(w, "Could not execute error template, error page unavailable", http.StatusInternalServerError)
-		log.Println("Error executing template: ", err)
-	}
+	log.Println("Internal Server Error occurred")
+	http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 }
 
 func NotFoundHandler(w http.ResponseWriter) {
-	tmpl := LoadTemplate()
-
-	Hitch.StatusCode = http.StatusNotFound
-	Hitch.Problem = "Not Found!"
-
-	err := tmpl.Execute(w, Hitch)
-	if err != nil {
-		http.Error(w, "Could not execute error template, error page unavailable", http.StatusInternalServerError)
-		log.Println("Error executing template: ", err)
-	}
+	http.Error(w, "Not Found", http.StatusNotFound)
 }
 
 func Signup(db *gorm.DB, tmpl *template.Template) http.HandlerFunc {

@@ -24,9 +24,15 @@ func Dashboard(db *gorm.DB, tmpl *template.Template) http.HandlerFunc {
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
 		w.WriteHeader(http.StatusOK)
 
-		UserProfileDetails := models.UserProfile{
-			Abbrev: shared.GenerateShortName(user.Name),
-			Name:   user.Name,
+		UserProfileDetails := struct {
+			models.UserProfile
+			CurrentPage string
+		}{
+			UserProfile: models.UserProfile{
+				Abbrev: shared.GenerateShortName(user.Name),
+				Name:   user.Name,
+			},
+			CurrentPage: "/dashboard",
 		}
 
 		// Serve the dashboard page
