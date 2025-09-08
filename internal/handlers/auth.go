@@ -77,7 +77,6 @@ func Signin(db *gorm.DB, sessionStore *sessions.CookieStore) http.HandlerFunc {
 		}
 
 		// Create JWT token
-		fmt.Printf("Creating token for user: %s (ID: %d)\n", user.Name, user.ID)
 		token, err := auth.CreateToken(user)
 		if err != nil {
 			fmt.Printf("Token creation failed: %v\n", err)

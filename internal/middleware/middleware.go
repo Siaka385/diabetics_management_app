@@ -79,12 +79,10 @@ func CreateToken(user *models.User) (string, error) {
 		fmt.Printf("Token creation error: %v\n", err)
 		return "", err
 	}
-	fmt.Printf("Token created successfully for user %s\n", user.Name)
 	return tokenString, nil
 }
 
 func ParseToken(tokenString string) (*models.User, error) {
-	fmt.Printf("Parsing token: %s\n", tokenString[:20]+"...") // Log first 20 chars
 	
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		// Ensure token signing method is expected

@@ -44,8 +44,6 @@ func LoginUser(db *gorm.DB, username, password string) (*models.User, error) {
 		return nil, fmt.Errorf("user not found")
 	}
 
-	fmt.Printf("User found: ID=%d, Name='%s', Username='%s', Email='%s'\n", user.ID, user.Name, user.Username, user.Email)
-
 	// Compare the provided password with the stored hashed password
 	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 	if err != nil {
