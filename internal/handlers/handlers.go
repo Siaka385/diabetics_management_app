@@ -1,4 +1,4 @@
-package api
+package handlers
 
 import (
 	"encoding/json"
@@ -9,15 +9,15 @@ import (
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/gorilla/sessions"
 	"gorm.io/gorm"
 
-	auth "diawise/src/auth"
-	"diawise/src/services"
+	auth "diawise/internal/middleware"
+	"diawise/internal/models"
+	"diawise/internal/repository"
+	"diawise/internal/services"
+	"diawise/internal/shared"
 )
-
-func GetMealSuggestions(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Getting meal suggestions...")
-}
 
 func LogMealHandler(db *gorm.DB, tmpl *template.Template) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -53,8 +53,8 @@ func LogMealHandler(db *gorm.DB, tmpl *template.Template) http.HandlerFunc {
 		now := time.Now()
 		today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
 
-		var dailyMealLog services.DailyMealLog
-		result := db.Where("user_id = ? AND date = ?", userID, today).FirstOrCreate(&dailyMealLog, services.DailyMealLog{UserID: userID, Date: today})
+		var dailyMealLog models.DailyMealLog
+		result := db.Where("user_id = ? AND date = ?", userID, today).FirstOrCreate(&dailyMealLog, models.DailyMealLog{UserID: userID, Date: today})
 		if result.Error != nil {
 			log.Printf("Failed to create/find daily meal log: %+v\n", err)
 			http.Error(w, "Failed to create/find daily meal log", http.StatusInternalServerError)
@@ -68,7 +68,7 @@ func LogMealHandler(db *gorm.DB, tmpl *template.Template) http.HandlerFunc {
 			http.Error(w, "Failed to create AI health analyser", http.StatusInternalServerError)
 			return
 		}
-		dietProfile, err := analyser.DietProfile(&mealEntry)
+		dietProfileModel, err := analyser.DietProfile(&mealEntry)
 		if err != nil {
 			log.Printf("Failed to generate diet profile: %v", err)
 			http.Error(w, "Failed to generate diet profile", http.StatusInternalServerError)
@@ -76,8 +76,22 @@ func LogMealHandler(db *gorm.DB, tmpl *template.Template) http.HandlerFunc {
 		}
 		defer analyser.Close()
 
-		dietProfile.UserID = userID
-		err = services.SaveDietLog(db, *dietProfile)
+		dietProfileModel.UserID = userID
+
+		// Convert *models.DietProfile to services.DietProfile
+		dietProfile := services.DietProfile{
+			UserID:            dietProfileModel.UserID,
+			FoodName:          dietProfileModel.FoodName,
+			CaloriesIntake:    dietProfileModel.Calories,
+			CarbIntake:        dietProfileModel.Carbs,
+			ProteinIntake:     dietProfileModel.Protein,
+			FatIntake:         dietProfileModel.Fat,
+			SugarConsumption:  0,
+			WaterIntake:       0,
+			ProcessedFoodRatio: 0,
+		}
+
+		err = services.SaveDietLog(db, dietProfile)
 		if err != nil {
 			log.Printf("Failed to save diet profile: %v", err)
 			http.Error(w, "Failed to save diet profile", http.StatusInternalServerError)
@@ -86,26 +100,42 @@ func LogMealHandler(db *gorm.DB, tmpl *template.Template) http.HandlerFunc {
 
 		mealEntry.DailyMealLogID = dailyMealLog.ID
 		mealEntry.DietProfileID = dietProfile.ID
+
 		err = services.SaveMealLog(db, mealEntry)
 		if err != nil {
 			http.Error(w, "Failed to save meal log", http.StatusInternalServerError)
 			return
 		}
-		dailyMealLog.Entries = append(dailyMealLog.Entries, mealEntry)
+
+		// Convert services.MealLogEntry to models.MealLogEntry for dailyMealLog
+		mealEntryModel := models.MealLogEntry{
+			UserID:         mealEntry.UserID,
+			DailyMealLogID: mealEntry.DailyMealLogID,
+			DietProfileID:  mealEntry.DietProfileID,
+			FoodName:       mealEntry.FoodItem,
+			Quantity:       mealEntry.Weight,
+			Calories:       dietProfileModel.Calories,
+			Carbs:          dietProfileModel.Carbs,
+			Protein:        dietProfileModel.Protein,
+			Fat:            dietProfileModel.Fat,
+			Date:           time.Now(),
+		}
+
+		dailyMealLog.Entries = append(dailyMealLog.Entries, mealEntryModel)
 		db.Save(&dailyMealLog)
 
 		// Send JSON response
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(struct {
-			DietProfile services.DietProfile
+			DietProfile models.DietProfile
 		}{
-			DietProfile: *dietProfile,
+			DietProfile: *dietProfileModel,
 		})
 	}
 }
 
 func EditPlan(w http.ResponseWriter, r *http.Request) {
-	var updates FoodLog
+	var updates models.FoodLog
 	if err := json.NewDecoder(r.Body).Decode(&updates); err != nil {
 		http.Error(w, "Invalid input", http.StatusBadRequest)
 		return
@@ -151,7 +181,7 @@ func PostHandler(tmpl *template.Template) http.HandlerFunc {
 			return
 		}
 
-		post.Abbrev = GenerateShortName(post.Author)
+		post.Abbrev = shared.GenerateShortName(post.Author)
 
 		err := tmpl.ExecuteTemplate(w, "blog_display.html", post)
 		if err != nil {
@@ -170,9 +200,9 @@ func BlogHomeHandler(tmpl *template.Template) http.HandlerFunc {
 			return
 		}
 
-		UserProfileDetails := UserProfile{
+		UserProfileDetails := models.UserProfile{
 			Name:   user.Name,
-			Abbrev: GenerateShortName(user.Name),
+			Abbrev: shared.GenerateShortName(user.Name),
 		}
 		Data.Profile = UserProfileDetails
 		if err := tmpl.ExecuteTemplate(w, "blog_home.html", Data); err != nil {
@@ -191,9 +221,9 @@ func BloodSugarHandler(tmpl *template.Template) http.HandlerFunc {
 			return
 		}
 
-		UserProfileDetails := UserProfile{
+		UserProfileDetails := models.UserProfile{
 			Name:   user.Name,
-			Abbrev: GenerateShortName(user.Name),
+			Abbrev: shared.GenerateShortName(user.Name),
 		}
 
 		if err := tmpl.ExecuteTemplate(w, "bloodsugar.html", UserProfileDetails); err != nil {
@@ -230,9 +260,9 @@ func DietAndNutritionHandler(tmpl *template.Template) http.HandlerFunc {
 			return
 		}
 
-		UserProfileDetails := UserProfile{
+		UserProfileDetails := models.UserProfile{
 			Name:   user.Name,
-			Abbrev: GenerateShortName(user.Name),
+			Abbrev: shared.GenerateShortName(user.Name),
 		}
 		if err := tmpl.ExecuteTemplate(w, "DietAndNutrition.html", UserProfileDetails); err != nil {
 			InternalServerErrorHandler(w)
@@ -250,9 +280,9 @@ func CommuniyAndSupportHandler(tmpl *template.Template) http.HandlerFunc {
 			return
 		}
 
-		UserProfileDetails := UserProfile{
+		UserProfileDetails := models.UserProfile{
 			Name:   user.Name,
-			Abbrev: GenerateShortName(user.Username),
+			Abbrev: shared.GenerateShortName(user.Name),
 		}
 
 		if err := tmpl.ExecuteTemplate(w, "CommunityAndSupport.html", UserProfileDetails); err != nil {
@@ -307,5 +337,104 @@ func NotFoundHandler(w http.ResponseWriter) {
 	if err != nil {
 		http.Error(w, "Could not execute error template, error page unavailable", http.StatusInternalServerError)
 		log.Println("Error executing template: ", err)
+	}
+}
+
+func Signup(db *gorm.DB, tmpl *template.Template) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		err := tmpl.ExecuteTemplate(w, "signup.html", nil)
+		if err != nil {
+			InternalServerErrorHandler(w)
+		}
+	}
+}
+
+func SignupUser(db *gorm.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if err := r.ParseForm(); err != nil {
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(map[string]string{"error": "Bad Request"})
+			return
+		}
+		username := r.FormValue("username")
+		name := r.FormValue("name")
+		email := r.FormValue("email")
+		password := r.FormValue("password")
+		if username == "" || name == "" || email == "" || password == "" {
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(map[string]string{"error": "All fields are required"})
+			return
+		}
+		success := repository.RegisterUser(db, username, name, email, password)
+		if !success {
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(map[string]string{"error": "Failed to register user"})
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]string{"message": "User registered successfully"})
+	}
+}
+
+func Login(db *gorm.DB, tmpl *template.Template) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		err := tmpl.ExecuteTemplate(w, "login.html", nil)
+		if err != nil {
+			InternalServerErrorHandler(w)
+		}
+	}
+}
+
+func LoginUser(db *gorm.DB, sessionStore *sessions.CookieStore) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		var loginData struct {
+			Username string `json:"username"`
+			Password string `json:"password"`
+		}
+		
+		if err := json.NewDecoder(r.Body).Decode(&loginData); err != nil {
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(map[string]string{"error": "Bad Request"})
+			return
+		}
+		
+		user, err := repository.LoginUser(db, loginData.Username, loginData.Password)
+		if err != nil {
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(map[string]string{
+			"status": "error",
+			"message": "Invalid credentials",
+		})
+			return
+		}
+		
+		session, _ := sessionStore.Get(r, "session-name")
+		session.Values["user_id"] = user.ID
+		session.Save(r, w)
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]string{
+			"status": "success",
+			"message": "Login successful",
+			"redirect": "/dashboard",
+		})
+	}
+}
+
+func LoginUserSuccess(tmpl *template.Template) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		err := tmpl.ExecuteTemplate(w, "login-success.html", nil)
+		if err != nil {
+			InternalServerErrorHandler(w)
+		}
+	}
+}
+
+func Logout(sessionStore *sessions.CookieStore) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		session, _ := sessionStore.Get(r, "session-name")
+		session.Values["user_id"] = nil
+		session.Save(r, w)
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]string{"message": "Logout successful"})
 	}
 }

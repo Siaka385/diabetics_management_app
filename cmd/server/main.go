@@ -11,49 +11,56 @@ import (
 	"github.com/rs/cors"
 	"gorm.io/gorm"
 
-	handlers "diawise/src/api"
-	auth "diawise/src/auth"
-	database "diawise/src/database"
-	utils "diawise/src/utils"
+	"diawise/internal/handlers"
+	"diawise/internal/middleware"
+	"diawise/internal/repository"
+	"diawise/internal/shared"
 )
 
 var (
-	db           *gorm.DB // since sqlite is an internal database that is file based, we need to  have a single handler to the database. Use mutexes to prevent race conditions
+	db           *gorm.DB
 	tmpl         *template.Template
 	err          error
 	sessionStore *sessions.CookieStore
 )
 
 func init() {
-	db = database.InitializeDatabase("data/diawise.db")
-	// parse all html files in the frontend and its subdirectories beforehand // optimization
-	tmpl, err = template.ParseGlob("templates/*.html")
+	db = repository.InitializeDatabase("../../data/diawise.db")
+	tmpl, err = template.ParseGlob("../../web/templates/*.html")
 	if err != nil {
 		log.Fatal(err)
 	}
+	sessionStore = sessions.NewCookieStore([]byte("your-secret-key"))
 }
 
 func main() {
-	port := utils.Port()
+	port := shared.Port()
 	fmt.Printf("Server listening on http://localhost:%d\n", port)
 	portStr := fmt.Sprintf("0.0.0.0:%d", port)
 
 	router := mux.NewRouter()
 
 	router.HandleFunc("/", handlers.Index(db, tmpl)).Methods("GET")
-	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
-	// router.HandleFunc("/nutrition/mealplan", handlers.GetMealPlan).Methods("POST")
-	// router.HandleFunc("/nutrition/editplan", api.EditPlan).Methods("POST")
-	// router.HandleFunc("/nutrition/suggestions", api.GetMealSuggestions).Methods("POST")
+	// Custom static file handler with proper MIME types
+	staticHandler := http.StripPrefix("/static/", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		path := r.URL.Path
+		if path[len(path)-4:] == ".css" {
+			w.Header().Set("Content-Type", "text/css")
+		} else if path[len(path)-3:] == ".js" {
+			w.Header().Set("Content-Type", "application/javascript")
+		}
+		http.FileServer(http.Dir("../../web/static")).ServeHTTP(w, r)
+	}))
+	router.PathPrefix("/static/").Handler(staticHandler)
+
 	router.HandleFunc("/signup", handlers.Signup(db, tmpl)).Methods("GET")
 	router.HandleFunc("/auth/signup", handlers.SignupUser(db)).Methods("POST")
 	router.HandleFunc("/auth/login", handlers.LoginUser(db, sessionStore)).Methods("POST")
 	router.HandleFunc("/auth/loginok", handlers.LoginUserSuccess(tmpl)).Methods("GET")
 	router.HandleFunc("/login", handlers.Login(db, tmpl)).Methods("GET")
 	router.HandleFunc("/nutrition/logmeal", handlers.LogMealHandler(db, tmpl)).Methods("POST")
-	//router.HandleFunc("/medication", handlers.MedicationPageHandler(db, tmpl)).Methods("GET")
-	router.Handle("/medication", http.HandlerFunc(auth.AuthMiddleware(handlers.MedicationPageHandler(db, tmpl)))).Methods("GET")
-	router.HandleFunc("/logout", handlers.Logout).Methods("GET")
+	router.Handle("/medication", http.HandlerFunc(middleware.AuthMiddleware(handlers.MedicationPageHandler(db, tmpl)))).Methods("GET")
+	router.HandleFunc("/logout", handlers.Logout(sessionStore)).Methods("GET")
 	router.HandleFunc("/updatemed/{id}", handlers.UpdateMedication(db)).Methods("PUT")
 	router.HandleFunc("/deletemed/{id}", handlers.DeleteMedication(db)).Methods("DELETE")
 	router.HandleFunc("/listmed", handlers.ListMedications(db)).Methods("GET")
@@ -68,23 +75,21 @@ func main() {
 	router.HandleFunc("/deleteroom", handlers.DeleteRoom(db))
 
 	// Restricted routes
-	router.Handle("/dashboard", http.HandlerFunc(auth.AuthMiddleware(handlers.Dashboard(db, tmpl)))).Methods("GET")
-	router.Handle("/support", http.HandlerFunc(auth.AuthMiddleware(handlers.Support(tmpl)))).Methods("GET")
-	router.Handle("/nutrition", http.HandlerFunc(auth.AuthMiddleware(handlers.DietAndNutritionHandler(tmpl)))).Methods("GET")
-	router.Handle("/bloodsugar", http.HandlerFunc(auth.AuthMiddleware(handlers.BloodSugarHandler(tmpl)))).Methods("GET")
-	router.Handle("/blog", http.HandlerFunc(auth.AuthMiddleware(handlers.BlogHomeHandler(tmpl)))).Methods("GET")
-	router.Handle("/addmedication", http.HandlerFunc(auth.AuthMiddleware(handlers.AddMedicationHandler(db, tmpl)))).Methods("GET", "POST")
+	router.Handle("/dashboard", http.HandlerFunc(middleware.AuthMiddleware(handlers.Dashboard(db, tmpl)))).Methods("GET")
+	router.Handle("/support", http.HandlerFunc(middleware.AuthMiddleware(handlers.Support(tmpl)))).Methods("GET")
+	router.Handle("/nutrition", http.HandlerFunc(middleware.AuthMiddleware(handlers.DietAndNutritionHandler(tmpl)))).Methods("GET")
+	router.Handle("/bloodsugar", http.HandlerFunc(middleware.AuthMiddleware(handlers.BloodSugarHandler(tmpl)))).Methods("GET")
+	router.Handle("/blog", http.HandlerFunc(middleware.AuthMiddleware(handlers.BlogHomeHandler(tmpl)))).Methods("GET")
+	router.Handle("/addmedication", http.HandlerFunc(middleware.AuthMiddleware(handlers.AddMedicationHandler(db, tmpl)))).Methods("GET", "POST")
 
-	// CORS configuration
 	corsHandler := cors.New(cors.Options{
-		AllowedOrigins: []string{"*"},
-		// AllowedMethods: []string{"GET", "POST", "OPTIONS"},
+		AllowedOrigins:   []string{"*"},
 		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Content-Type", "Authorization"},
 		AllowCredentials: true,
 	})
 
-	handlerWithCORS := corsHandler.Handler(router) // apply the CORS middleware to the router
+	handlerWithCORS := corsHandler.Handler(router)
 
 	http.ListenAndServe(portStr, handlerWithCORS)
 }

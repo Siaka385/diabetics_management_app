@@ -1,11 +1,13 @@
-package api
+package handlers
 
 import (
 	"encoding/json"
 	"fmt"
+
+	"diawise/internal/models"
 )
 
-func stringifyVitaminsAndMinerals(minrals, vitamins map[string]float64, info NutrientInfo) error {
+func stringifyVitaminsAndMinerals(minrals, vitamins map[string]float64, info models.NutrientInfo) error {
 	vitaminsJSON, err := json.Marshal(vitamins)
 	if err != nil {
 		return err
@@ -21,7 +23,7 @@ func stringifyVitaminsAndMinerals(minrals, vitamins map[string]float64, info Nut
 	return nil
 }
 
-func CalculateMealNutrition(foodLog FoodLog) (NutrientInfo, error) {
+func CalculateMealNutrition(foodLog models.FoodLog) (models.NutrientInfo, error) {
 	var totalCalories, totalCarbs, totalProtein, totalFat, totalFiber float64
 	totalVitamins := make(map[string]float64)
 	totalMinerals := make(map[string]float64)
@@ -29,7 +31,7 @@ func CalculateMealNutrition(foodLog FoodLog) (NutrientInfo, error) {
 	for _, mealItem := range foodLog.MealItems {
 		food, found := foodDatabase[mealItem.FoodItem]
 		if !found {
-			return NutrientInfo{}, fmt.Errorf("food item '%s' not found in the database", mealItem.FoodItem)
+			return models.NutrientInfo{}, fmt.Errorf("food item '%s' not found in the database", mealItem.FoodItem)
 		}
 
 		scaleFactor := mealItem.Weight / food.ServingSize * mealItem.Proportion
@@ -47,7 +49,7 @@ func CalculateMealNutrition(foodLog FoodLog) (NutrientInfo, error) {
 			totalMinerals[mineral] += value * scaleFactor
 		}
 	}
-	info := NutrientInfo{
+	info := models.NutrientInfo{
 		UserID:   foodLog.UserID,
 		Calories: totalCalories,
 		Carbs:    totalCarbs,
@@ -60,7 +62,7 @@ func CalculateMealNutrition(foodLog FoodLog) (NutrientInfo, error) {
 	return info, nil
 }
 
-func GenerateMealInsights(nutrientInfo NutrientInfo) string {
+func GenerateMealInsights(nutrientInfo models.NutrientInfo) string {
 	if nutrientInfo.Protein > 50 {
 		return "Your meal is high in protein, great for muscle building!"
 	}

@@ -1,73 +1,10 @@
-package api
+package handlers
 
-import "gorm.io/gorm"
-
-// Meal Plan
-type MealPlanRequest struct {
-	Duration           string   `json:"mp_duration"`
-	MealTypes          string   `json:"mp_type"`
-	DietaryPreferences string   `json:"mp_diet_pref"`
-	PreferredFoods     []string `json:"mp_preferred_foods"`
-	FoodRestrictions   []string `json:"mp_avoid_foods"`
-}
-
-type Meal struct {
-	Name        string   `json:"name"`
-	Type        string   `json:"type"` // Breakfast, Lunch, etc.
-	Ingredients []string `json:"ingredients"`
-}
-
-type MealPlanResponse struct {
-	Duration string `json:"duration"`
-	Meals    []Meal `json:"meals"`
-	Message  string `json:"message"`
-}
-
-// Meal log
-type NutritionResponse struct {
-	Message      string `json:"message"`
-	MealInsights string `json:"mealInsights"`
-}
-
-type NutrientInfo struct {
-	gorm.Model
-	UserID   string  `json:"user_id"`
-	Calories float64 `json:"calories"`
-	Carbs    float64 `json:"carbs"`
-	Protein  float64 `json:"protein"`
-	Fat      float64 `json:"fat"`
-	Fiber    float64 `json:"fiber"`
-	Vitamins string  `json:"vitamins"`
-	Minerals string  `json:"minerals"`
-}
-
-type FoodLog struct {
-	gorm.Model
-	UserID    string     `json:"user_id"`
-	MealItems []MealItem `gorm:"foreignKey:FoodLogID" json:"meal_items"`
-}
-
-type MealItem struct {
-	gorm.Model
-	FoodItem   string  `json:"food_item"`
-	Weight     float64 `json:"weight"`
-	Proportion float64 `json:"proportion"`
-	FoodLogID  uint    `json:"-"`
-}
-
-type FoodItem struct {
-	Name        string             `json:"name"`
-	ServingSize float64            `json:"serving_size"`
-	Calories    float64            `json:"calories"`
-	Carbs       float64            `json:"carbs"`
-	Protein     float64            `json:"protein"`
-	Fat         float64            `json:"fat"`
-	Fiber       float64            `json:"fiber"`
-	Vitamins    map[string]float64 `json:"vitamins"`
-	Minerals    map[string]float64 `json:"minerals"`
-}
-
-var foodDatabase = map[string]FoodItem{
+import (
+	"diawise/internal/models"
+)
+	
+var foodDatabase = map[string]models.FoodItem{
 	"Ugali": {
 		Name:        "Ugali",
 		ServingSize: 100,
@@ -144,9 +81,9 @@ var servings = map[string]float64{
 	"Chicken (Grilled)": 2,
 }
 
-var defaultMealPlan = FoodLog{
+var defaultMealPlan = models.FoodLog{
 	UserID: "default-user",
-	MealItems: []MealItem{
+	MealItems: []models.MealItem{
 		{
 			FoodItem:   "Eggs",
 			Weight:     100,

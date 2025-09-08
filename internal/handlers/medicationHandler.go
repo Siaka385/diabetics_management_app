@@ -1,4 +1,4 @@
-package api
+package handlers
 
 import (
 	"encoding/json"
@@ -12,8 +12,10 @@ import (
 	"github.com/gorilla/sessions"
 	"gorm.io/gorm"
 
-	auth "diawise/src/auth"
-	"diawise/src/services"
+	auth "diawise/internal/middleware"
+	"diawise/internal/models"
+	"diawise/internal/services"
+	"diawise/internal/shared"
 )
 
 type Medication struct {
@@ -79,9 +81,9 @@ func MedicationPageHandler(db *gorm.DB, tmpl *template.Template) http.HandlerFun
 			http.Error(w, "Failed to fetch medications", http.StatusInternalServerError)
 			return
 		}
-		UserProfileDetails := UserProfile{
+		UserProfileDetails := models.UserProfile{
 			Name:   user.Name,
-			Abbrev: GenerateShortName(user.Name),
+			Abbrev: shared.GenerateShortName(user.Name),
 		}
 		if err := tmpl.ExecuteTemplate(w, "medication.html", UserProfileDetails); err != nil {
 			http.Error(w, "Failed to render template", http.StatusInternalServerError)
@@ -238,9 +240,9 @@ func AddMedicationHandler(db *gorm.DB, tmpl *template.Template) http.HandlerFunc
 				Username:    username,
 			}
 
-			UserProfileDetails := UserProfile{
+			UserProfileDetails := models.UserProfile{
 				Name:   data.Username,
-				Abbrev: GenerateShortName(data.Username),
+				Abbrev: shared.GenerateShortName(data.Username),
 			}
 
 			// Render the template

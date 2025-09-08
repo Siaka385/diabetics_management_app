@@ -1,35 +1,12 @@
-package api
+package handlers
 
 import (
 	"html/template"
+
+	"diawise/internal/models"
 )
 
-type BlogPost struct {
-	Title   string
-	Author  string
-	Date    string
-	Content string
-}
-
-type Post struct {
-	ID      string
-	Title   string
-	Excerpt template.HTML
-	Author  string
-	Date    string
-	Content template.HTML
-	Image   string
-	Abbrev  string
-}
-
-type Issue struct {
-	StatusCode int
-	Problem    string
-}
-
-// Initialize variable to hold error message and status codes
-
-var Hitch Issue
+var Hitch models.Issue
 
 var LoadTemplate = func() *template.Template {
 	tmpl, _ := template.ParseFiles("../../frontend/public/error.html")
@@ -37,12 +14,12 @@ var LoadTemplate = func() *template.Template {
 }
 
 var Data = struct {
-	Profile UserProfile  
+	Profile models.UserProfile  
 	Title string
-	Posts []Post
+	Posts []models.Post
 }{
 	Title: "Home",
-	Posts: []Post{
+	Posts: []models.Post{
 		{ID: "1", Image: "understanding-diabetes.jpg", Title: "Understanding Diabetes: A Comprehensive Guide", Excerpt: template.HTML(`Diabetes occurs when your body either cannot produce enough insulin or cannot use it effectively. Insulin is a hormone that helps your cells absorb glucose (a type of sugar) from your bloodstream for energy. Without effective insulin action, glucose builds up in your blood, leading to symptoms and potential complications.</span></p>
 		<p><br></p>`)},
 		{ID: "2", Image: "glucometer.jpg", Title: "How to Monitor Blood Sugar Levels: A Step-by-Step Guide", Excerpt: template.HTML(`<p>Monitoring blood sugar levels is a crucial part of managing diabetes. Whether you have diabetes or are caring for someone with the condition, understanding how and when to check blood sugar can make a significant difference in overall health and well-being. In this step-by-step guide, we’ll explain how to effectively monitor blood sugar levels, the tools you need, and why regular checks are essential.</p>`)},
@@ -52,7 +29,7 @@ var Data = struct {
 	},
 }
 
-var Posts = map[string]Post{
+var Posts = map[string]models.Post{
 	"1": {
 		Title:  "Understanding Diabetes: A Comprehensive Guide",
 		Author: "Dr. Samantha Johnson",

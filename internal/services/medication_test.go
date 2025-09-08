@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"diawise/src/services"
+	"diawise/internal/services"
 
 	"github.com/stretchr/testify/require"
 	"gorm.io/gorm"

@@ -1,30 +1,14 @@
-package utils
+package shared
 
 import (
-	"os"
-	"strconv"
-	"time"
-
 	"math/rand"
+	"strings"
+	"time"
 )
 
 const (
 	CHARSET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 )
-
-func Port() int16 {
-	var port int16 = 9000
-
-	portStr, found := os.LookupEnv("PORT")
-	if !found {
-		return port
-	}
-	iport, err := strconv.Atoi(portStr)
-	if err != nil {
-		return port
-	}
-	return int16(iport)
-}
 
 /*
 * GenerateRandomString generates a random string of the specified length
@@ -37,4 +21,25 @@ func GenerateRandomString(length int) string {
 		result[i] = CHARSET[r.Intn(len(CHARSET))]
 	}
 	return string(result)
+}
+
+func GenerateShortName(fullName string) string {
+	name := strings.TrimSpace(fullName)
+	words := strings.Fields(name)
+	if len(words) == 0 {
+		return ""
+	}
+	if len(words) == 1 {
+		if len(words[0]) > 0 {
+			return string(words[0][0])
+		}
+		return ""
+	}
+	shortName := ""
+	for _, word := range words {
+		if len(word) > 0 {
+			shortName += string(word[0])
+		}
+	}
+	return shortName
 }

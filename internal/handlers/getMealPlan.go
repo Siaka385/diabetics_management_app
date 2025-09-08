@@ -1,15 +1,17 @@
-package api
+package handlers
 
 import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"diawise/internal/models"
 )
 
 // Generate meal plans
 func GetMealPlan(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Getting default meal plan...")
-	var req MealPlanRequest
+	var req models.MealPlanRequest
 	err := json.NewDecoder(r.Body).Decode(&req)
 	if err != nil {
 		http.Error(w, "Invalid request payload", http.StatusBadRequest)
@@ -31,8 +33,8 @@ func GetMealPlan(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(mealPlan)
 }
 
-func generateMealPlan(mp MealPlanRequest) MealPlanResponse {
-	availableMeals := []Meal{
+func generateMealPlan(mp models.MealPlanRequest) models.MealPlanResponse {
+	availableMeals := []models.Meal{
 		{Name: "Ugali with Sukuma Wiki", Type: "Lunch", Ingredients: []string{"Ugali", "Kale", "Tomato"}},
 		{Name: "Githeri", Type: "Lunch", Ingredients: []string{"Maize", "Beans"}},
 		{Name: "Matoke with Beef", Type: "Dinner", Ingredients: []string{"Plantains", "Beef", "Onion"}},
@@ -41,7 +43,7 @@ func generateMealPlan(mp MealPlanRequest) MealPlanResponse {
 	}
 
 	// Filter meals by type and preferences
-	filteredMeals := []Meal{}
+	filteredMeals := []models.Meal{}
 	for _, meal := range availableMeals {
 		if mp.MealTypes == meal.Type {
 			// Apply dietary preferences filtering (simplified)
@@ -52,7 +54,7 @@ func generateMealPlan(mp MealPlanRequest) MealPlanResponse {
 		}
 	}
 
-	var mealPlan []Meal
+	var mealPlan []models.Meal
 	if mp.Duration == "Single Day" {
 		// Randomly pick meals for the day (one for each type)
 		mealPlan = pickOneMealPerType(filteredMeals, mp.MealTypes)
@@ -63,7 +65,7 @@ func generateMealPlan(mp MealPlanRequest) MealPlanResponse {
 			mealPlan = append(mealPlan, dayPlan...)
 		}
 	}
-	return MealPlanResponse{
+	return models.MealPlanResponse{
 		Duration: mp.Duration,
 		Meals:    mealPlan,
 		Message:  "Meal plan generated successfully.",
@@ -79,8 +81,8 @@ func Contains(slice []string, item string) bool {
 	return false
 }
 
-func pickOneMealPerType(meals []Meal, mealType string) []Meal {
-	result := []Meal{}
+func pickOneMealPerType(meals []models.Meal, mealType string) []models.Meal {
+	result := []models.Meal{}
 	for _, meal := range meals {
 		if meal.Type == mealType {
 			result = append(result, meal)

@@ -1,4 +1,4 @@
-package api
+package handlers
 
 import (
 	"crypto/rand"
@@ -12,7 +12,9 @@ import (
 
 	"gorm.io/gorm"
 
-	auth "diawise/src/auth"
+	auth "diawise/internal/middleware"
+	"diawise/internal/models"
+	"diawise/internal/shared"
 )
 
 // Room model for database persistence
@@ -47,8 +49,8 @@ func Support(tmpl *template.Template) http.HandlerFunc {
 		// Log user details (optional)
 		// fmt.Printf("Authenticated user: %+v\n", user.Name)
 		// fmt.Printf("Authenticated user ID: %+v\n", user.ID)
-		UserProfileDetails := UserProfile{
-			Abbrev: GenerateShortName(user.Name),
+		UserProfileDetails := models.UserProfile{
+			Abbrev: shared.GenerateShortName(user.Name),
 			Name:   user.Name,
 		}
 		if err := tmpl.ExecuteTemplate(w, "support.html", UserProfileDetails); err != nil {

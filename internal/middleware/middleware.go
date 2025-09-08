@@ -1,4 +1,4 @@
-package auth
+package middleware
 
 import (
 	"context"
@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/dgrijalva/jwt-go"
+	"diawise/internal/models"
 )
 
 // UserContextKey is a key type for storing user in context
@@ -50,7 +51,7 @@ func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func GetUserFromContext(r *http.Request) (*User, bool) {
+func GetUserFromContext(r *http.Request) (*models.User, bool) {
 	// Retrieve the user from the context
 	userValue := r.Context().Value(userKey)
 	
@@ -58,7 +59,7 @@ func GetUserFromContext(r *http.Request) (*User, bool) {
 	// fmt.Printf("Context Value: %+v\n", userValue)
 
 	// Type assert to *User
-	user, ok := userValue.(*User)
+	user, ok := userValue.(*models.User)
 	if !ok {
 		fmt.Println("User not found in context or wrong type")
 		return nil, false
@@ -67,7 +68,7 @@ func GetUserFromContext(r *http.Request) (*User, bool) {
 	return user, true
 }
 
-func ParseToken(tokenString string) (*User, error) {
+func ParseToken(tokenString string) (*models.User, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		// Ensure token signing method is expected
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
@@ -91,7 +92,7 @@ func ParseToken(tokenString string) (*User, error) {
 		return nil, fmt.Errorf("missing or invalid user ID")
 	}
 
-	user := &User{
+	user := &models.User{
 		ID:    uint(userID), // Convert float64 to uint
 		Name:  claims["name"].(string),
 		Email: claims["email"].(string),

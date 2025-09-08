@@ -1,4 +1,4 @@
-package api
+package handlers
 
 import (
 	"bytes"
@@ -7,6 +7,8 @@ import (
 	"net/http/httptest"
 	"reflect"
 	"testing"
+
+	"diawise/internal/models"
 )
 
 func TestGetMealSuggestions(t *testing.T) {
@@ -72,7 +74,7 @@ func TestGetDefaultMealPlan(t *testing.T) {
 
 	expectedResponse := defaultMealPlan
 
-	var gotResponse FoodLog
+	var gotResponse models.FoodLog
 	err = json.Unmarshal(rr.Body.Bytes(), &gotResponse)
 	if err != nil {
 		t.Fatalf("Failed to deserialize response: %v", err)

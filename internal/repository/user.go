@@ -1,10 +1,13 @@
-package auth
+package repository
 
 import (
 	"fmt"
 
 	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
+
+	"diawise/internal/models"
+
 )
 
 // RegisterUser creates a new user and saves it to the database
@@ -16,7 +19,7 @@ func RegisterUser(db *gorm.DB, username, name, email, password string) bool {
 		return false
 	}
 
-	user := &User{
+	user := &models.User{
 		Username: username,
 		Name:     name,
 		Email:    email,
@@ -25,15 +28,15 @@ func RegisterUser(db *gorm.DB, username, name, email, password string) bool {
 	db.Create(user)
 
 	// Read
-	var userFromDB User
+	var userFromDB models.User
 	db.First(&userFromDB, 1) // Find user with id 1
 	fmt.Println(userFromDB)
 	return true
 }
 
 // LoginUser checks if a user exists and verifies the password
-func LoginUser(db *gorm.DB, username, password string) (*User, error) {
-	var user User
+func LoginUser(db *gorm.DB, username, password string) (*models.User, error) {
+	var user models.User
 	result := db.Where("email = ?", username).First(&user)
 
 	if result.Error != nil {
