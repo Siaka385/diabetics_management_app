@@ -2,21 +2,6 @@ package auth
 
 import "time"
 
-// type User struct {
-// 	gorm.Model
-// 	Username string `json:"username"`
-// 	Email    string `json:"email"`
-// 	Password string `json:"password"`
-// }
-
-// type User struct {
-//     ID       uint   `gorm:"primary_key"`
-//     Username string `gorm:"unique"`
-//     Password string
-//     Name     string
-//     Email    string
-// }
-
 type User struct {
 	ID        uint      `gorm:"primary_key" json:"id"`
 	Username  string    `gorm:"unique" json:"username"`

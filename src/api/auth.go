@@ -19,7 +19,7 @@ func generateJWT(user auth.User) (string, error) {
 	// Generate the JWT with claims
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"id":    user.ID,
-		"name":  user.Username,
+		"name":  user.Name,
 		"email": user.Email,
 		"exp":   time.Now().Add(time.Hour * 24).Unix(), // Expiration time (24 hours)
 	})
@@ -50,7 +50,7 @@ func SignupUser(db *gorm.DB) http.HandlerFunc {
 		}
 
 		// Register user
-		success := auth.RegisterUser(db, user.Username, user.Email, user.Password)
+		success := auth.RegisterUser(db, user.Username, user.Name, user.Email, user.Password)
 		if !success {
 			// If there is an error (e.g., email already registered), return error response
 			response = map[string]string{"status": "error", "message": "Unable to register user"}

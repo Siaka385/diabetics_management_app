@@ -8,7 +8,7 @@ import (
 )
 
 // RegisterUser creates a new user and saves it to the database
-func RegisterUser(db *gorm.DB, username, email, password string) bool {
+func RegisterUser(db *gorm.DB, username, name, email, password string) bool {
 	// Hash the password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
@@ -18,6 +18,7 @@ func RegisterUser(db *gorm.DB, username, email, password string) bool {
 
 	user := &User{
 		Username: username,
+		Name:     name,
 		Email:    email,
 		Password: string(hashedPassword),
 	}
@@ -37,6 +38,7 @@ func LoginUser(db *gorm.DB, username, password string) (*User, error) {
 
 	if result.Error != nil {
 		// User not found
+		fmt.Printf("User not found: %v\n", result.Error)
 		return nil, fmt.Errorf("user not found")
 	}
 
