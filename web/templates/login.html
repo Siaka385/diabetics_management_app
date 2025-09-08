@@ -44,45 +44,20 @@
         </div>
     </div>
 
+    <script src="/static/js/auth.js"></script>
     <script>
-        document.getElementById('login-form').addEventListener('submit', function(event) {
+        document.getElementById('login-form').addEventListener('submit', async function(event) {
             event.preventDefault();
-
+            
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
-
-            const formData = {
-                username: username,
-                password: password
-            };
-
-            // Send the data using fetch
-            fetch('/auth/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData)
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Success:', data);  // handle success response
-
-                if (data.status === 'success') {
-                    // The server has set the HttpOnly cookie, so just redirect
-                    if (data.redirect) {
-                        console.log("Redirecting to:", data.redirect)
-                        window.location.href = data.redirect;  // Redirect to the URL specified in the "redirect" field
-                    }
-                } else {
-                    // Handle error
-                    document.getElementById('error-alert').style.display = 'block';
-                    document.getElementById('error-alert').innerHTML = '<strong>Login Failed:</strong> ' + data.message;
-                }
-            })
-            .catch((error) => {
-                console.error('Error:', error);  // handle errors here
-            });
+            
+            const result = await Auth.login(username, password);
+            
+            if (!result.success) {
+                document.getElementById('error-alert').style.display = 'block';
+                document.getElementById('error-alert').innerHTML = '<strong>Login Failed:</strong> ' + result.message;
+            }
         });
     </script>
 </body>

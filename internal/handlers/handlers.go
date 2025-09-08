@@ -351,28 +351,42 @@ func Signup(db *gorm.DB, tmpl *template.Template) http.HandlerFunc {
 
 func SignupUser(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if err := r.ParseForm(); err != nil {
+		var signupData struct {
+			Username string `json:"username"`
+			Email    string `json:"email"`
+			Password string `json:"password"`
+		}
+		
+		if err := json.NewDecoder(r.Body).Decode(&signupData); err != nil {
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(map[string]string{"error": "Bad Request"})
 			return
 		}
-		username := r.FormValue("username")
-		name := r.FormValue("name")
-		email := r.FormValue("email")
-		password := r.FormValue("password")
-		if username == "" || name == "" || email == "" || password == "" {
+		
+		if signupData.Username == "" || signupData.Email == "" || signupData.Password == "" {
 			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(map[string]string{"error": "All fields are required"})
+			json.NewEncoder(w).Encode(map[string]string{
+				"status": "error",
+				"message": "All fields are required",
+			})
 			return
 		}
-		success := repository.RegisterUser(db, username, name, email, password)
+		
+		success := repository.RegisterUser(db, signupData.Username, signupData.Username, signupData.Email, signupData.Password)
 		if !success {
 			w.Header().Set("Content-Type", "application/json")
-			json.NewEncoder(w).Encode(map[string]string{"error": "Failed to register user"})
+			json.NewEncoder(w).Encode(map[string]string{
+				"status": "error",
+				"message": "Failed to register user",
+			})
 			return
 		}
+		
 		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]string{"message": "User registered successfully"})
+		json.NewEncoder(w).Encode(map[string]string{
+			"status": "success",
+			"message": "User registered successfully",
+		})
 	}
 }
 
@@ -408,9 +422,23 @@ func LoginUser(db *gorm.DB, sessionStore *sessions.CookieStore) http.HandlerFunc
 			return
 		}
 		
-		session, _ := sessionStore.Get(r, "session-name")
-		session.Values["user_id"] = user.ID
-		session.Save(r, w)
+		// Create JWT token
+		token, err := auth.CreateToken(user)
+		if err != nil {
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(map[string]string{"error": "Token creation failed"})
+			return
+		}
+		
+		// Set JWT token as HTTP-only cookie
+		http.SetCookie(w, &http.Cookie{
+			Name:     "authToken",
+			Value:    token,
+			Path:     "/",
+			HttpOnly: true,
+			Secure:   false,
+			SameSite: http.SameSiteLaxMode,
+		})
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]string{
 			"status": "success",
@@ -431,10 +459,15 @@ func LoginUserSuccess(tmpl *template.Template) http.HandlerFunc {
 
 func Logout(sessionStore *sessions.CookieStore) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		session, _ := sessionStore.Get(r, "session-name")
-		session.Values["user_id"] = nil
-		session.Save(r, w)
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(map[string]string{"message": "Logout successful"})
+		// Clear JWT cookie
+		http.SetCookie(w, &http.Cookie{
+			Name:     "authToken",
+			Value:    "",
+			Path:     "/",
+			MaxAge:   -1,
+			HttpOnly: true,
+		})
+		
+		http.Redirect(w, r, "/login", http.StatusSeeOther)
 	}
 }
