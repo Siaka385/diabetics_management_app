@@ -34,7 +34,7 @@ func RegisterUser(db *gorm.DB, username, name, email, password string) bool {
 // LoginUser checks if a user exists and verifies the password
 func LoginUser(db *gorm.DB, username, password string) (*User, error) {
 	var user User
-	result := db.Where("username = ?", username).First(&user)
+	result := db.Where("email = ?", username).First(&user)
 
 	if result.Error != nil {
 		// User not found

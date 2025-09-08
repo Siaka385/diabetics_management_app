@@ -47,14 +47,21 @@ func Dashboard(db *gorm.DB, tmpl *template.Template) http.HandlerFunc {
 
 func GenerateShortName(fullName string) string {
 	name := strings.TrimSpace(fullName)
-	words := strings.Split(name, " ")
+	words := strings.Fields(name)
+	if len(words) == 0 {
+		return ""
+	}
 	if len(words) == 1 {
-
-		return strings.Split(words[0], "")[0]
+		if len(words[0]) > 0 {
+			return string(words[0][0])
+		}
+		return ""
 	}
 	shortName := ""
-	for i := 0; i < len(words); i++ {
-		shortName += string(words[i][0])
+	for _, word := range words {
+		if len(word) > 0 {
+			shortName += string(word[0])
+		}
 	}
 	return shortName
 }

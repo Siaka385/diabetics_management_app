@@ -127,7 +127,7 @@ func LoginUser(db *gorm.DB, sessionStore *sessions.CookieStore) http.HandlerFunc
 			Value:    token,
 			Path:     "/",
 			HttpOnly: true,                    // Prevents access to the cookie via JavaScript
-			Secure:   true,                    // Ensures the cookie is only sent over HTTPS
+			Secure:   false,                   // Set to false for local testing without HTTPS
 			SameSite: http.SameSiteStrictMode, // Restricts cross-site usage
 		})
 
