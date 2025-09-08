@@ -20,7 +20,7 @@ export async function renderBlog() {
                     
                     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
                         <div class="lg:col-span-2 space-y-6">
-                            ${renderBlogPosts()}
+                            ${renderBlogPosts(userData.Posts)}
                         </div>
                         
                         <div class="bg-white p-6 rounded-xl shadow-sm border">
@@ -92,46 +92,41 @@ export async function renderBlog() {
             document.getElementById('createTopicModal').classList.remove('flex');
         });
         
+        // Add click handlers for blog posts
+        document.querySelectorAll('[data-post-id]').forEach(postElement => {
+            postElement.addEventListener('click', (e) => {
+                e.preventDefault();
+                const postId = e.currentTarget.getAttribute('data-post-id');
+                if (window.router && window.router.navigate) {
+                    window.router.navigate(`/post/${postId}`);
+                } else {
+                    // Fallback: trigger router manually
+                    history.pushState(null, null, `/post/${postId}`);
+                    window.dispatchEvent(new PopStateEvent('popstate'));
+                }
+            });
+        });
+        
     } catch (error) {
         window.location.href = '/login';
     }
 }
 
-function renderBlogPosts() {
-    const posts = [
-        {
-            title: "Understanding Diabetes: A Comprehensive Guide",
-            author: "Dr. Sarah Johnson",
-            date: "2 days ago",
-            excerpt: "Learn the fundamentals of diabetes management, from blood sugar monitoring to lifestyle changes that can make a real difference.",
-            image: "understanding-diabetes.jpg"
-        },
-        {
-            title: "10 Healthy Recipes for Diabetic-Friendly Meals",
-            author: "Chef Maria Rodriguez",
-            date: "1 week ago", 
-            excerpt: "Delicious and nutritious meal ideas that help maintain stable blood sugar levels while satisfying your taste buds.",
-            image: "prevent.jpg"
-        },
-        {
-            title: "Exercise and Diabetes: Finding the Right Balance",
-            author: "Fitness Expert Mike Chen",
-            date: "2 weeks ago",
-            excerpt: "Discover how regular physical activity can improve your diabetes management and overall health.",
-            image: "workout.jpg"
-        }
-    ];
+function renderBlogPosts(posts) {
+    if (!posts || posts.length === 0) {
+        return '<div class="text-center text-gray-500">No posts available</div>';
+    }
     
     return posts.map(post => `
-        <div class="bg-white rounded-xl shadow-sm border overflow-hidden hover:shadow-md transition-shadow">
-            <img src="/static/images/${post.image}" alt="${post.title}" class="w-full h-48 object-cover">
+        <div class="bg-white rounded-xl shadow-sm border overflow-hidden hover:shadow-md transition-shadow cursor-pointer" data-post-id="${post.ID}">
+            <img src="/static/images/${post.Image}" alt="${post.Title}" class="w-full h-48 object-cover">
             <div class="p-6">
-                <h3 class="text-xl font-semibold mb-2 hover:text-blue-600 cursor-pointer">${post.title}</h3>
+                <h3 class="text-xl font-semibold mb-2 hover:text-blue-600">${post.Title}</h3>
                 <div class="text-sm text-gray-500 mb-3">
-                    By ${post.author} • ${post.date}
+                    By ${post.Author} • ${post.Date}
                 </div>
-                <p class="text-gray-600 mb-4">${post.excerpt}</p>
-                <button class="text-blue-600 hover:text-blue-700 font-medium">Read More →</button>
+                <div class="text-gray-600 mb-4">${post.Excerpt}</div>
+                <button class="text-blue-600 hover:text-blue-700 font-medium read-more-btn">Read More →</button>
             </div>
         </div>
     `).join('');

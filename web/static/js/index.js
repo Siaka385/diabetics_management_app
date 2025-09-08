@@ -20,6 +20,9 @@ class App {
         // Initialize router
         this.router = new Router();
         
+        // Make router globally accessible
+        window.router = this.router;
+        
         // Check authentication status
         const authStatus = await checkAuthStatus();
         

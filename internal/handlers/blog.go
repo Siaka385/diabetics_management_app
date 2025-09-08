@@ -20,6 +20,34 @@ func BlogHomeHandler() http.HandlerFunc {
 			return
 		}
 
+		// Use static posts data with proper IDs for navigation
+		staticPosts := []models.Post{
+			{
+				ID:      "1",
+				Title:   "Understanding Diabetes: A Comprehensive Guide",
+				Author:  "Dr. Sarah Johnson",
+				Date:    "2 days ago",
+				Excerpt: "Learn the fundamentals of diabetes management, from blood sugar monitoring to lifestyle changes that can make a real difference.",
+				Image:   "understanding-diabetes.jpg",
+			},
+			{
+				ID:      "2",
+				Title:   "10 Healthy Recipes for Diabetic-Friendly Meals",
+				Author:  "Chef Maria Rodriguez",
+				Date:    "1 week ago",
+				Excerpt: "Delicious and nutritious meal ideas that help maintain stable blood sugar levels while satisfying your taste buds.",
+				Image:   "prevent.jpg",
+			},
+			{
+				ID:      "3",
+				Title:   "Exercise and Diabetes: Finding the Right Balance",
+				Author:  "Fitness Expert Mike Chen",
+				Date:    "2 weeks ago",
+				Excerpt: "Discover how regular physical activity can improve your diabetes management and overall health.",
+				Image:   "workout.jpg",
+			},
+		}
+
 		UserProfileDetails := struct {
 			models.UserProfile
 			CurrentPage string
@@ -30,7 +58,7 @@ func BlogHomeHandler() http.HandlerFunc {
 				Abbrev: shared.GenerateShortName(user.Name),
 			},
 			CurrentPage: "/blog",
-			Posts:       Data.Posts,
+			Posts:       staticPosts,
 		}
 
 		w.Header().Set("Content-Type", "application/json")
