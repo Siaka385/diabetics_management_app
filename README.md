@@ -2,12 +2,17 @@
 
 ## Project Overview
 
-DiaWise is an application designed to help diabetic patients manage their diet, get educated about diabetes, and connect with other patients. The app provides tools and resources to track dietary choices, understand diabetes better, and build a supportive community for individuals living with diabetes.
+Diawise is a platform focused on diabetes education and community support. We provide the following key features:
+
+- **Educational Content:** Provides essential resources and expert insights to help users better understand and manage the condition.
+- **Community:** Offers a space for individuals to connect with others on similar diabetes journeys, enabling them to share experiences and support each other in a safe environment.
+- **Healthy Living Tips:** Delivers practical advice on diet, exercise, and lifestyle choices tailored to improve the well-being of people managing diabetes.
+- **Diet Management:** Track meals and nutritional intake tailored to diabetes management.
+
+The platform encourages users to join a vibrant, supportive community dedicated to empowering individuals in their diabetes management journey.
 
 ## Features
-- **Diet Management:** Track meals and nutritional intake tailored to diabetes management.
-- **Education:** Access helpful information about diabetes and tips for living with the condition.
-- **Community:** Connect with other diabetic patients for shared experiences and support.
+
 
 ## Tech Stack
 - **Backend:** Go (Golang)

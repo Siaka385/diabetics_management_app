@@ -19,6 +19,7 @@ type Post struct {
 	Date    string
 	Content template.HTML
 	Image   string
+	Abbrev  string
 }
 
 type Issue struct {

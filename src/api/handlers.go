@@ -151,6 +151,8 @@ func PostHandler(tmpl *template.Template) http.HandlerFunc {
 			return
 		}
 
+		post.Abbrev = GenerateShortName(post.Author)
+
 		err := tmpl.ExecuteTemplate(w, "blog_display.html", post)
 		if err != nil {
 			log.Printf("Error executing template: %v", err)

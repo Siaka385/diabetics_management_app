@@ -79,8 +79,11 @@ func MedicationPageHandler(db *gorm.DB, tmpl *template.Template) http.HandlerFun
 			http.Error(w, "Failed to fetch medications", http.StatusInternalServerError)
 			return
 		}
-		fmt.Println(user.Name)
-		if err := tmpl.ExecuteTemplate(w, "medication.html", user.Name); err != nil {
+		UserProfileDetails := UserProfile{
+			Name:   user.Name,
+			Abbrev: GenerateShortName(user.Name),
+		}
+		if err := tmpl.ExecuteTemplate(w, "medication.html", UserProfileDetails); err != nil {
 			http.Error(w, "Failed to render template", http.StatusInternalServerError)
 		}
 	}

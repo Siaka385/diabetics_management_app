@@ -68,16 +68,16 @@
             .then(data => {
                 console.log('Success:', data);  // handle success response
 
-                // Check if the backend sends a "token" field in the response
-                if (data.token) {
-                    // Set the JWT token in the cookie (HttpOnly, Secure, SameSite)
-                    document.cookie = `authToken=${data.token}; path=/; HttpOnly; Secure; SameSite=Strict`;
-
-                    // If the backend sends a "redirect" field in the response, handle the redirection
+                if (data.status === 'success') {
+                    // The server has set the HttpOnly cookie, so just redirect
                     if (data.redirect) {
-                        console.log("REDIESTING: ", data.redirect)
+                        console.log("Redirecting to:", data.redirect)
                         window.location.href = data.redirect;  // Redirect to the URL specified in the "redirect" field
                     }
+                } else {
+                    // Handle error
+                    document.getElementById('error-alert').style.display = 'block';
+                    document.getElementById('error-alert').innerHTML = '<strong>Login Failed:</strong> ' + data.message;
                 }
             })
             .catch((error) => {
