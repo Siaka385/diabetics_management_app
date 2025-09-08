@@ -1,62 +1,60 @@
-// Frontend Authentication Utility
-class Auth {
-    static async login(username, password) {
-        try {
-            const response = await fetch('/auth/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ username, password })
-            });
-            
-            const data = await response.json();
-            
-            if (data.status === 'success') {
-                window.location.href = data.redirect || '/dashboard';
-                return { success: true };
-            } else {
-                return { success: false, message: data.message };
-            }
-        } catch (error) {
-            return { success: false, message: 'Network error occurred' };
-        }
-    }
-    
-    static async logout() {
-        try {
-            await fetch('/logout', { method: 'GET' });
-            window.location.href = '/login';
-        } catch (error) {
-            window.location.href = '/login';
-        }
-    }
-    
-    static async isAuthenticated() {
-        try {
-            const response = await fetch('/auth/status');
-            const data = await response.json();
-            return data.authenticated;
-        } catch (error) {
-            return false;
-        }
-    }
-    
-    static async requireAuth() {
-        const isAuth = await this.isAuthenticated();
-        if (!isAuth) {
-            window.location.href = '/login';
-            return false;
-        }
-        return true;
-    }
-    
-    static async redirectIfAuthenticated() {
-        const isAuth = await this.isAuthenticated();
-        if (isAuth) {
-            window.location.href = '/dashboard';
-            return true;
-        }
-        return false;
+// Authentication utilities
+async function checkAuthStatus() {
+    try {
+        const response = await fetch('/auth/status');
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        return { authenticated: false };
     }
 }
+
+async function login(username, password) {
+    try {
+        const response = await fetch('/auth/signin', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ username, password })
+        });
+        
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        return { status: 'error', message: 'Network error occurred' };
+    }
+}
+
+async function signup(username, email, password) {
+    try {
+        const response = await fetch('/auth/signup', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ username, email, password })
+        });
+        
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        return { status: 'error', message: 'Network error occurred' };
+    }
+}
+
+async function logout() {
+    try {
+        await fetch('/auth/signout', { method: 'POST' });
+        window.location.href = '/';
+    } catch (error) {
+        window.location.href = '/';
+    }
+}
+
+export {
+    checkAuthStatus,
+    login,
+    signup,
+    logout
+};

@@ -7,101 +7,27 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/static/css/index.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        'inter': ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        'primary': '#3B82F6',
+                        'secondary': '#10B981',
+                        'accent': '#F59E0B',
+                    }
+                }
+            }
+        }
+    </script>
 </head>
 <body>
-    <header>
-        <nav class="main-nav">
-            <div class="logo">DiaWise</div>
-            <div class="hamburger" aria-label="Toggle menu">
-                ☰
-            </div>
-            <div class="nav-links">
-                <a href="#features">Features</a>
-                <a href="#community">Community</a>
-                <a href="/blog">Educational Resources</a>
-                <a href="/dashboard">My Dashboard</a>
-            </div>
-        </nav>
-    </header>
-    
-    <section class="hero">
-        <div class="container">
-            <div class="hero-content">
-                <div class="hero-text">
-                    <h1>Take Control of Your Diabetes Journey, One Step at a Time</h1>
-                    <p>Join thousands of people who've found their path to better diabetes management through personalized support, expert guidance, and a caring community.</p>
-                    <div class="auth-buttons">
-                        <a href="/login" class="btn-auth btn-login">Log In</a>
-                        <a href="/signup" class="btn-auth btn-signup">Sign Up</a>
-                    </div>
-                </div>
-                <div class="hero-image">
-                    <img src="/static/images/hero-image.jpg" width="100%" height="500px" fill="none" stroke="none">
-                </div>
-            </div>
-        </div>
-    </section>
+    <div id="app"></div>
 
-    <section id="features" class="features">
-        <div class="container">
-            <h2>Your Complete Diabetes Management Companion</h2>
-            <div class="features-grid">
-                <div class="feature-card">
-                    <svg class="feature-icon" viewBox="0 0 24 24" fill="none">
-                        <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-width="2"/>
-                    </svg>
-                    <h3>Expert-Backed Learning</h3>
-                    <p>Access clinically-reviewed diabetes education, from blood sugar management to lifestyle strategies. Our step-by-step resources help you make informed decisions about your health.</p>
-                </div>
-                <div class="feature-card">
-                    <svg class="feature-icon" viewBox="0 0 24 24" fill="none">
-                        <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" stroke-width="2"/>
-                    </svg>
-                    <h3>Never Walk Alone</h3>
-                    <p>Join supportive group discussions led by certified diabetes educators. Share experiences, ask questions, and learn from others who understand your journey firsthand.</p>
-                </div>
-                <div class="feature-card">
-                    <svg class="feature-icon" viewBox="0 0 24 24" fill="none">
-                        <path d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" stroke-width="2"/>
-                    </svg>
-                    <h3>Practical Daily Guidance</h3>
-                    <p>Get personalized recommendations for meals, exercise, and lifestyle choices that fit your needs. Our evidence-based tips make diabetes management simpler and more effective.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section id="community" class="cta">
-        <div class="container">
-            <h2>Your Success Story Starts Here</h2>
-            <p>Join a community where thousands of people are achieving their diabetes management goals through shared experiences and mutual support.</p>
-            <div class="btn-group">
-                <a href="/signup" class="btn btn-secondary">Start Your Journey Today</a>
-            </div>
-        </div>
-    </section>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const navbar = document.querySelector('.main-nav');
-            const hamburger = document.querySelector('.hamburger');
-            const navLinks = document.querySelector('.nav-links');
-
-            // Toggle navbar background on scroll
-            window.addEventListener('scroll', () => {
-                if (window.scrollY > 10) {
-                    navbar.classList.add('scrolled');
-                } else {
-                    navbar.classList.remove('scrolled');
-                }
-            });
-
-            // Toggle nav menu on hamburger click
-            hamburger.addEventListener('click', () => {
-                navLinks.classList.toggle('show');
-            });
-        });
-    </script>
+    <script type="module" src="/static/js/index.js"></script>
 </body>
 </html>

@@ -25,13 +25,13 @@ var (
 )
 
 func init() {
-	db = repository.InitializeDatabase("../../data/diawise.db")
-	tmpl, err = template.ParseGlob("../../web/templates/*.html")
+	db = repository.InitializeDatabase("data/diawise.db")
+	tmpl, err = template.ParseGlob("web/templates/*.html")
 	if err != nil {
 		log.Fatal(err)
 	}
 	// Parse partials
-	tmpl, err = tmpl.ParseGlob("../../web/templates/partials/*.html")
+	tmpl, err = tmpl.ParseGlob("web/templates/partials/*.html")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -54,19 +54,17 @@ func main() {
 		} else if path[len(path)-3:] == ".js" {
 			w.Header().Set("Content-Type", "application/javascript")
 		}
-		http.FileServer(http.Dir("../../web/static")).ServeHTTP(w, r)
+		http.FileServer(http.Dir("web/static")).ServeHTTP(w, r)
 	}))
 	router.PathPrefix("/static/").Handler(staticHandler)
 
-	router.HandleFunc("/signup", handlers.Signup(db, tmpl)).Methods("GET")
-	router.HandleFunc("/auth/signup", handlers.SignupUser(db)).Methods("POST")
-	router.HandleFunc("/auth/login", handlers.LoginUser(db, sessionStore)).Methods("POST")
-	router.HandleFunc("/auth/status", handlers.AuthStatusHandler()).Methods("GET")
-	router.HandleFunc("/auth/loginok", handlers.LoginUserSuccess(tmpl)).Methods("GET")
-	router.HandleFunc("/login", handlers.Login(db, tmpl)).Methods("GET")
+	router.HandleFunc("/auth/signup", handlers.Signup(db)).Methods("POST")
+	router.HandleFunc("/auth/signin", handlers.Signin(db, sessionStore)).Methods("POST")
+	router.HandleFunc("/auth/signout", handlers.Signout).Methods("POST")
+	router.HandleFunc("/auth/status", handlers.AuthStatus).Methods("GET")
+
 	router.HandleFunc("/nutrition/logmeal", handlers.LogMealHandler(db, tmpl)).Methods("POST")
 	router.Handle("/medication", http.HandlerFunc(middleware.AuthMiddleware(handlers.MedicationPageHandler(db, tmpl)))).Methods("GET")
-	router.HandleFunc("/logout", handlers.Logout(sessionStore)).Methods("GET")
 	router.HandleFunc("/updatemed/{id}", handlers.UpdateMedication(db)).Methods("PUT")
 	router.HandleFunc("/deletemed/{id}", handlers.DeleteMedication(db)).Methods("DELETE")
 	router.HandleFunc("/listmed", handlers.ListMedications(db)).Methods("GET")
@@ -81,7 +79,7 @@ func main() {
 	router.HandleFunc("/deleteroom", handlers.DeleteRoom(db))
 
 	// Restricted routes
-	router.Handle("/dashboard", http.HandlerFunc(middleware.AuthMiddleware(handlers.Dashboard(db, tmpl)))).Methods("GET")
+	router.Handle("/dashboard", http.HandlerFunc(middleware.AuthMiddleware(handlers.Dashboard(db)))).Methods("GET")
 	router.Handle("/support", http.HandlerFunc(middleware.AuthMiddleware(handlers.Support(tmpl)))).Methods("GET")
 	router.Handle("/nutrition", http.HandlerFunc(middleware.AuthMiddleware(handlers.DietAndNutritionHandler(tmpl)))).Methods("GET")
 	router.Handle("/bloodsugar", http.HandlerFunc(middleware.AuthMiddleware(handlers.BloodSugarHandler(tmpl)))).Methods("GET")

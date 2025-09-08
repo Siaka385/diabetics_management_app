@@ -126,7 +126,6 @@ func ParseToken(tokenString string) (*models.User, error) {
 		Email: claims["email"].(string),
 	}
 
-	fmt.Printf("Token parsed successfully for user: %s\n", user.Name)
 	return user, nil
 }
 

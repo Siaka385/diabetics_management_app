@@ -3,26 +3,16 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
-	"html/template"
 	"net/http"
 
-	"diawise/internal/repository"
 	auth "diawise/internal/middleware"
+	"diawise/internal/repository"
 
 	"github.com/gorilla/sessions"
 	"gorm.io/gorm"
 )
 
-func Signup(db *gorm.DB, tmpl *template.Template) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		err := tmpl.ExecuteTemplate(w, "signup.html", nil)
-		if err != nil {
-			InternalServerErrorHandler(w)
-		}
-	}
-}
-
-func SignupUser(db *gorm.DB) http.HandlerFunc {
+func Signup(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var signupData struct {
 			Username string `json:"username"`
@@ -63,16 +53,7 @@ func SignupUser(db *gorm.DB) http.HandlerFunc {
 	}
 }
 
-func Login(db *gorm.DB, tmpl *template.Template) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		err := tmpl.ExecuteTemplate(w, "login.html", nil)
-		if err != nil {
-			InternalServerErrorHandler(w)
-		}
-	}
-}
-
-func LoginUser(db *gorm.DB, sessionStore *sessions.CookieStore) http.HandlerFunc {
+func Signin(db *gorm.DB, sessionStore *sessions.CookieStore) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var loginData struct {
 			Username string `json:"username"`
@@ -105,7 +86,6 @@ func LoginUser(db *gorm.DB, sessionStore *sessions.CookieStore) http.HandlerFunc
 			return
 		}
 
-		fmt.Printf("Token created, setting cookie\n")
 		// Set JWT token as HTTP-only cookie
 		http.SetCookie(w, &http.Cookie{
 			Name:     "authToken",
@@ -115,7 +95,6 @@ func LoginUser(db *gorm.DB, sessionStore *sessions.CookieStore) http.HandlerFunc
 			Secure:   false,
 			SameSite: http.SameSiteLaxMode,
 		})
-		fmt.Printf("Cookie set successfully\n")
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(map[string]string{
 			"status":   "success",
@@ -125,33 +104,30 @@ func LoginUser(db *gorm.DB, sessionStore *sessions.CookieStore) http.HandlerFunc
 	}
 }
 
-func LoginUserSuccess(tmpl *template.Template) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		err := tmpl.ExecuteTemplate(w, "login-success.html", nil)
-		if err != nil {
-			InternalServerErrorHandler(w)
-		}
-	}
-}
-
-func Logout(sessionStore *sessions.CookieStore) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func Signout(w http.ResponseWriter, r *http.Request) {
 		// Clear JWT cookie
 		http.SetCookie(w, &http.Cookie{
 			Name:     "authToken",
-			Value:    "",
 			Path:     "/",
 			MaxAge:   -1,
 			HttpOnly: true,
+			Secure:   false,
+			SameSite: http.SameSiteLaxMode,
 		})
 
-		http.Redirect(w, r, "/login", http.StatusSeeOther)
-	}
+		w.Header().Set("Content-Type", "application/json")
+
+		if err := json.NewEncoder(w).Encode(map[string]string{
+			"status":   "success",
+			"message":  "Signed out successfully",
+			"redirect": "/",
+		}); err != nil {
+			http.Error(w, "failed to encode response", http.StatusInternalServerError)
+		}
 }
 
 // AuthStatusHandler returns the current authentication status
-func AuthStatusHandler() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
+func AuthStatus(w http.ResponseWriter, r *http.Request) {
 		// Try to get auth cookie
 		cookie, err := r.Cookie("authToken")
 		if err != nil || cookie == nil {
@@ -181,5 +157,4 @@ func AuthStatusHandler() http.HandlerFunc {
 				"email": user.Email,
 			},
 		})
-	}
 }
