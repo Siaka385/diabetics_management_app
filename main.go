@@ -63,14 +63,14 @@ func main() {
 	router.HandleFunc("/auth/signout", handlers.Signout).Methods("POST")
 	router.HandleFunc("/auth/status", handlers.AuthStatus).Methods("GET")
 
-	router.HandleFunc("/nutrition/logmeal", handlers.LogMealHandler(db, tmpl)).Methods("POST")
-	router.Handle("/medication", http.HandlerFunc(middleware.AuthMiddleware(handlers.MedicationHandler(tmpl)))).Methods("GET")
+	router.HandleFunc("/nutrition/logmeal", handlers.LogMealHandler(db)).Methods("POST")
+	router.Handle("/medication", http.HandlerFunc(middleware.AuthMiddleware(handlers.MedicationHandler()))).Methods("GET")
 	router.HandleFunc("/updatemed/{id}", handlers.UpdateMedication(db)).Methods("PUT")
 	router.HandleFunc("/deletemed/{id}", handlers.DeleteMedication(db)).Methods("DELETE")
 	router.HandleFunc("/listmed", handlers.ListMedications(db)).Methods("GET")
-	router.HandleFunc("/education", handlers.EducationHandler(tmpl)).Methods("GET")
-	router.HandleFunc("/glucose-tracker", handlers.GlucoseTrackerEndPointHandler).Methods("GET")
-	router.HandleFunc("/post/{id}", handlers.PostHandler(tmpl)).Methods("GET")
+	router.Handle("/education", http.HandlerFunc(middleware.AuthMiddleware(handlers.EducationHandler()))).Methods("GET")
+	router.Handle("/glucose-tracker", http.HandlerFunc(middleware.AuthMiddleware(handlers.GlucoseTrackerHandler()))).Methods("GET")
+	router.Handle("/post/{id}", http.HandlerFunc(middleware.AuthMiddleware(handlers.PostHandler()))).Methods("GET")
 
 	router.HandleFunc("/createroom", handlers.CreateRoom(db)).Methods("POST")
 	router.HandleFunc("/listrooms", handlers.ListRooms(db)).Methods("GET")
@@ -80,11 +80,11 @@ func main() {
 
 	// Restricted routes
 	router.Handle("/dashboard", http.HandlerFunc(middleware.AuthMiddleware(handlers.Dashboard(db)))).Methods("GET")
-	router.Handle("/support", http.HandlerFunc(middleware.AuthMiddleware(handlers.Support(tmpl)))).Methods("GET")
-	router.Handle("/nutrition", http.HandlerFunc(middleware.AuthMiddleware(handlers.DietAndNutritionHandler(tmpl)))).Methods("GET")
-	router.Handle("/bloodsugar", http.HandlerFunc(middleware.AuthMiddleware(handlers.BloodSugarHandler(tmpl)))).Methods("GET")
-	router.Handle("/blog", http.HandlerFunc(middleware.AuthMiddleware(handlers.BlogHomeHandler(tmpl)))).Methods("GET")
-	router.Handle("/addmedication", http.HandlerFunc(middleware.AuthMiddleware(handlers.AddMedicationHandler(db, tmpl)))).Methods("GET", "POST")
+	router.Handle("/support", http.HandlerFunc(middleware.AuthMiddleware(handlers.Support()))).Methods("GET")
+	router.Handle("/nutrition", http.HandlerFunc(middleware.AuthMiddleware(handlers.DietAndNutritionHandler()))).Methods("GET")
+	router.Handle("/bloodsugar", http.HandlerFunc(middleware.AuthMiddleware(handlers.BloodSugarHandler()))).Methods("GET")
+	router.Handle("/blog", http.HandlerFunc(middleware.AuthMiddleware(handlers.BlogHomeHandler()))).Methods("GET")
+	router.HandleFunc("/addmedication", handlers.AddMedication(db, sessionStore)).Methods("POST")
 
 	corsHandler := cors.New(cors.Options{
 		AllowedOrigins:   []string{"*"},

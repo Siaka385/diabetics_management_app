@@ -3,7 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
-	"html/template"
+
 	"log"
 	"net/http"
 	"time"
@@ -83,7 +83,7 @@ func GenerateMealInsights(nutrientInfo models.NutrientInfo) string {
 	return "Your meal is well-balanced!"
 }
 
-func LogMealHandler(db *gorm.DB, tmpl *template.Template) http.HandlerFunc {
+func LogMealHandler(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Starting meal logging...")
 		// Get user id to use as foreignkey

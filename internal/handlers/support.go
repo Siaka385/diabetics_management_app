@@ -38,7 +38,7 @@ var (
 	roomsMu sync.RWMutex
 )
 
-func Support(tmpl *template.Template) http.HandlerFunc {
+func Support() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		user, ok := auth.GetUserFromContext(r)
 		if !ok {

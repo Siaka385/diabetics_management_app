@@ -2,7 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
-	"html/template"
+
 	"net/http"
 
 	auth "diawise/internal/middleware"
@@ -10,7 +10,7 @@ import (
 	"diawise/internal/shared"
 )
 
-func MedicationHandler(tmpl *template.Template) http.HandlerFunc {
+func MedicationHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Retrieve user from context
 		user, ok := auth.GetUserFromContext(r)

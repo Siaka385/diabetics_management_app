@@ -3,7 +3,7 @@ import { checkAuthStatus } from './auth.js';
 class Router {
     constructor() {
         this.routes = new Map();
-        this.protectedRoutes = new Set(['/dashboard', '/nutrition', '/bloodsugar', '/blog', '/support', '/medication']);
+        this.protectedRoutes = new Set(['/dashboard', '/nutrition', '/bloodsugar', '/blog', '/support', '/medication', '/education', '/glucose-tracker']);
         this.currentRoute = null;
     }
 
@@ -74,8 +74,19 @@ class Router {
             case '/medication':
                 await this.renderMedication();
                 break;
+            case '/education':
+                await this.renderEducation();
+                break;
+            case '/glucose-tracker':
+                await this.renderGlucoseTracker();
+                break;
             default:
-                this.render404();
+                if (path.startsWith('/post/')) {
+                    const postId = path.split('/')[2];
+                    await this.renderPost(postId);
+                } else {
+                    this.render404();
+                }
         }
     }
 
@@ -122,6 +133,21 @@ class Router {
     async renderMedication() {
         const { renderMedication } = await import('./pages/medication.js');
         await renderMedication();
+    }
+
+    async renderEducation() {
+        const { renderEducation } = await import('./pages/education.js');
+        await renderEducation();
+    }
+
+    async renderGlucoseTracker() {
+        const { renderGlucoseTracker } = await import('./pages/glucose-tracker.js');
+        await renderGlucoseTracker();
+    }
+
+    async renderPost(postId) {
+        const { renderPost } = await import('./pages/post.js');
+        await renderPost(postId);
     }
 
     render404() {

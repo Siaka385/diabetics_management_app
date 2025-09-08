@@ -2,8 +2,6 @@ package handlers
 
 import (
 	"encoding/json"
-	"html/template"
-	"log"
 	"net/http"
 
 	auth "diawise/internal/middleware"
@@ -13,29 +11,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func PostHandler(tmpl *template.Template) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		postID := vars["id"]
-
-		post, ok := Posts[postID]
-		if !ok {
-			NotFoundHandler(w)
-			return
-		}
-
-		post.Abbrev = shared.GenerateShortName(post.Author)
-
-		err := tmpl.ExecuteTemplate(w, "blog_display.html", post)
-		if err != nil {
-			log.Printf("Error executing template: %v", err)
-			InternalServerErrorHandler(w)
-			return
-		}
-	}
-}
-
-func BlogHomeHandler(tmpl *template.Template) http.HandlerFunc {
+func BlogHomeHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Retrieve user from context
 		user, ok := auth.GetUserFromContext(r)
@@ -62,12 +38,63 @@ func BlogHomeHandler(tmpl *template.Template) http.HandlerFunc {
 	}
 }
 
-func EducationHandler(tmpl *template.Template) http.HandlerFunc {
+func EducationHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if err := tmpl.ExecuteTemplate(w, "education.html", Data); err != nil {
-			InternalServerErrorHandler(w)
+		// Retrieve user from context
+		user, ok := auth.GetUserFromContext(r)
+		if !ok {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
+
+		UserProfileDetails := struct {
+			models.UserProfile
+			CurrentPage string
+		}{
+			UserProfile: models.UserProfile{
+				Name:   user.Name,
+				Abbrev: shared.GenerateShortName(user.Name),
+			},
+			CurrentPage: "/education",
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(UserProfileDetails)
 	}
 }
 
+func PostHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Retrieve user from context
+		user, ok := auth.GetUserFromContext(r)
+		if !ok {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		vars := mux.Vars(r)
+		postID := vars["id"]
+
+		post, exists := Posts[postID]
+		if !exists {
+			http.Error(w, "Post not found", http.StatusNotFound)
+			return
+		}
+
+		response := struct {
+			models.UserProfile
+			CurrentPage string
+			Post        models.Post
+		}{
+			UserProfile: models.UserProfile{
+				Name:   user.Name,
+				Abbrev: shared.GenerateShortName(user.Name),
+			},
+			CurrentPage: "/post/" + postID,
+			Post:        post,
+		}
+
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(response)
+	}
+}
