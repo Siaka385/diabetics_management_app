@@ -16,7 +16,7 @@ export async function renderBloodsugar() {
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         <div class="bg-white p-6 rounded-xl shadow-sm border">
                             <h2 class="text-xl font-semibold mb-6">Blood Sugar Trends</h2>
-                            <div id="simpleChart" class="w-full h-96"></div>
+                            <div id="chartContainer" class="w-full h-96"></div>
                         </div>
                         
                         <div class="bg-white p-6 rounded-xl shadow-sm border">
@@ -58,18 +58,75 @@ export async function renderBloodsugar() {
                             </div>
                         </div>
                     </div>
+                    
+                    <!-- Blood Sugar Interpretation Summary -->
+                    <div class="mt-8 bg-white p-6 rounded-xl shadow-sm border">
+                        <h2 class="text-xl font-semibold mb-6">Understanding Your Blood Sugar Readings</h2>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <h3 class="text-lg font-medium mb-4 text-blue-600">Normal Ranges (mg/dL)</h3>
+                                <div class="space-y-3">
+                                    <div class="flex justify-between p-3 bg-green-50 rounded-lg border-l-4 border-green-400">
+                                        <span class="font-medium">Fasting:</span>
+                                        <span>70-100</span>
+                                    </div>
+                                    <div class="flex justify-between p-3 bg-green-50 rounded-lg border-l-4 border-green-400">
+                                        <span class="font-medium">Before Meal:</span>
+                                        <span>70-130</span>
+                                    </div>
+                                    <div class="flex justify-between p-3 bg-green-50 rounded-lg border-l-4 border-green-400">
+                                        <span class="font-medium">2hrs After Meal:</span>
+                                        <span>&lt; 180</span>
+                                    </div>
+                                    <div class="flex justify-between p-3 bg-green-50 rounded-lg border-l-4 border-green-400">
+                                        <span class="font-medium">Bedtime:</span>
+                                        <span>100-140</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <h3 class="text-lg font-medium mb-4 text-amber-600">Warning Signs</h3>
+                                <div class="space-y-3">
+                                    <div class="p-3 bg-yellow-50 rounded-lg border-l-4 border-yellow-400">
+                                        <div class="font-medium text-yellow-800">Pre-diabetes:</div>
+                                        <div class="text-sm text-yellow-700">Fasting: 100-125 mg/dL</div>
+                                    </div>
+                                    <div class="p-3 bg-red-50 rounded-lg border-l-4 border-red-400">
+                                        <div class="font-medium text-red-800">Diabetes:</div>
+                                        <div class="text-sm text-red-700">Fasting: ≥126 mg/dL</div>
+                                    </div>
+                                    <div class="p-3 bg-red-50 rounded-lg border-l-4 border-red-400">
+                                        <div class="font-medium text-red-800">Hypoglycemia:</div>
+                                        <div class="text-sm text-red-700">&lt; 70 mg/dL</div>
+                                    </div>
+                                    <div class="p-3 bg-red-50 rounded-lg border-l-4 border-red-400">
+                                        <div class="font-medium text-red-800">Severe High:</div>
+                                        <div class="text-sm text-red-700">&gt; 250 mg/dL</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-6 p-4 bg-blue-50 rounded-lg border-l-4 border-blue-400">
+                            <h4 class="font-medium text-blue-800 mb-2">Important Notes:</h4>
+                            <ul class="text-sm text-blue-700 space-y-1">
+                                <li>• These are general guidelines - your target ranges may be different based on your condition</li>
+                                <li>• Consistently high or low readings should be discussed with your healthcare provider</li>
+                                <li>• Factors like stress, illness, medications, and food can affect readings</li>
+                                <li>• Track patterns and trends, not just individual readings</li>
+                            </ul>
+                        </div>
+                    </div>
                 </div>
             </div>
         `;
         
-        // Initialize simple chart
-        initializeSimpleChart();
+        initializeChart();
         
-        // Add form handler
         const form = document.getElementById('bloodSugarForm');
-        if (form) {
-            form.addEventListener('submit', handleBloodSugarSubmit);
-        }
+        if (form) form.addEventListener('submit', handleBloodSugarSubmit);
         
     } catch (error) {
         console.error('Error rendering blood sugar page:', error);
@@ -77,122 +134,31 @@ export async function renderBloodsugar() {
     }
 }
 
-// Simple chart data storage
+// Chart data storage
 let chartData = [
-    { label: 'Mon', value: 120 },
-    { label: 'Tue', value: 135 },
-    { label: 'Wed', value: 128 },
-    { label: 'Thu', value: 142 },
-    { label: 'Fri', value: 118 },
-    { label: 'Sat', value: 125 },
-    { label: 'Sun', value: 130 }
+    { label: 'Mon', value: 120, time: 'fasting' },
+    { label: 'Tue', value: 135, time: 'after_meal' },
+    { label: 'Wed', value: 128, time: 'fasting' },
+    { label: 'Thu', value: 142, time: 'after_meal' },
+    { label: 'Fri', value: 118, time: 'fasting' },
+    { label: 'Sat', value: 125, time: 'before_meal' },
+    { label: 'Sun', value: 130, time: 'fasting' }
 ];
 
-function initializeSimpleChart() {
-    const container = document.getElementById('simpleChart');
+function initializeChart() {
+    const container = document.getElementById('chartContainer');
     if (!container) return;
-    
-    renderSimpleChart(container);
+    renderChart(container);
 }
 
-function renderSimpleChart(container) {
-    const maxValue = Math.max(...chartData.map(d => d.value));
-    const minValue = Math.min(...chartData.map(d => d.value));
-    const range = maxValue - minValue || 1;
-    const chartHeight = 300;
-    
-    let html = `
-        <div class="relative bg-gray-50 rounded-lg p-4" style="height: ${chartHeight + 80}px;">
-            <!-- Y-axis labels -->
-            <div class="absolute left-0 top-4 bottom-16 w-12 flex flex-col justify-between text-xs text-gray-500">
-                <span>${Math.round(maxValue + 20)}</span>
-                <span>${Math.round(maxValue)}</span>
-                <span>${Math.round((maxValue + minValue) / 2)}</span>
-                <span>${Math.round(minValue)}</span>
-                <span>${Math.round(minValue - 20)}</span>
-            </div>
-            
-            <!-- Chart area -->
-            <div class="ml-16 mr-4 relative" style="height: ${chartHeight}px;">
-                <!-- Grid lines -->
-                <div class="absolute inset-0">
-                    <div class="h-full flex flex-col justify-between">
-                        <div class="h-px bg-gray-200"></div>
-                        <div class="h-px bg-gray-200"></div>
-                        <div class="h-px bg-gray-200"></div>
-                        <div class="h-px bg-gray-200"></div>
-                        <div class="h-px bg-gray-200"></div>
-                    </div>
-                </div>
-                
-                <!-- Data points and line -->
-                <svg class="absolute inset-0 w-full h-full" viewBox="0 0 400 ${chartHeight}">
-                    <defs>
-                        <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                            <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:0.3" />
-                            <stop offset="100%" style="stop-color:#3B82F6;stop-opacity:0" />
-                        </linearGradient>
-                    </defs>
-                    ${generateSVGPath(chartData, chartHeight, range, minValue)}
-                </svg>
-                
-                <!-- Data points -->
-                <div class="absolute inset-0 flex items-end justify-between">
-                    ${chartData.map(point => {
-                        const height = ((point.value - minValue) / range) * (chartHeight - 40) + 20;
-                        return `
-                            <div class="flex flex-col items-center">
-                                <div class="w-3 h-3 bg-blue-600 rounded-full relative" style="margin-bottom: ${chartHeight - height - 6}px;">
-                                    <div class="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs px-2 py-1 rounded opacity-0 hover:opacity-100 transition-opacity">
-                                        ${point.value} mg/dL
-                                    </div>
-                                </div>
-                            </div>
-                        `;
-                    }).join('')}
-                </div>
-            </div>
-            
-            <!-- X-axis labels -->
-            <div class="ml-16 mr-4 mt-2 flex justify-between text-xs text-gray-500">
-                ${chartData.map(point => `<span>${point.label}</span>`).join('')}
-            </div>
-        </div>
-    `;
-    
-    container.innerHTML = html;
-}
-
-function generateSVGPath(data, height, range, minValue) {
-    if (data.length < 2) return '';
-    
-    const svgWidth = 400; // Fixed width in pixels
-    const svgHeight = height;
-    const stepWidth = svgWidth / (data.length - 1);
-    
-    let pathData = '';
-    let areaData = '';
-    
-    data.forEach((point, index) => {
-        const x = index * stepWidth;
-        const y = svgHeight - (((point.value - minValue) / range) * (svgHeight * 0.8) + (svgHeight * 0.1));
-        
-        if (index === 0) {
-            pathData += `M ${x} ${y}`;
-            areaData += `M ${x} ${y}`;
-        } else {
-            pathData += ` L ${x} ${y}`;
-            areaData += ` L ${x} ${y}`;
-        }
-    });
-    
-    // Close the area path
-    areaData += ` L ${svgWidth} ${svgHeight} L 0 ${svgHeight} Z`;
-    
-    return `
-        <path d="${areaData}" fill="url(#gradient)" />
-        <path d="${pathData}" stroke="#3B82F6" stroke-width="3" fill="none" />
-    `;
+function formatTimeType(timeType) {
+    const timeMap = {
+        'fasting': 'Fasting',
+        'before_meal': 'Before Meal',
+        'after_meal': 'After Meal',
+        'bedtime': 'Bedtime'
+    };
+    return timeMap[timeType] || timeType;
 }
 
 function handleBloodSugarSubmit(e) {
@@ -215,17 +181,17 @@ function handleBloodSugarSubmit(e) {
     const now = new Date();
     const timeLabel = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     
-    chartData.push({ label: timeLabel, value: level });
+    chartData.push({ label: timeLabel, value: level, time: time });
     
     // Keep only the last 10 data points
     if (chartData.length > 10) {
         chartData.shift();
     }
     
-    // Re-render the simple chart
-    const container = document.getElementById('simpleChart');
+    // Re-render the chart
+    const container = document.getElementById('chartContainer');
     if (container) {
-        renderSimpleChart(container);
+        renderChart(container);
     }
     
     // Add to recent logs
@@ -234,20 +200,56 @@ function handleBloodSugarSubmit(e) {
     // Reset form
     e.target.reset();
     
-    // Show success message
-    showAlert('Blood sugar reading logged successfully!', 'success');
+    // Show success message with interpretation
+    const interpretation = interpretReading(level, time);
+    showAlert(`Blood sugar reading logged: ${level} mg/dL - ${interpretation}`, 
+             interpretation.includes('normal') ? 'success' : 'warning');
+}
+
+function interpretReading(value, timeType) {
+    if (value < 70) return 'Low (Hypoglycemia) - Consider treating immediately';
+    if (value > 250) return 'Very High - Consult healthcare provider';
+    
+    switch (timeType) {
+        case 'fasting':
+            if (value <= 100) return 'Normal fasting level';
+            if (value <= 125) return 'Pre-diabetic range';
+            return 'Diabetic range';
+        
+        case 'before_meal':
+            if (value <= 130) return 'Normal pre-meal level';
+            return 'Above target range';
+        
+        case 'after_meal':
+            if (value < 180) return 'Normal post-meal level';
+            return 'Above target range';
+        
+        case 'bedtime':
+            if (value >= 100 && value <= 140) return 'Normal bedtime level';
+            if (value < 100) return 'Slightly low for bedtime';
+            return 'Above target range';
+        
+        default:
+            return 'Reading logged';
+    }
 }
 
 function addToRecentLogs(level, time) {
     const logsList = document.getElementById('recentLogsList');
     if (!logsList) return;
     
-    const timeFormatted = time.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+    const timeFormatted = formatTimeType(time);
+    const interpretation = interpretReading(level, time);
+    const color = getLogColor(level, time);
+    
     const newLog = document.createElement('div');
-    newLog.className = 'p-3 bg-gray-50 rounded-lg';
+    newLog.className = `p-3 rounded-lg ${color}`;
     newLog.innerHTML = `
-        <div class="flex justify-between">
-            <span class="font-medium">${level} mg/dL</span>
+        <div class="flex justify-between items-start">
+            <div>
+                <span class="font-medium">${level} mg/dL</span>
+                <div class="text-xs text-gray-600 mt-1">${interpretation}</div>
+            </div>
             <span class="text-sm text-gray-500">${timeFormatted} - Just now</span>
         </div>
     `;
@@ -261,21 +263,43 @@ function addToRecentLogs(level, time) {
     }
 }
 
+function getLogColor(value, timeType) {
+    const pointColor = getPointColor(value, timeType);
+    
+    if (pointColor.includes('green')) return 'bg-green-50 border-l-4 border-green-400';
+    if (pointColor.includes('yellow')) return 'bg-yellow-50 border-l-4 border-yellow-400';
+    if (pointColor.includes('red')) return 'bg-red-50 border-l-4 border-red-400';
+    
+    return 'bg-gray-50';
+}
+
 function showAlert(message, type) {
     const alert = document.getElementById('alertMessage');
     if (!alert) return;
     
     alert.classList.remove('hidden');
-    alert.className = `mt-4 p-3 rounded-lg ${
-        type === 'success' 
-            ? 'bg-green-100 text-green-700 border border-green-200' 
-            : 'bg-red-100 text-red-700 border border-red-200'
-    }`;
+    
+    let colorClass = '';
+    switch (type) {
+        case 'success':
+            colorClass = 'bg-green-100 text-green-700 border border-green-200';
+            break;
+        case 'warning':
+            colorClass = 'bg-yellow-100 text-yellow-700 border border-yellow-200';
+            break;
+        case 'error':
+            colorClass = 'bg-red-100 text-red-700 border border-red-200';
+            break;
+        default:
+            colorClass = 'bg-blue-100 text-blue-700 border border-blue-200';
+    }
+    
+    alert.className = `mt-4 p-3 rounded-lg ${colorClass}`;
     alert.textContent = message;
     
     setTimeout(() => {
         alert.classList.add('hidden');
-    }, 3000);
+    }, 5000);
 }
 
 function renderSidebar(userData, currentPage) {
@@ -308,5 +332,182 @@ function renderSidebar(userData, currentPage) {
                 </button>
             </div>
         </div>
+    `;
+}
+
+function getPointColor(value, timeType) {
+    if (value < 70) return 'bg-red-500'; // Hypoglycemia
+    if (value > 250) return 'bg-red-600'; // Dangerously high
+    
+    switch (timeType) {
+        case 'fasting':
+            if (value <= 100) return 'bg-green-500';
+            if (value <= 125) return 'bg-yellow-500';
+            return 'bg-red-500';
+        
+        case 'before_meal':
+            if (value <= 130) return 'bg-green-500';
+            if (value <= 180) return 'bg-yellow-500';
+            return 'bg-red-500';
+        
+        case 'after_meal':
+            if (value < 180) return 'bg-green-500';
+            if (value <= 250) return 'bg-yellow-500';
+            return 'bg-red-500';
+        
+        case 'bedtime':
+            if (value >= 100 && value <= 140) return 'bg-green-500';
+            if ((value >= 70 && value < 100) || (value > 140 && value <= 180)) return 'bg-yellow-500';
+            return 'bg-red-500';
+        
+        default:
+            return 'bg-blue-500';
+    }
+}
+
+function renderChart(container) {
+    const maxValue = Math.max(...chartData.map(d => d.value)) + 20;
+    const minValue = Math.max(0, Math.min(...chartData.map(d => d.value)) - 20);
+    const range = maxValue - minValue;
+    const chartHeight = 300;
+    const padding = { top: 20, right: 20, bottom: 40, left: 60 };
+    
+    // Calculate Y-axis scale ticks
+    const tickCount = 6;
+    const tickStep = range / (tickCount - 1);
+    const yTicks = [];
+    for (let i = 0; i < tickCount; i++) {
+        yTicks.push(Math.round(minValue + (i * tickStep)));
+    }
+    
+    container.innerHTML = `
+        <div class="relative bg-gray-50 rounded-lg p-4" style="height:${chartHeight + padding.top + padding.bottom}px;">
+            <!-- Y-axis scale -->
+            <div class="absolute left-0 top-0" style="width:${padding.left}px; height:${chartHeight + padding.top + padding.bottom}px;">
+                ${yTicks.map((tick, index) => {
+                    const y = padding.top + chartHeight - ((tick - minValue) / range) * chartHeight;
+                    const isTargetRange = (tick >= 70 && tick <= 140);
+                    return `
+                        <div class="absolute right-2 text-xs ${isTargetRange ? 'text-green-600 font-medium' : 'text-gray-500'}"
+                             style="top:${y - 8}px; transform:translateY(-50%);">
+                            ${tick}
+                        </div>
+                        <div class="absolute right-0 w-2 h-px bg-gray-300"
+                             style="top:${y}px;"></div>
+                        <div class="absolute w-full h-px ${isTargetRange ? 'bg-green-200' : 'bg-gray-200'} opacity-50"
+                             style="top:${y}px; left:${padding.left}px; right:${padding.right}px;"></div>
+                    `;
+                }).join('')}
+                
+                <!-- Y-axis label -->
+                <div class="absolute left-2 top-1/2 -rotate-90 text-sm text-gray-600 font-medium whitespace-nowrap"
+                     style="transform: translateY(-50%) translateX(-50%) rotate(-90deg); transform-origin: center;">
+                    Blood Sugar (mg/dL)
+                </div>
+            </div>
+            
+            <!-- Chart SVG -->
+            <svg width="100%" height="${chartHeight}" style="margin-left:${padding.left}px; margin-right:${padding.right}px;">
+                <defs>
+                    <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:0.3" />
+                        <stop offset="100%" style="stop-color:#3B82F6;stop-opacity:0" />
+                    </linearGradient>
+                    
+                    <!-- Target range highlight -->
+                    <linearGradient id="targetGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" style="stop-color:#10B981;stop-opacity:0.1" />
+                        <stop offset="100%" style="stop-color:#10B981;stop-opacity:0.05" />
+                    </linearGradient>
+                </defs>
+                
+                <!-- Target range background -->
+                ${generateTargetRangeBackground(chartHeight, range, minValue)}
+                
+                <!-- Chart path and area -->
+                ${generateSVGPath(chartData, chartHeight, range, minValue)}
+            </svg>
+            
+            <!-- Data points -->
+            ${chartData.map((point, index) => {
+                const x = (index / (chartData.length - 1)) * (container.clientWidth - padding.left - padding.right);
+                const y = chartHeight - ((point.value - minValue) / range) * chartHeight;
+                const color = getPointColor(point.value, point.time);
+                return `
+                    <div class="absolute w-4 h-4 ${color} rounded-full border-2 border-white shadow-lg cursor-pointer hover:scale-110 transition-transform"
+                         style="left:${padding.left + x}px; top:${padding.top + y - 8}px; transform:translateX(-50%);"
+                         title="${point.value} mg/dL - ${formatTimeType(point.time)} - ${point.label}"></div>
+                `;
+            }).join('')}
+            
+            <!-- X-axis labels -->
+            <div class="flex justify-between text-xs text-gray-500 mt-2"
+                 style="margin-left:${padding.left}px; margin-right:${padding.right}px;">
+                ${chartData.map(p => `<span class="text-center">${p.label}</span>`).join('')}
+            </div>
+            
+            <!-- Chart legend -->
+            <div class="absolute bottom-2 right-4 text-xs text-gray-500">
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center">
+                        <div class="w-3 h-3 bg-green-500 rounded-full mr-1"></div>
+                        <span>Normal</span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-3 h-3 bg-yellow-500 rounded-full mr-1"></div>
+                        <span>Caution</span>
+                    </div>
+                    <div class="flex items-center">
+                        <div class="w-3 h-3 bg-red-500 rounded-full mr-1"></div>
+                        <span>Alert</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+function generateTargetRangeBackground(height, range, minValue) {
+    // Highlight the general target range (70-180 mg/dL) as a subtle background
+    const targetMin = 70;
+    const targetMax = 180;
+    
+    if (targetMax < minValue || targetMin > (minValue + range)) {
+        return ''; // Target range not visible in current chart range
+    }
+    
+    const clampedMin = Math.max(targetMin, minValue);
+    const clampedMax = Math.min(targetMax, minValue + range);
+    
+    const yTop = 100 - ((clampedMax - minValue) / range) * 100;
+    const yBottom = 100 - ((clampedMin - minValue) / range) * 100;
+    
+    return `
+        <rect x="0%" y="${yTop}%" width="100%" height="${yBottom - yTop}%" 
+              fill="url(#targetGradient)" opacity="0.5" />
+    `;
+}
+
+function generateSVGPath(data, height, range, minValue) {
+    if (data.length < 2) return '';
+    let pathData = '';
+    let areaData = '';
+    
+    data.forEach((point, i) => {
+        const x = (i / (data.length - 1)) * 100; // %
+        const y = 100 - ((point.value - minValue) / range) * 100; // %
+        if (i === 0) {
+            pathData += `M ${x}%,${y}%`;
+            areaData += `M ${x}%,${y}%`;
+        } else {
+            pathData += ` L ${x}%,${y}%`;
+            areaData += ` L ${x}%,${y}%`;
+        }
+    });
+    areaData += ` L 100%,100% L 0,100% Z`;
+    
+    return `
+        <path d="${areaData}" fill="url(#gradient)" />
+        <path d="${pathData}" stroke="#3B82F6" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" />
     `;
 }
