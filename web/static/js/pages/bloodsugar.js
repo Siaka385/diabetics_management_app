@@ -136,13 +136,13 @@ export async function renderBloodsugar() {
 
 // Chart data storage
 let chartData = [
-    { label: 'Mon', value: 120, time: 'fasting' },
-    { label: 'Tue', value: 135, time: 'after_meal' },
-    { label: 'Wed', value: 128, time: 'fasting' },
-    { label: 'Thu', value: 142, time: 'after_meal' },
-    { label: 'Fri', value: 118, time: 'fasting' },
-    { label: 'Sat', value: 125, time: 'before_meal' },
-    { label: 'Sun', value: 130, time: 'fasting' }
+    { label: 'Mon', value: 120, time: 'fasting', timestamp: Date.now() - 6*24*60*60*1000 },
+    { label: 'Tue', value: 135, time: 'after_meal', timestamp: Date.now() - 5*24*60*60*1000 },
+    { label: 'Wed', value: 128, time: 'fasting', timestamp: Date.now() - 4*24*60*60*1000 },
+    { label: 'Thu', value: 142, time: 'after_meal', timestamp: Date.now() - 3*24*60*60*1000 },
+    { label: 'Fri', value: 118, time: 'fasting', timestamp: Date.now() - 2*24*60*60*1000 },
+    { label: 'Sat', value: 125, time: 'before_meal', timestamp: Date.now() - 1*24*60*60*1000 },
+    { label: 'Sun', value: 130, time: 'fasting', timestamp: Date.now() }
 ];
 
 function initializeChart() {
@@ -180,8 +180,8 @@ function handleBloodSugarSubmit(e) {
     // Add new data point
     const now = new Date();
     const timeLabel = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    
-    chartData.push({ label: timeLabel, value: level, time: time });
+
+    chartData.push({ label: timeLabel, value: level, time: time, timestamp: Date.now() });
     
     // Keep only the last 10 data points
     if (chartData.length > 10) {
@@ -366,6 +366,15 @@ function getPointColor(value, timeType) {
 }
 
 function renderChart(container) {
+    // Sort data by timestamp
+    chartData.sort((a, b) => a.timestamp - b.timestamp);
+
+    // Calculate time range
+    const timestamps = chartData.map(d => d.timestamp);
+    const minTimestamp = Math.min(...timestamps);
+    const maxTimestamp = Math.max(...timestamps);
+    const timeRange = maxTimestamp - minTimestamp;
+
     const maxValue = Math.max(...chartData.map(d => d.value)) + 20;
     const minValue = Math.max(0, Math.min(...chartData.map(d => d.value)) - 20);
     const range = maxValue - minValue;
@@ -425,25 +434,30 @@ function renderChart(container) {
                 ${generateTargetRangeBackground(chartHeight, range, minValue)}
                 
                 <!-- Chart path and area -->
-                ${generateSVGPath(chartData, chartHeight, range, minValue)}
+                ${generateSVGPath(chartData, chartHeight, range, minValue, minTimestamp, maxTimestamp, timeRange)}
             </svg>
             
             <!-- Data points -->
             ${chartData.map((point, index) => {
-                const x = (index / (chartData.length - 1)) * (container.clientWidth - padding.left - padding.right);
+                const x = timeRange > 0 ? ((point.timestamp - minTimestamp) / timeRange) * (container.clientWidth - padding.left - padding.right) : (index / (chartData.length - 1)) * (container.clientWidth - padding.left - padding.right);
                 const y = chartHeight - ((point.value - minValue) / range) * chartHeight;
                 const color = getPointColor(point.value, point.time);
+                const dateStr = new Date(point.timestamp).toLocaleDateString();
                 return `
                     <div class="absolute w-4 h-4 ${color} rounded-full border-2 border-white shadow-lg cursor-pointer hover:scale-110 transition-transform"
                          style="left:${padding.left + x}px; top:${padding.top + y - 8}px; transform:translateX(-50%);"
-                         title="${point.value} mg/dL - ${formatTimeType(point.time)} - ${point.label}"></div>
+                         title="${point.value} mg/dL - ${formatTimeType(point.time)} - ${dateStr} ${point.label}"></div>
                 `;
             }).join('')}
             
             <!-- X-axis labels -->
             <div class="flex justify-between text-xs text-gray-500 mt-2"
                  style="margin-left:${padding.left}px; margin-right:${padding.right}px;">
-                ${chartData.map(p => `<span class="text-center">${p.label}</span>`).join('')}
+                ${chartData.map(p => {
+                    const date = new Date(p.timestamp);
+                    const dateStr = date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+                    return `<span class="text-center">${dateStr}</span>`;
+                }).join('')}
             </div>
             
             <!-- Chart legend -->
@@ -488,18 +502,18 @@ function generateTargetRangeBackground(height, range, minValue) {
     `;
 }
 
-function generateSVGPath(data, height, range, minValue) {
+function generateSVGPath(data, height, range, minValue, minTimestamp, maxTimestamp, timeRange) {
     if (data.length < 2) return '';
-    
+
     const svgWidth = 400;
     const svgHeight = height;
     let pathData = '';
     let areaData = '';
-    
+
     data.forEach((point, i) => {
-        const x = (i / (data.length - 1)) * svgWidth;
+        const x = timeRange > 0 ? ((point.timestamp - minTimestamp) / timeRange) * svgWidth : (i / (data.length - 1)) * svgWidth;
         const y = svgHeight - ((point.value - minValue) / range) * svgHeight;
-        
+
         if (i === 0) {
             pathData += `M ${x} ${y}`;
             areaData += `M ${x} ${y}`;
@@ -508,9 +522,9 @@ function generateSVGPath(data, height, range, minValue) {
             areaData += ` L ${x} ${y}`;
         }
     });
-    
+
     areaData += ` L ${svgWidth} ${svgHeight} L 0 ${svgHeight} Z`;
-    
+
     return `
         <path d="${areaData}" fill="url(#gradient)" />
         <path d="${pathData}" stroke="#3B82F6" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" />
