@@ -1,4 +1,4 @@
-import { renderGlucoseChart, CHART_TYPES } from '../graphing.js';
+import { renderGlucoseChart, CHART_TYPES, getPointColor } from '../graphing.js';
 
 export async function renderBloodsugar() {
     try {

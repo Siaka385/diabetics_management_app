@@ -256,7 +256,7 @@ function generateSVGPath(data, height, range, minValue, minTimestamp, maxTimesta
     `;
 }
 
-function getPointColor(value, timeType) {
+export function getPointColor(value, timeType) {
     if (value < 70) return 'bg-red-500';
     if (value > 250) return 'bg-red-600';
 
