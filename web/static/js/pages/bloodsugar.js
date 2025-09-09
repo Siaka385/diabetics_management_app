@@ -151,22 +151,110 @@ let chartData = [
 // Make chartData globally accessible for onclick handlers
 window.chartData = chartData;
 
+// Global function for changing subgraph time period
+window.changeSubgraphPeriod = function(clickedTimestamp, hours) {
+    const subgraphContainer = document.getElementById('subgraphContainer');
+    if (!subgraphContainer) return;
+
+    const timeWindow = hours * 60 * 60 * 1000; // Convert hours to milliseconds
+    const windowStart = clickedTimestamp - timeWindow;
+    const windowEnd = clickedTimestamp + timeWindow;
+
+    const windowReadings = window.chartData.filter(reading =>
+        reading.timestamp >= windowStart && reading.timestamp <= windowEnd
+    );
+
+    if (windowReadings.length > 0) {
+        subgraphContainer.innerHTML = `
+            <div class="mb-2 flex items-center justify-between">
+                <div class="text-sm text-gray-600">
+                    Showing readings within ±${hours} hours (${windowReadings.length} readings)
+                </div>
+                <div class="flex space-x-1">
+                    <button onclick="changeSubgraphPeriod(${clickedTimestamp}, 1)" class="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded">1h</button>
+                    <button onclick="changeSubgraphPeriod(${clickedTimestamp}, 6)" class="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded">6h</button>
+                    <button onclick="changeSubgraphPeriod(${clickedTimestamp}, 12)" class="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded">12h</button>
+                    <button onclick="changeSubgraphPeriod(${clickedTimestamp}, 24)" class="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded">24h</button>
+                    <button onclick="changeSubgraphPeriod(${clickedTimestamp}, 48)" class="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded">48h</button>
+                </div>
+            </div>
+            <div id="subgraphChart"></div>
+        `;
+
+        const chartContainer = document.getElementById('subgraphChart');
+        if (chartContainer) {
+            renderGlucoseChart(chartContainer, windowReadings, CHART_TYPES.FULL_TIMELINE);
+        }
+    } else {
+        // No readings found, show message
+        subgraphContainer.innerHTML = `
+            <div class="mb-2 flex items-center justify-between">
+                <div class="text-sm text-gray-600">
+                    No readings found within ±${hours} hours
+                </div>
+                <div class="flex space-x-1">
+                    <button onclick="changeSubgraphPeriod(${clickedTimestamp}, 1)" class="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded">1h</button>
+                    <button onclick="changeSubgraphPeriod(${clickedTimestamp}, 6)" class="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded">6h</button>
+                    <button onclick="changeSubgraphPeriod(${clickedTimestamp}, 12)" class="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded">12h</button>
+                    <button onclick="changeSubgraphPeriod(${clickedTimestamp}, 24)" class="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded">24h</button>
+                    <button onclick="changeSubgraphPeriod(${clickedTimestamp}, 48)" class="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded">48h</button>
+                </div>
+            </div>
+            <div class="text-center py-8 text-gray-500">
+                No blood sugar readings found in this time period.
+            </div>
+        `;
+    }
+};
+
 // Global function for handling point clicks
 window.handlePointClick = function(event, timestamp) {
     // Show time-based subgraph for the clicked point
     const subgraphContainer = document.getElementById('subgraphContainer');
     if (!subgraphContainer) return;
 
-    // Filter readings to ±12 hours around the clicked timestamp
-    const windowStart = timestamp - 12 * 60 * 60 * 1000; // 12 hours before
-    const windowEnd = timestamp + 12 * 60 * 60 * 1000;   // 12 hours after
-    const windowReadings = window.chartData.filter(reading =>
-        reading.timestamp >= windowStart && reading.timestamp <= windowEnd
-    );
+    // Start with ±12 hours, but expand if needed
+    let timeWindow = 12 * 60 * 60 * 1000; // 12 hours in milliseconds
+    let windowReadings = [];
+
+    // Try different time windows until we have at least 3 readings or reach max window
+    const maxWindow = 7 * 24 * 60 * 60 * 1000; // 7 days
+    while (timeWindow <= maxWindow) {
+        const windowStart = timestamp - timeWindow;
+        const windowEnd = timestamp + timeWindow;
+        windowReadings = window.chartData.filter(reading =>
+            reading.timestamp >= windowStart && reading.timestamp <= windowEnd
+        );
+
+        if (windowReadings.length >= 3) break; // Found enough readings
+        timeWindow *= 2; // Double the window
+    }
 
     if (windowReadings.length > 0) {
         subgraphContainer.classList.remove('hidden');
-        renderGlucoseChart(subgraphContainer, windowReadings, CHART_TYPES.FULL_TIMELINE);
+
+        // Add time period selector to subgraph
+        const timePeriodHours = Math.round(timeWindow / (60 * 60 * 1000));
+        subgraphContainer.innerHTML = `
+            <div class="mb-2 flex items-center justify-between">
+                <div class="text-sm text-gray-600">
+                    Showing readings within ±${timePeriodHours} hours (${windowReadings.length} readings)
+                </div>
+                <div class="flex space-x-1">
+                    <button onclick="changeSubgraphPeriod(${timestamp}, 1)" class="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded">1h</button>
+                    <button onclick="changeSubgraphPeriod(${timestamp}, 6)" class="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded">6h</button>
+                    <button onclick="changeSubgraphPeriod(${timestamp}, 12)" class="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded">12h</button>
+                    <button onclick="changeSubgraphPeriod(${timestamp}, 24)" class="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded">24h</button>
+                    <button onclick="changeSubgraphPeriod(${timestamp}, 48)" class="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded">48h</button>
+                </div>
+            </div>
+            <div id="subgraphChart"></div>
+        `;
+
+        const chartContainer = document.getElementById('subgraphChart');
+        if (chartContainer) {
+            renderGlucoseChart(chartContainer, windowReadings, CHART_TYPES.FULL_TIMELINE);
+        }
     }
 };
 
