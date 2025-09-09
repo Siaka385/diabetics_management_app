@@ -394,8 +394,8 @@ function renderChart(container) {
                         </div>
                         <div class="absolute right-0 w-2 h-px bg-gray-300"
                              style="top:${y}px;"></div>
-                        <div class="absolute w-full h-px ${isTargetRange ? 'bg-green-200' : 'bg-gray-200'} opacity-50"
-                             style="top:${y}px; left:${padding.left}px; right:${padding.right}px;"></div>
+                        <div class="absolute h-px ${isTargetRange ? 'bg-green-200' : 'bg-gray-200'} opacity-50"
+                             style="top:${y}px; left:${padding.left}px; right:${padding.right}px; width:calc(100% - ${padding.left + padding.right}px);"></div>
                     `;
                 }).join('')}
                 
@@ -407,7 +407,7 @@ function renderChart(container) {
             </div>
             
             <!-- Chart SVG -->
-            <svg width="100%" height="${chartHeight}" style="margin-left:${padding.left}px; margin-right:${padding.right}px;">
+            <svg width="100%" height="${chartHeight}" viewBox="0 0 400 ${chartHeight}" style="margin-left:${padding.left}px; margin-right:${padding.right}px;">
                 <defs>
                     <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
                         <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:0.3" />
@@ -490,21 +490,26 @@ function generateTargetRangeBackground(height, range, minValue) {
 
 function generateSVGPath(data, height, range, minValue) {
     if (data.length < 2) return '';
+    
+    const svgWidth = 400;
+    const svgHeight = height;
     let pathData = '';
     let areaData = '';
     
     data.forEach((point, i) => {
-        const x = (i / (data.length - 1)) * 100; // %
-        const y = 100 - ((point.value - minValue) / range) * 100; // %
+        const x = (i / (data.length - 1)) * svgWidth;
+        const y = svgHeight - ((point.value - minValue) / range) * svgHeight;
+        
         if (i === 0) {
-            pathData += `M ${x}%,${y}%`;
-            areaData += `M ${x}%,${y}%`;
+            pathData += `M ${x} ${y}`;
+            areaData += `M ${x} ${y}`;
         } else {
-            pathData += ` L ${x}%,${y}%`;
-            areaData += ` L ${x}%,${y}%`;
+            pathData += ` L ${x} ${y}`;
+            areaData += ` L ${x} ${y}`;
         }
     });
-    areaData += ` L 100%,100% L 0,100% Z`;
+    
+    areaData += ` L ${svgWidth} ${svgHeight} L 0 ${svgHeight} Z`;
     
     return `
         <path d="${areaData}" fill="url(#gradient)" />
