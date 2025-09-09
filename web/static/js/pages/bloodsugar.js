@@ -171,11 +171,14 @@ window.changeSubgraphPeriod = function(clickedTimestamp, hours) {
                     Showing readings within ±${hours} hours (${windowReadings.length} readings)
                 </div>
                 <div class="flex space-x-1">
+                    <button onclick="shiftSubgraphPeriod(${clickedTimestamp}, ${hours}, -1)" class="px-2 py-1 text-xs bg-blue-200 hover:bg-blue-300 rounded" title="Previous period">◀</button>
                     <button onclick="changeSubgraphPeriod(${clickedTimestamp}, 1)" class="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded">1h</button>
                     <button onclick="changeSubgraphPeriod(${clickedTimestamp}, 6)" class="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded">6h</button>
                     <button onclick="changeSubgraphPeriod(${clickedTimestamp}, 12)" class="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded">12h</button>
                     <button onclick="changeSubgraphPeriod(${clickedTimestamp}, 24)" class="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded">24h</button>
                     <button onclick="changeSubgraphPeriod(${clickedTimestamp}, 48)" class="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded">48h</button>
+                    <button onclick="changeSubgraphPeriod(${clickedTimestamp}, 168)" class="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded">1w</button>
+                    <button onclick="shiftSubgraphPeriod(${clickedTimestamp}, ${hours}, 1)" class="px-2 py-1 text-xs bg-blue-200 hover:bg-blue-300 rounded" title="Next period">▶</button>
                 </div>
             </div>
             <div id="subgraphChart"></div>
@@ -193,11 +196,14 @@ window.changeSubgraphPeriod = function(clickedTimestamp, hours) {
                     No readings found within ±${hours} hours
                 </div>
                 <div class="flex space-x-1">
+                    <button onclick="shiftSubgraphPeriod(${clickedTimestamp}, ${hours}, -1)" class="px-2 py-1 text-xs bg-blue-200 hover:bg-blue-300 rounded" title="Previous period">◀</button>
                     <button onclick="changeSubgraphPeriod(${clickedTimestamp}, 1)" class="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded">1h</button>
                     <button onclick="changeSubgraphPeriod(${clickedTimestamp}, 6)" class="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded">6h</button>
                     <button onclick="changeSubgraphPeriod(${clickedTimestamp}, 12)" class="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded">12h</button>
                     <button onclick="changeSubgraphPeriod(${clickedTimestamp}, 24)" class="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded">24h</button>
                     <button onclick="changeSubgraphPeriod(${clickedTimestamp}, 48)" class="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded">48h</button>
+                    <button onclick="changeSubgraphPeriod(${clickedTimestamp}, 168)" class="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded">1w</button>
+                    <button onclick="shiftSubgraphPeriod(${clickedTimestamp}, ${hours}, 1)" class="px-2 py-1 text-xs bg-blue-200 hover:bg-blue-300 rounded" title="Next period">▶</button>
                 </div>
             </div>
             <div class="text-center py-8 text-gray-500">
@@ -241,11 +247,14 @@ window.handlePointClick = function(event, timestamp) {
                     Showing readings within ±${timePeriodHours} hours (${windowReadings.length} readings)
                 </div>
                 <div class="flex space-x-1">
+                    <button onclick="shiftSubgraphPeriod(${timestamp}, ${timePeriodHours}, -1)" class="px-2 py-1 text-xs bg-blue-200 hover:bg-blue-300 rounded" title="Previous period">◀</button>
                     <button onclick="changeSubgraphPeriod(${timestamp}, 1)" class="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded">1h</button>
                     <button onclick="changeSubgraphPeriod(${timestamp}, 6)" class="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded">6h</button>
                     <button onclick="changeSubgraphPeriod(${timestamp}, 12)" class="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded">12h</button>
                     <button onclick="changeSubgraphPeriod(${timestamp}, 24)" class="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded">24h</button>
                     <button onclick="changeSubgraphPeriod(${timestamp}, 48)" class="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded">48h</button>
+                    <button onclick="changeSubgraphPeriod(${timestamp}, 168)" class="px-2 py-1 text-xs bg-gray-200 hover:bg-gray-300 rounded">1w</button>
+                    <button onclick="shiftSubgraphPeriod(${timestamp}, ${timePeriodHours}, 1)" class="px-2 py-1 text-xs bg-blue-200 hover:bg-blue-300 rounded" title="Next period">▶</button>
                 </div>
             </div>
             <div id="subgraphChart"></div>
@@ -256,6 +265,12 @@ window.handlePointClick = function(event, timestamp) {
             renderGlucoseChart(chartContainer, windowReadings, CHART_TYPES.FULL_TIMELINE);
         }
     }
+};
+
+// Global function to shift the subgraph period forward or backward
+window.shiftSubgraphPeriod = function(currentTimestamp, currentHours, direction) {
+    const newTimestamp = currentTimestamp + direction * currentHours * 60 * 60 * 1000;
+    window.changeSubgraphPeriod(newTimestamp, currentHours);
 };
 
 function initializeChart() {
