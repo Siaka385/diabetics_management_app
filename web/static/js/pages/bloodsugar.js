@@ -1,3 +1,5 @@
+import { renderGlucoseChart, CHART_TYPES } from '../graphing.js';
+
 export async function renderBloodsugar() {
     try {
         const response = await fetch('/bloodsugar');
@@ -17,6 +19,7 @@ export async function renderBloodsugar() {
                         <div class="bg-white p-6 rounded-xl shadow-sm border">
                             <h2 class="text-xl font-semibold mb-6">Blood Sugar Trends</h2>
                             <div id="chartContainer" class="w-full h-96"></div>
+                            <div id="subgraphContainer" class="w-full h-64 mt-4 hidden"></div>
                         </div>
                         
                         <div class="bg-white p-6 rounded-xl shadow-sm border">
@@ -134,21 +137,44 @@ export async function renderBloodsugar() {
     }
 }
 
-// Chart data storage
+// Chart data storage with real timestamps and human-readable labels
 let chartData = [
-    { label: 'Mon', value: 120, time: 'fasting', timestamp: Date.now() - 6*24*60*60*1000 },
-    { label: 'Tue', value: 135, time: 'after_meal', timestamp: Date.now() - 5*24*60*60*1000 },
-    { label: 'Wed', value: 128, time: 'fasting', timestamp: Date.now() - 4*24*60*60*1000 },
-    { label: 'Thu', value: 142, time: 'after_meal', timestamp: Date.now() - 3*24*60*60*1000 },
-    { label: 'Fri', value: 118, time: 'fasting', timestamp: Date.now() - 2*24*60*60*1000 },
-    { label: 'Sat', value: 125, time: 'before_meal', timestamp: Date.now() - 1*24*60*60*1000 },
-    { label: 'Sun', value: 130, time: 'fasting', timestamp: Date.now() }
+    { label: '8:00 AM', value: 120, time: 'fasting', timestamp: Date.now() - 6*24*60*60*1000 },
+    { label: '2:00 PM', value: 135, time: 'after_meal', timestamp: Date.now() - 5*24*60*60*1000 },
+    { label: '8:30 AM', value: 128, time: 'fasting', timestamp: Date.now() - 4*24*60*60*1000 },
+    { label: '1:30 PM', value: 142, time: 'after_meal', timestamp: Date.now() - 3*24*60*60*1000 },
+    { label: '8:15 AM', value: 118, time: 'fasting', timestamp: Date.now() - 2*24*60*60*1000 },
+    { label: '11:00 AM', value: 125, time: 'before_meal', timestamp: Date.now() - 1*24*60*60*1000 },
+    { label: '9:00 AM', value: 130, time: 'fasting', timestamp: Date.now() }
 ];
+
+// Make chartData globally accessible for onclick handlers
+window.chartData = chartData;
+
+// Global function for handling point clicks
+window.handlePointClick = function(event, timestamp) {
+    // Show time-based subgraph for the clicked point
+    const subgraphContainer = document.getElementById('subgraphContainer');
+    if (!subgraphContainer) return;
+
+    // Filter readings to ±12 hours around the clicked timestamp
+    const windowStart = timestamp - 12 * 60 * 60 * 1000; // 12 hours before
+    const windowEnd = timestamp + 12 * 60 * 60 * 1000;   // 12 hours after
+    const windowReadings = window.chartData.filter(reading =>
+        reading.timestamp >= windowStart && reading.timestamp <= windowEnd
+    );
+
+    if (windowReadings.length > 0) {
+        subgraphContainer.classList.remove('hidden');
+        renderGlucoseChart(subgraphContainer, windowReadings, CHART_TYPES.FULL_TIMELINE);
+    }
+};
 
 function initializeChart() {
     const container = document.getElementById('chartContainer');
     if (!container) return;
-    renderChart(container);
+
+    renderGlucoseChart(container, window.chartData, CHART_TYPES.FULL_TIMELINE);
 }
 
 function formatTimeType(timeType) {
@@ -181,17 +207,17 @@ function handleBloodSugarSubmit(e) {
     const now = new Date();
     const timeLabel = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-    chartData.push({ label: timeLabel, value: level, time: time, timestamp: Date.now() });
+    window.chartData.push({ label: timeLabel, value: level, time: time, timestamp: Date.now() });
     
     // Keep only the last 10 data points
-    if (chartData.length > 10) {
-        chartData.shift();
+    if (window.chartData.length > 10) {
+        window.chartData.shift();
     }
     
     // Re-render the chart
     const container = document.getElementById('chartContainer');
     if (container) {
-        renderChart(container);
+        renderGlucoseChart(container, window.chartData, CHART_TYPES.FULL_TIMELINE);
     }
     
     // Add to recent logs
@@ -335,151 +361,9 @@ function renderSidebar(userData, currentPage) {
     `;
 }
 
-function getPointColor(value, timeType) {
-    if (value < 70) return 'bg-red-500'; // Hypoglycemia
-    if (value > 250) return 'bg-red-600'; // Dangerously high
-    
-    switch (timeType) {
-        case 'fasting':
-            if (value <= 100) return 'bg-green-500';
-            if (value <= 125) return 'bg-yellow-500';
-            return 'bg-red-500';
-        
-        case 'before_meal':
-            if (value <= 130) return 'bg-green-500';
-            if (value <= 180) return 'bg-yellow-500';
-            return 'bg-red-500';
-        
-        case 'after_meal':
-            if (value < 180) return 'bg-green-500';
-            if (value <= 250) return 'bg-yellow-500';
-            return 'bg-red-500';
-        
-        case 'bedtime':
-            if (value >= 100 && value <= 140) return 'bg-green-500';
-            if ((value >= 70 && value < 100) || (value > 140 && value <= 180)) return 'bg-yellow-500';
-            return 'bg-red-500';
-        
-        default:
-            return 'bg-blue-500';
-    }
-}
 
-function renderChart(container) {
-    // Sort data by timestamp
-    chartData.sort((a, b) => a.timestamp - b.timestamp);
 
-    // Calculate time range
-    const timestamps = chartData.map(d => d.timestamp);
-    const minTimestamp = Math.min(...timestamps);
-    const maxTimestamp = Math.max(...timestamps);
-    const timeRange = maxTimestamp - minTimestamp;
 
-    const maxValue = Math.max(...chartData.map(d => d.value)) + 20;
-    const minValue = Math.max(0, Math.min(...chartData.map(d => d.value)) - 20);
-    const range = maxValue - minValue;
-    const chartHeight = 300;
-    const padding = { top: 20, right: 20, bottom: 40, left: 60 };
-    
-    // Calculate Y-axis scale ticks
-    const tickCount = 6;
-    const tickStep = range / (tickCount - 1);
-    const yTicks = [];
-    for (let i = 0; i < tickCount; i++) {
-        yTicks.push(Math.round(minValue + (i * tickStep)));
-    }
-    
-    container.innerHTML = `
-        <div class="relative bg-gray-50 rounded-lg p-4" style="height:${chartHeight + padding.top + padding.bottom}px;">
-            <!-- Y-axis scale -->
-            <div class="absolute left-0 top-0" style="width:${padding.left}px; height:${chartHeight + padding.top + padding.bottom}px;">
-                ${yTicks.map((tick, index) => {
-                    const y = padding.top + chartHeight - ((tick - minValue) / range) * chartHeight;
-                    const isTargetRange = (tick >= 70 && tick <= 140);
-                    return `
-                        <div class="absolute right-2 text-xs ${isTargetRange ? 'text-green-600 font-medium' : 'text-gray-500'}"
-                             style="top:${y - 8}px; transform:translateY(-50%);">
-                            ${tick}
-                        </div>
-                        <div class="absolute right-0 w-2 h-px bg-gray-300"
-                             style="top:${y}px;"></div>
-                        <div class="absolute h-px ${isTargetRange ? 'bg-green-200' : 'bg-gray-200'} opacity-50"
-                             style="top:${y}px; left:${padding.left}px; right:${padding.right}px; width:calc(100% - ${padding.left + padding.right}px);"></div>
-                    `;
-                }).join('')}
-                
-                <!-- Y-axis label -->
-                <div class="absolute left-2 top-1/2 -rotate-90 text-sm text-gray-600 font-medium whitespace-nowrap"
-                     style="transform: translateY(-50%) translateX(-50%) rotate(-90deg); transform-origin: center;">
-                    Blood Sugar (mg/dL)
-                </div>
-            </div>
-            
-            <!-- Chart SVG -->
-            <svg width="100%" height="${chartHeight}" viewBox="0 0 400 ${chartHeight}" style="margin-left:${padding.left}px; margin-right:${padding.right}px;">
-                <defs>
-                    <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" style="stop-color:#3B82F6;stop-opacity:0.3" />
-                        <stop offset="100%" style="stop-color:#3B82F6;stop-opacity:0" />
-                    </linearGradient>
-                    
-                    <!-- Target range highlight -->
-                    <linearGradient id="targetGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" style="stop-color:#10B981;stop-opacity:0.1" />
-                        <stop offset="100%" style="stop-color:#10B981;stop-opacity:0.05" />
-                    </linearGradient>
-                </defs>
-                
-                <!-- Target range background -->
-                ${generateTargetRangeBackground(chartHeight, range, minValue)}
-                
-                <!-- Chart path and area -->
-                ${generateSVGPath(chartData, chartHeight, range, minValue, minTimestamp, maxTimestamp, timeRange)}
-            </svg>
-            
-            <!-- Data points -->
-            ${chartData.map((point, index) => {
-                const x = timeRange > 0 ? ((point.timestamp - minTimestamp) / timeRange) * (container.clientWidth - padding.left - padding.right) : (index / (chartData.length - 1)) * (container.clientWidth - padding.left - padding.right);
-                const y = chartHeight - ((point.value - minValue) / range) * chartHeight;
-                const color = getPointColor(point.value, point.time);
-                const dateStr = new Date(point.timestamp).toLocaleDateString();
-                return `
-                    <div class="absolute w-4 h-4 ${color} rounded-full border-2 border-white shadow-lg cursor-pointer hover:scale-110 transition-transform"
-                         style="left:${padding.left + x}px; top:${padding.top + y - 8}px; transform:translateX(-50%);"
-                         title="${point.value} mg/dL - ${formatTimeType(point.time)} - ${dateStr} ${point.label}"></div>
-                `;
-            }).join('')}
-            
-            <!-- X-axis labels -->
-            <div class="flex justify-between text-xs text-gray-500 mt-2"
-                 style="margin-left:${padding.left}px; margin-right:${padding.right}px;">
-                ${chartData.map(p => {
-                    const date = new Date(p.timestamp);
-                    const dateStr = date.toLocaleDateString([], { month: 'short', day: 'numeric' });
-                    return `<span class="text-center">${dateStr}</span>`;
-                }).join('')}
-            </div>
-            
-            <!-- Chart legend -->
-            <div class="absolute bottom-2 right-4 text-xs text-gray-500">
-                <div class="flex items-center space-x-4">
-                    <div class="flex items-center">
-                        <div class="w-3 h-3 bg-green-500 rounded-full mr-1"></div>
-                        <span>Normal</span>
-                    </div>
-                    <div class="flex items-center">
-                        <div class="w-3 h-3 bg-yellow-500 rounded-full mr-1"></div>
-                        <span>Caution</span>
-                    </div>
-                    <div class="flex items-center">
-                        <div class="w-3 h-3 bg-red-500 rounded-full mr-1"></div>
-                        <span>Alert</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    `;
-}
 
 function generateTargetRangeBackground(height, range, minValue) {
     // Highlight the general target range (70-180 mg/dL) as a subtle background
