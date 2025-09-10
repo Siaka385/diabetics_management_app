@@ -157,11 +157,12 @@ function generateDataPoints(readings, chartHeight, range, minValue, minTimestamp
         const color = getPointColor(point.value, point.time);
         const dateStr = new Date(point.timestamp).toLocaleDateString();
         const clickHandler = `onclick="window.handlePointClick(event, ${point.timestamp})"`;
+        const hoverHandler = `onmouseover="showCrosshair(${x}, ${y}, ${chartHeight}, ${padding.left}, ${padding.top})" onmouseout="hideCrosshair()"`;
         return `
             <div class="absolute w-4 h-4 ${color} rounded-full border-2 border-white shadow-lg cursor-pointer hover:scale-110 transition-transform"
                  style="left:${padding.left + x}px; top:${padding.top + y - 8}px; transform:translateX(-50%);"
                  title="${point.value} mg/dL - ${formatTimeType(point.time)} - ${dateStr} ${point.label}"
-                 ${clickHandler}></div>
+                 ${clickHandler} ${hoverHandler}></div>
         `;
     }).join('');
 }
@@ -295,3 +296,48 @@ function formatTimeType(timeType) {
     };
     return timeMap[timeType] || timeType;
 }
+
+// Global crosshair functions for hover effects
+window.showCrosshair = function(x, y, chartHeight, paddingLeft, paddingTop) {
+    // Remove existing crosshair
+    hideCrosshair();
+
+    // Create crosshair container
+    const chartContainer = document.querySelector('.relative.bg-gray-50.rounded-lg.p-4');
+    if (!chartContainer) return;
+
+    // Create vertical line (from point to X-axis)
+    const verticalLine = document.createElement('div');
+    verticalLine.id = 'crosshair-vertical';
+    verticalLine.className = 'absolute bg-gray-400 opacity-75 pointer-events-none';
+    verticalLine.style.cssText = `
+        left: ${paddingLeft + x}px;
+        top: ${paddingTop}px;
+        width: 1px;
+        height: ${chartHeight}px;
+        z-index: 10;
+    `;
+
+    // Create horizontal line (from point to Y-axis)
+    const horizontalLine = document.createElement('div');
+    horizontalLine.id = 'crosshair-horizontal';
+    horizontalLine.className = 'absolute bg-gray-400 opacity-75 pointer-events-none';
+    horizontalLine.style.cssText = `
+        left: ${paddingLeft}px;
+        top: ${paddingTop + y}px;
+        width: ${400 - paddingLeft}px;
+        height: 1px;
+        z-index: 10;
+    `;
+
+    chartContainer.appendChild(verticalLine);
+    chartContainer.appendChild(horizontalLine);
+};
+
+window.hideCrosshair = function() {
+    const verticalLine = document.getElementById('crosshair-vertical');
+    const horizontalLine = document.getElementById('crosshair-horizontal');
+
+    if (verticalLine) verticalLine.remove();
+    if (horizontalLine) horizontalLine.remove();
+};
