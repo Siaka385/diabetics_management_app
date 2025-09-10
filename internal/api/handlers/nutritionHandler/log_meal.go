@@ -3,14 +3,14 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
-
 	"log"
 	"net/http"
 	"time"
 
-	auth "diawise/internal/middleware"
+	auth "diawise/internal/api/middleware"
 	"diawise/internal/models"
-	"diawise/internal/services"
+	genai "diawise/internal/services/genAi"
+	services "diawise/internal/services/nutrition"
 
 	"gorm.io/gorm"
 )
@@ -103,7 +103,7 @@ func LogMealHandler(db *gorm.DB) http.HandlerFunc {
 		}
 		userID := user.ID
 
-		var mealEntry services.MealLogEntry
+		var mealEntry models.MealLogEntry
 		mealEntry.UserID = userID
 		// Decode the request body into the new struct
 		err = json.NewDecoder(r.Body).Decode(&mealEntry)
@@ -126,7 +126,7 @@ func LogMealHandler(db *gorm.DB) http.HandlerFunc {
 		}
 
 		// Add meal entry to daily meal log
-		analyser, err := NewAIHealthAnalyser()
+		analyser, err := genai.NewAIHealthAnalyser()
 		if err != nil {
 			log.Printf("Failed to create AI health analyser: %v", err)
 			http.Error(w, "Failed to create AI health analyser", http.StatusInternalServerError)
@@ -142,17 +142,18 @@ func LogMealHandler(db *gorm.DB) http.HandlerFunc {
 
 		dietProfileModel.UserID = userID
 
-		// Convert *models.DietProfile to services.DietProfile
-		dietProfile := services.DietProfile{
-			UserID:             dietProfileModel.UserID,
-			FoodName:           dietProfileModel.FoodName,
-			CaloriesIntake:     dietProfileModel.Calories,
-			CarbIntake:         dietProfileModel.Carbs,
-			ProteinIntake:      dietProfileModel.Protein,
-			FatIntake:          dietProfileModel.Fat,
-			SugarConsumption:   0,
-			WaterIntake:        0,
-			ProcessedFoodRatio: 0,
+		// Convert *models.DietProfile to models.DietProfile
+		dietProfile := models.DietProfile{
+			UserID:      dietProfileModel.UserID,
+			FoodName:    dietProfileModel.FoodName,
+			Quantity:    dietProfileModel.Quantity,
+			Calories:    dietProfileModel.Calories,
+			Carbs:       dietProfileModel.Carbs,
+			Protein:     dietProfileModel.Protein,
+			Fat:         dietProfileModel.Fat,
+			HealthScore: 0,
+			Suggestions: "",
+			Date:        time.Now(),
 		}
 
 		err = services.SaveDietLog(db, dietProfile)
@@ -176,8 +177,8 @@ func LogMealHandler(db *gorm.DB) http.HandlerFunc {
 			UserID:         mealEntry.UserID,
 			DailyMealLogID: mealEntry.DailyMealLogID,
 			DietProfileID:  mealEntry.DietProfileID,
-			FoodName:       mealEntry.FoodItem,
-			Quantity:       mealEntry.Weight,
+			FoodName:       mealEntry.FoodName,
+			Quantity:       mealEntry.Quantity,
 			Calories:       dietProfileModel.Calories,
 			Carbs:          dietProfileModel.Carbs,
 			Protein:        dietProfileModel.Protein,
