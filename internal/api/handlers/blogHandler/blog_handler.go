@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	auth "diawise/internal/middleware"
+	auth "diawise/internal/api/middleware"
 	"diawise/internal/models"
 	"diawise/internal/shared"
 
@@ -59,31 +59,6 @@ func BlogHomeHandler() http.HandlerFunc {
 			},
 			CurrentPage: "/blog",
 			Posts:       staticPosts,
-		}
-
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(UserProfileDetails)
-	}
-}
-
-func EducationHandler() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		// Retrieve user from context
-		user, ok := auth.GetUserFromContext(r)
-		if !ok {
-			http.Error(w, "Unauthorized", http.StatusUnauthorized)
-			return
-		}
-
-		UserProfileDetails := struct {
-			models.UserProfile
-			CurrentPage string
-		}{
-			UserProfile: models.UserProfile{
-				Name:   user.Name,
-				Abbrev: shared.GenerateShortName(user.Name),
-			},
-			CurrentPage: "/education",
 		}
 
 		w.Header().Set("Content-Type", "application/json")

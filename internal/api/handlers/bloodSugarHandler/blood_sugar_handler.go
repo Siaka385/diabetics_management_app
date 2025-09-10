@@ -2,14 +2,15 @@ package handlers
 
 import (
 	"encoding/json"
-
 	"net/http"
 
-	auth "diawise/internal/middleware"
+	auth "diawise/internal/api/middleware"
 	"diawise/internal/models"
 
 	"diawise/internal/shared"
 )
+
+var defaultMealPlan models.FoodLog
 
 func EditPlan(w http.ResponseWriter, r *http.Request) {
 	var updates models.FoodLog
@@ -23,9 +24,6 @@ func EditPlan(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]string{"message": "Meal plan updated successfully"})
 }
-
-
-
 
 func BloodSugarHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

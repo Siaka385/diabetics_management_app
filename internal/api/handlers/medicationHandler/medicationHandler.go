@@ -12,9 +12,9 @@ import (
 	"github.com/gorilla/sessions"
 	"gorm.io/gorm"
 
-	auth "diawise/internal/middleware"
+	auth "diawise/internal/api/middleware"
 	"diawise/internal/models"
-	"diawise/internal/services"
+	services "diawise/internal/services/medication"
 	"diawise/internal/shared"
 )
 

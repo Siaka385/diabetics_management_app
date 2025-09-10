@@ -7,8 +7,23 @@ import (
 	"gorm.io/gorm"
 
 	"diawise/internal/models"
-
 )
+
+type Signup_repository struct {
+	DB *gorm.DB
+}
+
+func NewSignup_repository(db *gorm.DB) *Signup_repository {
+	return &Signup_repository{DB: db}
+}
+
+type Signin_repository struct {
+	DB *gorm.DB
+}
+
+func NewSignin_repository(db *gorm.DB) *Signin_repository {
+	return &Signin_repository{DB: db}
+}
 
 // RegisterUser creates a new user and saves it to the database
 func RegisterUser(db *gorm.DB, username, name, email, password string) bool {
