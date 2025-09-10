@@ -6,11 +6,10 @@ import (
 	"log"
 	"os"
 
+	"diawise/internal/models"
+
 	"github.com/google/generative-ai-go/genai"
 	"google.golang.org/api/option"
-
-	"diawise/internal/models"
-	"diawise/internal/services"
 )
 
 type AIHealthAnalyser struct {
@@ -35,7 +34,7 @@ func (a *AIHealthAnalyser) Close() {
 	a.client.Close()
 }
 
-func (a *AIHealthAnalyser) DietProfile(mealEntry *services.MealLogEntry) (*models.DietProfile, error) {
+func (a *AIHealthAnalyser) DietProfile(mealEntry *models.MealLogEntry) (*models.DietProfile, error) {
 	fmt.Println("Calling gen ai client...")
 	ctx := context.Background()
 	model := a.client.GenerativeModel("gemini-2.0-flash-exp")
@@ -51,7 +50,7 @@ func (a *AIHealthAnalyser) DietProfile(mealEntry *services.MealLogEntry) (*model
 	ProteinIntake      float64
 	FatIntake          float64
 	SugarConsumption   float64
-	ProcessedFoodRatio float64`, mealEntry.FoodItem, mealEntry.Weight, mealEntry.Proportion)
+	ProcessedFoodRatio float64`, mealEntry.FoodName, mealEntry.Quantity, 1.0)
 
 	resp, err := model.GenerateContent(ctx, genai.Text(prompt))
 	if err != nil {
@@ -63,7 +62,7 @@ func (a *AIHealthAnalyser) DietProfile(mealEntry *services.MealLogEntry) (*model
 	}
 	var dietProfile models.DietProfile
 	dietProfile.UserID = mealEntry.UserID
-	dietProfile.FoodName = mealEntry.FoodItem
+	dietProfile.FoodName = mealEntry.FoodName
 	err = dietProfile.ParseDietProfileString(respStr)
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse diet profile analysis: %v", err)

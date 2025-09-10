@@ -12,7 +12,8 @@ import (
 
 	"gorm.io/gorm"
 
-	auth "diawise/internal/middleware"
+	templatehelper "diawise/internal/api/handlers/templateHelperHandler"
+	auth "diawise/internal/api/middleware"
 	"diawise/internal/models"
 	"diawise/internal/shared"
 )
@@ -45,7 +46,7 @@ func Support() http.HandlerFunc {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
-		
+
 		UserProfileDetails := struct {
 			models.UserProfile
 			CurrentPage string
@@ -56,7 +57,7 @@ func Support() http.HandlerFunc {
 			},
 			CurrentPage: "/support",
 		}
-		
+
 		w.Header().Set("Content-Type", "application/json")
 		json.NewEncoder(w).Encode(UserProfileDetails)
 	}
@@ -331,7 +332,7 @@ func CommuniyAndSupportHandler(tmpl *template.Template) http.HandlerFunc {
 		}
 
 		if err := tmpl.ExecuteTemplate(w, "CommunityAndSupport.html", UserProfileDetails); err != nil {
-			InternalServerErrorHandler(w)
+			templatehelper.InternalServerErrorHandler(w)
 			return
 		}
 	}

@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"net/http"
 	"html/template"
+	"net/http"
 )
 
 // TemplateData holds common template data
@@ -20,7 +20,7 @@ func RenderProtectedTemplate(w http.ResponseWriter, tmpl *template.Template, tem
 	if data.JS == "" {
 		data.JS = "/static/js/protected-page.js"
 	}
-	
+
 	err := tmpl.ExecuteTemplate(w, templateName, data)
 	if err != nil {
 		InternalServerErrorHandler(w)
@@ -33,4 +33,9 @@ func RenderPublicTemplate(w http.ResponseWriter, tmpl *template.Template, templa
 	if err != nil {
 		InternalServerErrorHandler(w)
 	}
+}
+
+// InternalServerErrorHandler handles internal server errors
+func InternalServerErrorHandler(w http.ResponseWriter) {
+	http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 }

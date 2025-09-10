@@ -2,35 +2,41 @@ package handlers
 
 import (
 	"encoding/json"
-
 	"net/http"
 
-	auth "diawise/internal/middleware"
+	"gorm.io/gorm"
+
+	"diawise/internal/api/middleware"
 	"diawise/internal/models"
 	"diawise/internal/shared"
 )
 
-func MedicationHandler() http.HandlerFunc {
+func Dashboard(db *gorm.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		// Retrieve user from context
-		user, ok := auth.GetUserFromContext(r)
+		user, ok := middleware.GetUserFromContext(r)
 		if !ok {
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
 		}
+
+		w.Header().Set("Content-Type", "application/json")
+		w.WriteHeader(http.StatusOK)
 
 		UserProfileDetails := struct {
 			models.UserProfile
 			CurrentPage string
 		}{
 			UserProfile: models.UserProfile{
-				Name:   user.Name,
 				Abbrev: shared.GenerateShortName(user.Name),
+				Name:   user.Name,
 			},
-			CurrentPage: "/medication",
+			CurrentPage: "/dashboard",
 		}
 
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(UserProfileDetails)
+		// Return JSON response
+		if err := json.NewEncoder(w).Encode(UserProfileDetails); err != nil {
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		}
 	}
 }
